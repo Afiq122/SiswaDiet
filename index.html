@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f7d4f">
+<title>SiswaDiet</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f7ef;--ink:#1e2b22;--mute:#5d6d62;--green:#2f7d4f;--chilli:#e4572e;--card:#fff;--line:#d9e4d5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Nunito Sans",system-ui,sans-serif;padding:env(safe-area-inset-top) 0 calc(72px + env(safe-area-inset-bottom))}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.15;margin:0 0 .5rem}
+main{max-width:520px;margin:0 auto;padding:16px}
+.brand{font:800 2rem "Bricolage Grotesque",sans-serif;color:var(--green)}
+.brand b{color:var(--chilli)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+label{display:block;font-weight:600;margin:12px 0 4px}
+input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff;color:var(--ink)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:600 1rem "Nunito Sans",sans-serif;border:0;border-radius:10px;padding:12px 16px;background:var(--green);color:#fff;width:100%;margin-top:16px;cursor:pointer}
+button.ghost{background:transparent;color:var(--green);border:1px solid var(--green)}
+button.link{background:none;color:var(--green);width:auto;padding:4px;margin:8px 0 0;text-decoration:underline}
+:focus-visible{outline:3px solid var(--chilli);outline-offset:2px}
+.msg{color:var(--chilli);min-height:1.4em;margin:8px 0 0;font-size:.95rem}
+.big{font:800 2.6rem "Bricolage Grotesque",sans-serif;color:var(--green)}
+.tag{display:inline-block;background:#e6f1e2;color:var(--green);border-radius:99px;padding:2px 10px;font-weight:600;font-size:.9rem}
+.why li{margin-bottom:6px}
+.meal{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.meal:first-of-type{border-top:0}
+small,.mute{color:var(--mute)}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:#fff;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{margin:0;border-radius:0;background:none;color:var(--mute);flex:1;padding:14px 4px}
+nav button.on{color:var(--green);box-shadow:inset 0 3px 0 var(--green)}
+.hide{display:none!important}
+@media (prefers-reduced-motion:no-preference){.card{transition:transform .15s}}
+</style>
+</head>
+<body>
+<main>
+
+<!-- LOGIN / REGISTER -->
+<section id="auth" class="hide">
+  <div class="brand">Siswa<b>Diet</b></div>
+  <p class="mute">Diet advice for students, based on your body and your budget.</p>
+  <div class="card">
+    <h2 id="authTitle">Log in</h2>
+    <div id="nameWrap" class="hide"><label for="name">Name</label><input id="name" autocomplete="name"></div>
+    <label for="email">Email</label><input id="email" type="email" autocomplete="email">
+    <label for="pass">Password (6+ characters)</label><input id="pass" type="password" autocomplete="current-password">
+    <p class="msg" id="authMsg" role="alert"></p>
+    <button id="authBtn">Log in</button>
+    <button class="link" id="switchBtn">Create a new account</button>
+    <button class="link" id="resetBtn">Forgot password?</button>
+  </div>
+</section>
+
+<!-- APP -->
+<section id="app" class="hide">
+  <div class="brand">Siswa<b>Diet</b></div>
+  <p class="mute" id="hello"></p>
+
+  <div id="tabForm">
+    <form class="card" id="form">
+      <h2>Your details</h2>
+      <div class="row">
+        <div><label for="age">Age</label><input id="age" type="number" min="10" max="80" required></div>
+        <div><label for="gender">Gender</label><select id="gender"><option value="female">Female</option><option value="male">Male</option></select></div>
+      </div>
+      <div class="row">
+        <div><label for="weight">Weight (kg)</label><input id="weight" type="number" step="0.1" min="25" max="250" required></div>
+        <div><label for="height">Height (cm)</label><input id="height" type="number" min="120" max="230" required></div>
+      </div>
+      <label for="activity">Activity level</label>
+      <select id="activity">
+        <option value="1.2">Low: mostly sitting, lectures</option>
+        <option value="1.375" selected>Light: walking around campus</option>
+        <option value="1.55">Moderate: exercise 3 to 5 days a week</option>
+        <option value="1.725">High: hard exercise most days</option>
+      </select>
+      <label for="goal">Goal</label>
+      <select id="goal"><option value="auto">Let SiswaDiet decide</option><option value="lose">Lose weight</option><option value="maintain">Maintain weight</option><option value="gain">Gain weight</option></select>
+      <label for="budget">Daily food budget</label>
+      <select id="budget"><option value="low">Tight (under RM 10)</option><option value="mid">Normal (RM 10 to 20)</option></select>
+      <label for="allergy">Allergies</label>
+      <select id="allergy" multiple size="4"><option value="egg">Egg</option><option value="peanut">Peanut</option><option value="milk">Milk</option><option value="seafood">Seafood</option></select>
+      <small>Hold Ctrl or tap multiple to choose more than one.</small>
+      <button type="submit">Get my diet plan</button>
+    </form>
+  </div>
+
+  <div id="tabResult" class="hide"></div>
+
+  <div id="tabHistory" class="hide">
+    <div class="card"><h2>My history</h2><div id="histList" class="mute">Loading…</div></div>
+  </div>
+
+  <p class="mute"><small>For education only. This is not medical advice. See a doctor or dietitian for health problems.</small></p>
+  <button class="ghost" id="logout">Log out</button>
+</section>
+</main>
+
+<nav id="nav" class="hide">
+  <button data-tab="Form" class="on">Details</button>
+  <button data-tab="Result">Plan</button>
+  <button data-tab="History">History</button>
+</nav>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, orderBy, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* ===== 1. PASTE YOUR FIREBASE CONFIG HERE (Project settings > Your apps > Web) ===== */
+const firebaseConfig = {
+  apiKey: "AIzaSyDHryM71YQreXyoNK8cJAcgJZSUnyYMqDA",
+  authDomain: "siswadiet-4abc1.firebaseapp.com",
+  projectId: "siswadiet-4abc1",
+  storageBucket: "siswadiet-4abc1.firebasestorage.app",
+  messagingSenderId: "937160576607",
+  appId: "1:937160576607:web:823ba150a695c28dfb55ea"
+};
+const fb = initializeApp(firebaseConfig);
+const auth = getAuth(fb);
+const db = getFirestore(fb);
+
+/* ===== 2. KNOWLEDGE BASE: meals (edit freely) ===== */
+const MEALS = [
+  { n: "Nasi + telur rebus + sayur kangkung", kcal: 480, rm: 5, budget: "low", goal: ["lose","maintain"], allergy: ["egg"] },
+  { n: "Nasi + tempe goreng + sayur", kcal: 520, rm: 4, budget: "low", goal: ["lose","maintain"], allergy: [] },
+  { n: "Nasi + ayam rebus + timun", kcal: 540, rm: 7, budget: "mid", goal: ["lose","maintain"], allergy: [] },
+  { n: "Oatmeal + pisang", kcal: 300, rm: 3, budget: "low", goal: ["lose","maintain"], allergy: [] },
+  { n: "Sup sayur + roti wholemeal", kcal: 350, rm: 5, budget: "low", goal: ["lose"], allergy: [] },
+  { n: "Ikan bakar + nasi + ulam", kcal: 560, rm: 9, budget: "mid", goal: ["lose","maintain"], allergy: ["seafood"] },
+  { n: "Nasi lemak + telur + kacang", kcal: 650, rm: 5, budget: "low", goal: ["gain","maintain"], allergy: ["egg","peanut"] },
+  { n: "Roti + peanut butter + susu", kcal: 580, rm: 4, budget: "low", goal: ["gain"], allergy: ["peanut","milk"] },
+  { n: "Mi goreng + telur mata + sayur", kcal: 620, rm: 5, budget: "low", goal: ["gain","maintain"], allergy: ["egg"] },
+  { n: "Nasi ayam + sup", kcal: 700, rm: 8, budget: "mid", goal: ["gain"], allergy: [] },
+  { n: "Bubur ayam + telur", kcal: 420, rm: 6, budget: "low", goal: ["lose","maintain","gain"], allergy: ["egg"] },
+  { n: "Smoothie pisang + susu + oat", kcal: 380, rm: 4, budget: "low", goal: ["gain","maintain"], allergy: ["milk"] }
+];
+
+/* ===== 3. INFERENCE ENGINE: forward chaining ===== */
+// Each rule: IF condition(facts) THEN action(facts). The engine keeps firing rules until nothing new happens.
+const RULES = [
+  { id: "R1", text: "IF BMI < 18.5 THEN status = Underweight",
+    when: f => f.status === undefined && f.bmi < 18.5, then: f => (f.status = "Underweight") },
+  { id: "R2", text: "IF 18.5 <= BMI < 25 THEN status = Normal",
+    when: f => f.status === undefined && f.bmi >= 18.5 && f.bmi < 25, then: f => (f.status = "Normal") },
+  { id: "R3", text: "IF 25 <= BMI < 30 THEN status = Overweight",
+    when: f => f.status === undefined && f.bmi >= 25 && f.bmi < 30, then: f => (f.status = "Overweight") },
+  { id: "R4", text: "IF BMI >= 30 THEN status = Obese",
+    when: f => f.status === undefined && f.bmi >= 30, then: f => (f.status = "Obese") },
+  { id: "R5", text: "IF goal = auto AND status = Underweight THEN goal = gain",
+    when: f => f.goal === "auto" && f.status === "Underweight", then: f => (f.goal = "gain") },
+  { id: "R6", text: "IF goal = auto AND status = Normal THEN goal = maintain",
+    when: f => f.goal === "auto" && f.status === "Normal", then: f => (f.goal = "maintain") },
+  { id: "R7", text: "IF goal = auto AND status is Overweight or Obese THEN goal = lose",
+    when: f => f.goal === "auto" && (f.status === "Overweight" || f.status === "Obese"), then: f => (f.goal = "lose") },
+  { id: "R8", text: "IF goal is known THEN calories = TDEE + adjustment (lose -500, gain +300), minimum 1200 kcal",
+    when: f => f.goal !== "auto" && f.calories === undefined,
+    then: f => { const adj = { lose: -500, gain: 300, maintain: 0 }[f.goal]; f.calories = Math.max(1200, Math.round(f.tdee + adj)); } },
+  { id: "R9", text: "IF calories is known THEN protein = weight x (1.0 maintain, 1.2 lose/gain)",
+    when: f => f.calories !== undefined && f.protein === undefined,
+    then: f => (f.protein = Math.round(f.weight * (f.goal === "maintain" ? 1.0 : 1.2))) },
+  { id: "R10", text: "IF activity is low THEN advise a 20-minute walk daily",
+    when: f => f.activity === 1.2 && !f.tips.includes("walk"),
+    then: f => f.tips.push("walk") },
+  { id: "R11", text: "IF budget is tight THEN prefer meals costing RM 6 or less",
+    when: f => f.budget === "low" && !f.tips.includes("cheap"),
+    then: f => f.tips.push("cheap") },
+  { id: "R12", text: "IF the student has allergies THEN remove meals containing those allergens",
+    when: f => f.allergy.length > 0 && !f.tips.includes("allergy"),
+    then: f => f.tips.push("allergy") }
+];
+
+const TIPS = {
+  walk: "Your activity is low, so walk for 20 minutes a day, for example between classes.",
+  cheap: "On a tight budget, tempe, eggs, oats and seasonal vegetables give the most nutrition per ringgit.",
+  allergy: "Meals with your allergens have been removed from the list."
+};
+
+function infer(input) {
+  const f = { ...input, tips: [] };
+  f.bmi = +(f.weight / ((f.height / 100) ** 2)).toFixed(1);
+  f.bmr = 10 * f.weight + 6.25 * f.height - 5 * f.age + (f.gender === "male" ? 5 : -161);
+  f.tdee = Math.round(f.bmr * f.activity);
+  const why = [`Facts: BMI = ${f.bmi}, BMR = ${Math.round(f.bmr)} kcal, TDEE = ${f.tdee} kcal`];
+  let fired = true, guard = 0;
+  const done = new Set();
+  while (fired && guard++ < 50) {
+    fired = false;
+    for (const r of RULES) {
+      if (!done.has(r.id) && r.when(f)) { r.then(f); done.add(r.id); fired = true; why.push(`${r.id}: ${r.text}`); }
+    }
+  }
+  const price = f.budget === "low" ? 6 : 99;
+  f.meals = MEALS.filter(m => m.goal.includes(f.goal) && m.rm <= price && !m.allergy.some(a => f.allergy.includes(a)));
+  f.why = why;
+  return f;
+}
+
+/* ===== 4. UI ===== */
+const $ = id => document.getElementById(id);
+let mode = "login", last = null;
+
+function show(tab) {
+  ["Form","Result","History"].forEach(t => $("tab"+t).classList.toggle("hide", t !== tab));
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
+  if (tab === "History") loadHistory();
+}
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => show(b.dataset.tab));
+
+function setMode(m) {
+  mode = m;
+  $("authTitle").textContent = m === "login" ? "Log in" : "Create account";
+  $("authBtn").textContent = m === "login" ? "Log in" : "Create account";
+  $("switchBtn").textContent = m === "login" ? "Create a new account" : "I already have an account";
+  $("nameWrap").classList.toggle("hide", m === "login");
+  $("authMsg").textContent = "";
+}
+$("switchBtn").onclick = () => setMode(mode === "login" ? "register" : "login");
+
+function friendly(e) {
+  const c = e.code || "";
+  if (c.includes("invalid-credential") || c.includes("wrong-password") || c.includes("user-not-found")) return "Email or password is wrong. Check and try again.";
+  if (c.includes("email-already")) return "This email already has an account. Log in instead.";
+  if (c.includes("weak-password")) return "Password needs at least 6 characters.";
+  if (c.includes("invalid-email")) return "Enter a valid email address.";
+  if (c.includes("network")) return "No internet connection. Connect and try again.";
+  return "Something went wrong (" + c + ").";
+}
+
+$("authBtn").onclick = async () => {
+  const email = $("email").value.trim(), pass = $("pass").value;
+  $("authMsg").textContent = "";
+  try {
+    if (mode === "login") await signInWithEmailAndPassword(auth, email, pass);
+    else {
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      await updateProfile(cred.user, { displayName: $("name").value.trim() || "Student" });
+      $("hello").textContent = "Hello, " + (cred.user.displayName || "Student");
+    }
+  } catch (e) { $("authMsg").textContent = friendly(e); }
+};
+$("resetBtn").onclick = async () => {
+  const email = $("email").value.trim();
+  if (!email) { $("authMsg").textContent = "Type your email above first, then tap Forgot password."; return; }
+  try { await sendPasswordResetEmail(auth, email); $("authMsg").style.color = "#2f7d4f"; $("authMsg").textContent = "Reset link sent. Check your email."; }
+  catch (e) { $("authMsg").textContent = friendly(e); }
+};
+$("logout").onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, user => {
+  $("auth").classList.toggle("hide", !!user);
+  $("app").classList.toggle("hide", !user);
+  $("nav").classList.toggle("hide", !user);
+  if (user) { $("hello").textContent = "Hello, " + (user.displayName || "Student"); show("Form"); }
+  else { $("authMsg").style.color = ""; setMode("login"); }
+});
+
+$("form").onsubmit = async e => {
+  e.preventDefault();
+  const input = {
+    age: +$("age").value, gender: $("gender").value, weight: +$("weight").value, height: +$("height").value,
+    activity: +$("activity").value, goal: $("goal").value, budget: $("budget").value,
+    allergy: [...$("allergy").selectedOptions].map(o => o.value)
+  };
+  const r = infer(input);
+  last = r;
+  const goalName = { lose: "Lose weight", maintain: "Maintain weight", gain: "Gain weight" }[r.goal];
+  $("tabResult").innerHTML = `
+    <div class="card">
+      <span class="tag">${r.status}</span> <span class="tag">${goalName}</span>
+      <div class="big">${r.calories} kcal</div>
+      <div class="mute">Daily target · Protein about ${r.protein} g · BMI ${r.bmi}</div>
+    </div>
+    <div class="card"><h3>Meal ideas</h3>
+      ${r.meals.length ? r.meals.map(m => `<div class="meal"><span>${m.n}</span><span class="mute">${m.kcal} kcal · RM ${m.rm}</span></div>`).join("")
+        : `<p class="mute">No meal matches your filters. Try changing budget or allergies.</p>`}
+    </div>
+    <div class="card"><h3>Tips</h3><ul>${r.tips.map(t => `<li>${TIPS[t]}</li>`).join("") || "<li>Keep eating balanced meals and drink water.</li>"}</ul></div>
+    <div class="card"><h3>Why this advice?</h3><ol class="why">${r.why.map(w => `<li>${w}</li>`).join("")}</ol></div>
+    <button id="saveBtn">Save to my history</button><p class="msg" id="saveMsg"></p>`;
+  show("Result");
+  $("saveBtn").onclick = save;
+};
+
+async function save() {
+  const u = auth.currentUser;
+  if (!u || !last) return;
+  try {
+    await addDoc(collection(db, "users", u.uid, "records"), {
+      date: new Date().toISOString().slice(0, 10), createdAt: serverTimestamp(),
+      weight: last.weight, height: last.height, bmi: last.bmi, status: last.status,
+      goal: last.goal, calories: last.calories
+    });
+    $("saveMsg").style.color = "#2f7d4f"; $("saveMsg").textContent = "Saved to your history.";
+  } catch (e) { $("saveMsg").style.color = ""; $("saveMsg").textContent = "Could not save. Check your connection and Firestore rules."; }
+}
+
+async function loadHistory() {
+  const u = auth.currentUser;
+  if (!u) return;
+  $("histList").textContent = "Loading…";
+  try {
+    const snap = await getDocs(query(collection(db, "users", u.uid, "records"), orderBy("createdAt", "desc")));
+    $("histList").innerHTML = snap.empty ? "No records yet. Get a diet plan, then tap Save."
+      : snap.docs.map(d => { const r = d.data(); return `<div class="meal"><span>${r.date}<br><small>${r.status} · BMI ${r.bmi}</small></span><span>${r.weight} kg<br><small>${r.calories} kcal</small></span></div>`; }).join("");
+  } catch (e) { $("histList").textContent = "Could not load history. Check your connection."; }
+}
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
