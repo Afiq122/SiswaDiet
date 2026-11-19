@@ -115,6 +115,29 @@ html, body, .sheet {
     font-size: max(16px, 1em);
   }
 }
+/* Today nutrition and grouped profile */
+.nutrition-card{--nutr:#6724a4}
+:root[data-theme=dark] .nutrition-card{--nutr:#bc92ec}
+.nutrition-title,.nutrition-count{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.nutrition-count{margin-top:8px;flex-wrap:wrap}
+.nutrition-count strong{font-size:22px}
+.nutrition-meter{display:block;width:100%;height:8px;margin-top:8px;border:0;border-radius:99px;overflow:hidden;background:var(--lav);appearance:none}
+.nutrition-meter::-webkit-progress-bar{background:var(--lav);border-radius:99px}
+.nutrition-meter::-webkit-progress-value{background:var(--nutr);border-radius:99px;transition:width .25s ease}
+.nutrition-meter::-moz-progress-bar{background:var(--nutr);border-radius:99px}
+.nutrition-macros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.nutrition-macros h3{font-size:13px;margin-bottom:4px}
+.nutrition-macros b{white-space:nowrap}
+.profile-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;background:var(--lav)}
+.profile-header h2,.profile-header p{overflow-wrap:anywhere}
+.profile-avatar{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--pri);color:#fff;font-size:20px;font-weight:800}
+.profile-stats{text-align:center;line-height:1.2}
+.profile-group{padding:0;overflow:hidden}
+.profile-heading{margin:20px 2px 6px;color:var(--mut)}
+.profile-item{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;width:100%;min-height:51px;padding:10px 14px;border:0;border-bottom:1px solid var(--bd);background:var(--card);color:var(--ink)}
+.profile-item:last-child{border-bottom:0}.profile-item>svg{color:var(--pri)}
+.profile-item:focus-visible{outline-offset:-4px}.profile-item:hover{background:var(--lav)}
+.profile-item.danger{color:var(--err)}.profile-arrow{font-size:20px;color:var(--mut)}
 </style></head><body><div id="app" class="app"></div><div id="sh"></div><div id="toast" role="status" aria-live="polite"></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -177,7 +200,7 @@ function val(s,P){const e={};
 /* ===== STATE ===== */
 const freshP=()=>({goal:'balanced',al:[],hn:[],dl:[]}),SAMPLE={name:'Aina',age:21,gen:'skip',w:58,h:160,goal:'muscle',act:'mod',ex:'strength',exf:'3-4',sleep:'7-8',al:['peanut'],hn:['none'],diet:'omni',dl:['anchovy'],bud:12};
 const freshS=()=>({v:2,P:freshP(),plan:null,logs:[],theme:null,sample:false}),lk=()=>KEY+':'+(U?U.uid:'x');
-let reviewEdit=false, signupName='', toastTimer;
+let profileEdit=false, reviewEdit=false, signupName='', toastTimer;
 let U=null,S=freshS(),V='load',AM='in',AE='',AB=0,step=0,tab='home',day=0,sheet=null,errs={},A=null,PL=null,foc=0,anaN=0,STP=[],Q='',CF='all',SO=1,tmr;
 async function cloud(){try{await setDoc(doc(db,'users',U.uid,'app','state'),{json:JSON.stringify(S),updated:serverTimestamp()})}catch(e){toast('Could not sync. Saved on this device for now.','empty')}}
 const save=()=>{try{localStorage.setItem(lk(),JSON.stringify(S))}catch(e){}if(U){clearTimeout(tmr);tmr=setTimeout(cloud,800)}};
@@ -227,7 +250,7 @@ function bfeed(){const b=S.P.bud,T=A.T,g=GN();if(A.none)return'<div class="bn e"
 const b4=()=>{A=analyse(S.P);const sg=A.sg;return`<h2>Daily food budget</h2><p class="mut">How much can you spend on food each day?</p><div class="f"><label for="bud">Budget per day (RM)</label><input id="bud" class="big" data-k="bud" type="number" inputmode="decimal" step="0.01" min="0.01" value="${S.P.bud??''}" placeholder="0.00">${er('bud')}</div>
 <div class="chs">${[...new Set([10,15,20,25,...(sg||[])])].sort((a,b)=>a-b).map(v=>`<button class="ch ${S.P.bud==v?'on':''}" data-a="setbud" data-v="${v}" aria-pressed="${S.P.bud==v}">${rm(v)}${sg&&v==sg[0]?' · goal minimum':sg&&v==sg[1]&&sg[1]!=sg[0]?' · recommended':''}</button>`).join('')}</div><div id="bfeed">${bfeed()}</div>`};
 
-function vWiz(){return`<div class="row sp"><button class="lk" data-a="back">${ic('back')} Back</button><span class="mut sm">Step ${step+1} of 5</span></div><div class="pb mt"><i style="width:${(step+1)*20}%"></i></div><div class="tip">${sisi(Object.keys(errs).length?'empty':step==0&&S.P.goal=='muscle'?'muscle':SV[step],64)}<p>${Object.keys(errs).length?'Almost there! Check the highlighted answers.':TIP[step]}</p></div>${[b0,b1,b2,b3,b4][step]()}<button class="btn mt" data-a="next">${reviewEdit?'Save and review':step<4?'Continue':'Review my answers'}</button>`}
+function vWiz(){return`<div class="row sp"><button class="lk" data-a="back">${ic('back')} Back</button><span class="mut sm">Step ${step+1} of 5</span></div><div class="pb mt"><i style="width:${(step+1)*20}%"></i></div><div class="tip">${sisi(Object.keys(errs).length?'empty':step==0&&S.P.goal=='muscle'?'muscle':SV[step],64)}<p>${Object.keys(errs).length?'Almost there! Check the highlighted answers.':TIP[step]}</p></div>${[b0,b1,b2,b3,b4][step]()}<button class="btn mt" data-a="next">${profileEdit?'Save changes':reviewEdit?'Save and review':step<4?'Continue':'Review my answers'}</button>`}
 const missing=()=>[0,1,2,3,4].filter(s=>Object.keys(val(s,S.P)).length);
 function vRev(){const P=S.P,mi=missing(),L=a=>a.length?a.map(x=>LB[x]).join(', '):'None',row=(s,t,v)=>`<div class="ml"><div style="flex:1"><b>${t}</b><div class="mut sm">${v}</div></div><button class="lk" data-a="edit" data-v="${s}">Edit</button></div>`,mis='<span style="color:var(--err)">Missing</span>';
  return`<div class="row sp"><h1>Check your answers</h1>${sisi('plan',72)}</div><div class="card">${row(0,'About you',P.name&&P.age&&P.gen?`${esc(P.name)}, ${P.age}, ${LB[P.gen]}. Goal: ${GN()}`:mis)}${row(1,'Routine',P.act?LB[P.act]:mis)}${row(2,'Health &amp; safety',P.al.length?`Allergies: ${L(P.al)}`:mis)}${row(3,'Food',P.diet?`${LB[P.diet]}. Dislikes: ${L(P.dl)}`:mis)}${row(4,'Budget',P.bud>0?`${rm(P.bud)} per day`:mis)}</div>
@@ -249,13 +272,44 @@ ${pt&&sg?`<div class="bn w"><b>What would help?</b> In our list the cheapest day
 
 const isLg=(i,id)=>S.logs.find(x=>x.d==today()&&(i<3?x.s==i:x.s==3&&x.id==id));
 const mrow=(id,i,d,lg)=>{const m=MB[id];return`<div class="ml"><button class="pl" data-a="meal" data-v="${id}" data-i="${i}" data-d="${d}">${th(m)}<div><div class="mut sm">${SL[i]}</div><b>${esc(m.n)}</b><div class="mut sm">${rm(m.rm)} · ${m.p} g protein · ${m.k} kcal</div></div></button><div class="g">${lg?(isLg(i,id)?`<span class="ok">${ic('ok',16)} Logged</span>`:`<button class="btn bs" data-a="log" data-v="${id}" data-i="${i}" data-d="${d}">Log</button>`):''}<button class="lk" data-a="swap" data-i="${i}" data-d="${d}">Swap</button></div></div>`};
-function vHome(){const P=S.P,pl=S.plan,d=wd(),ids=pl.days[d],pt=tot(ids),sp=+S.logs.filter(l=>l.d==today()).reduce((t,l)=>t+l.rm,0).toFixed(2),left=+(P.bud-sp).toFixed(2),next=ids.findIndex((id,i)=>!isLg(i,id)),T=targets(P),mid=(T.kLo+T.kHi)/2,sm=k=>ids.reduce((t,i)=>t+MB[i][k],0),
- bar=(l,v,t)=>`<div><div class="sm row sp"><span>${l}</span><b>${v}/${t} g</b></div><div class="pb mt" style="margin-top:4px"><i style="width:${Math.min(100,v/t*100)}%"></i></div></div>`;
+function nutritionTotals(logs){
+ const totals={k:0,cb:0,f:0,p:0,unknown:0};
+ for(const log of logs){
+  const meal=MB[log.id];
+  if(!meal){totals.unknown++;continue}
+  for(const key of ['k','cb','f','p'])totals[key]+=meal[key];
+ }
+ return totals;
+}
+function nutritionCards(logs,P){
+ const totals=nutritionTotals(logs), T=targets(P);
+ const energy=Math.max(1,Math.round((T.kLo+T.kHi)/2));
+ const remaining=energy-totals.k;
+ const meter=(name,value,target)=>`<progress class="nutrition-meter" aria-label="${name}" value="${Math.min(value,target)}" max="${target}"></progress>`;
+ const macro=(name,value,target)=>`<div><h3>${name}</h3><b>${value} g</b> <span class="mut sm">/ ${target} g</span>${meter(name,value,target)}</div>`;
+ return `<section aria-label="Nutrition logged today">
+ <div class="card nutrition-card">
+  <div class="nutrition-title"><h2>Calories</h2><span class="mut sm">Logged today</span></div>
+  <div class="nutrition-count"><span><strong>${totals.k.toLocaleString('en-MY')}</strong> <span class="mut sm">/ ${energy.toLocaleString('en-MY')} kcal</span></span><span class="mut sm">${Math.abs(remaining).toLocaleString('en-MY')} kcal ${remaining<0?'over target':'left'}</span></div>
+  ${meter('Calories',totals.k,energy)}
+ </div>
+ <div class="card nutrition-card"><div class="nutrition-macros">
+  ${macro('Carbs',totals.cb,Math.max(1,Math.round(energy*.5/4)))}
+  ${macro('Fat',totals.f,Math.max(1,Math.round(energy*.3/9)))}
+  ${macro('Protein',totals.p,Math.max(1,T.pro))}
+ </div><p class="mut sm mt">Estimated from meals logged today.${totals.unknown?' Custom meals without nutrition values are excluded.':''}</p></div>
+ </section>`;
+}
+function vHome(){
+ const P=S.P,pl=S.plan,d=wd(),ids=pl.days[d],pt=tot(ids),logs=S.logs.filter(l=>l.d==today());
+ const sp=logs.reduce((total,log)=>total+log.rm,0),left=+(P.bud-sp).toFixed(2);
+ const next=ids.findIndex((id,i)=>!isLg(i,id));
  return`<div class="row sp"><div><h1>Hi, ${esc(P.name)}</h1><p class="mut">Today’s meal plan</p></div>${sisi(new Set(S.logs.filter(l=>l.d==today()&&l.s<3).map(l=>l.s)).size>=3?'celebrate':'wave',72)}</div>${S.sample?'<div class="bn w">You’re viewing a sample profile. Edit it in Profile to use your own details.</div>':''}
 ${JSON.stringify(pl.P)!=JSON.stringify(P)?'<div class="bn w">Your details changed. <button class="lk" data-a="gen">Regenerate plan</button></div>':''}${pl.mode=='partial'?`<div class="bn w">Closest-match plan: your goal targets aren’t fully met within ${rm(P.bud)} a day. <button class="lk" data-a="how">See why</button></div>`:''}
+${nutritionCards(logs,P)}
 <div class="card budget-card"><div class="budget-value">${rm(P.bud)}</div><p>Daily food budget</p><div class="budget-stats"><div><b>${rm(pt)}</b><span class="mut sm">Planned today</span></div><div><b>${rm(sp)}</b><span class="mut sm">Logged today</span></div></div><p class="sm mt">${rm(Math.abs(left))} ${left<0?'over budget':'left today'}</p></div>
 ${next>=0?`<div class="card"><h3>Next meal to log</h3>${mrow(ids[next],next,d,1)}</div>`:''}
-<details class="card"><summary>Planned nutrition estimates</summary><div class="three mt">${bar('Carbs',sm('cb'),Math.round(mid*.5/4))}${bar('Protein',sm('p'),T.pro)}${bar('Fat',sm('f'),Math.round(mid*.3/9))}</div></details>
+
 <div class="card"><h3>Today’s meals</h3>${ids.map((id,i)=>mrow(id,i,d,1)).join('')}</div><div class="row mt"><button class="btn s" data-a="how">Why these meals?</button><button class="btn s" data-a="go" data-v="plan">View week</button></div>`}
 function vPlan(){const pl=S.plan,ids=pl.days[day],b=S.P.bud;return`<div class="row sp"><h1>Meal plan</h1>${sisi('plan',72)}</div><div class="week-days mt">${DAYS.map((x,i)=>`<button class="dp ${i==day?'on':''}" data-a="day" data-v="${i}" aria-pressed="${i==day}">${x}</button>`).join('')}</div>
 <div class="tot"><div class="card row sp" style="margin-top:10px"><b>${rm(tot(ids))} <span class="mut sm">of ${rm(b)}</span></b><span class="ok">${sisi('budget',40)} Within budget</span></div></div><div class="card" style="margin-top:6px">${ids.map((id,i)=>mrow(id,i,day,day==wd())).join('')}</div><p class="mut sm mt">Prices and nutrition are illustrative estimates. A swap that goes over budget is blocked.</p><button class="btn s" data-a="how">How this plan was made</button>`}
@@ -266,10 +320,40 @@ function vProg(){const wk=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate
  bd=[['First plan','You built a meal plan.',!!S.plan],['First log','You logged a meal.',S.logs.length>0],['Full day','Logged breakfast, lunch and dinner on one day.',wk.some(d=>[0,1,2].every(s=>S.logs.some(l=>l.d==d&&l.s==s)))],['Variety','Logged 5 different meals in a week.',new Set(L.map(l=>l.id||l.n)).size>=5],['On budget','Logged a day within your budget.',by.some(v=>v>0&&v<=b)]];
  return`<h1>Progress</h1>${L.length?'':`<div class="wel">${sisi('sleep',90)}<p class="mut">Nothing logged yet. Tap Log on a meal in Home to start.</p></div>`}<div class="card"><h3>This week</h3><div class="two mt"><div><b>${L.length}</b><div class="mut sm">meals logged</div></div><div><b>${rm(act)}</b><div class="mut sm">spent (estimate ${rm(est)})</div></div></div><div class="bars mt">${wk.map((d,i)=>`<span>${DAYS[i]}</span><div class="pb"><i style="width:${by[i]/mx*100}%;${by[i]>b?'background:var(--err)':''}"></i></div><span>${rm(by[i])}</span>`).join('')}</div><p class="mut sm mt">Daily budget ${rm(b)}. Only meals you log are counted.</p></div>
 <div class="card"><h3>Achievements</h3>${bd.map(([t,d,o])=>`<div class="bg2 ${o?'':'off'}"><span class="th" style="background:${o?'var(--yw)':'var(--lav)'};width:40px;height:40px">${ic(o?'ok':'x',20)}</span><div><b>${t}</b><div class="mut sm">${d}</div></div></div>`).join('')}</div>`}
-function vProf(){const P=S.P;return`<div class="row"><span class="th" style="background:var(--pri);color:#fff;border-radius:50%;font-weight:800;font-size:22px">${esc((P.name||'?')[0].toUpperCase())}</span><div><h2>${esc(P.name)}</h2><p class="mut sm">${GN()} · ${LB[P.diet]} · ${rm(P.bud)} a day</p></div></div>
-<div class="card"><button class="btn" style="margin:0" data-a="edit" data-v="0">Edit my details</button><button class="btn s" data-a="upd">Check for updates</button><button class="btn s" data-a="theme">${S.theme=='dark'?'Switch to light mode':'Switch to dark mode'}</button><button class="btn s" data-a="how">How recommendations work</button><button class="btn s" data-a="export">Export my data (JSON)</button></div>
-<div class="card"><h3>Privacy &amp; limits</h3><p class="mut sm mt">Your plan and logs are saved to your SiswaDiet account (Google Firebase) and cached on this device. Meals, prices and nutrition are illustrative estimates, and this is not medical advice.</p><p class="mut sm mt">Installed version: ${esc(new Date(document.lastModified).toLocaleString('en-MY'))}</p></div>
-<button class="btn o" data-a="exit">Log out</button><button class="btn o" data-a="reset" style="color:var(--err)">Delete all my data</button>`}
+function profileItem(label,icon,action,value=null,danger=false){
+ return `<button class="profile-item${danger?' danger':''}" data-a="${action}"${value===null?'':` data-v="${value}"`}>
+ ${ic(icon,19)}<span>${label}</span><span class="profile-arrow" aria-hidden="true">›</span></button>`;
+}
+function profileGroup(title,items){
+ return `<section><h3 class="profile-heading">${title}</h3><div class="card profile-group">${items.join('')}</div></section>`;
+}
+function vProf(){
+ const P=S.P, logCount=S.logs.length;
+ return `<h1>Profile</h1>
+ <div class="card profile-header mt"><span class="profile-avatar" aria-hidden="true">${esc((P.name||'?')[0].toUpperCase())}</span><div><h2>${esc(P.name)}</h2><p class="mut sm">${GN()} · ${LB[P.diet]}</p></div><div class="profile-stats"><b>${logCount}</b><br><span class="mut sm">${logCount===1?'meal logged':'meals logged'}</span></div></div>
+ ${profileGroup('Meal preferences',[
+  profileItem('Personal details &amp; goal','prof','profileedit',0),
+  profileItem('Activity routine','prog','profileedit',1),
+  profileItem('Allergies &amp; health','ok','profileedit',2),
+  profileItem('Food preferences','bowl','profileedit',3),
+  profileItem('Daily budget','plan','profileedit',4)
+ ])}
+ ${profileGroup('Plan &amp; progress',[
+  profileItem('Nutrition today','home','go','home'),
+  profileItem('Weekly progress','prog','go','prog'),
+  profileItem('How recommendations work','explore','how')
+ ])}
+ ${profileGroup('App settings',[
+  profileItem(S.theme=='dark'?'Switch to light mode':'Switch to dark mode','home','theme'),
+  profileItem('Check for updates','plan','upd')
+ ])}
+ ${profileGroup('Account &amp; data',[
+  profileItem('Export my data (JSON)','plan','export'),
+  profileItem('Log out','back','exit'),
+  profileItem('Delete all my data','x','reset',null,true)
+ ])}
+ <details class="card"><summary>Privacy &amp; limits</summary><p class="mut sm mt">Your plans and logs are saved in Firebase and cached on this device. Nutrition and prices are estimates.</p><p class="mut sm mt">Installed version: ${esc(new Date(document.lastModified).toLocaleString('en-MY'))}</p></details>`;
+}
 const vLoad=()=>`<div class="wel full">${sisi('load',130)}<p class="mut">Loading your account…</p></div>`;
 const vAuth=()=>{const up=AM=='up';return`<div class="wel auth-view"><img class="logo" style="width:140px" src="${LOGO}" alt="SiswaDiet logo"><h1>${up?'Create account':'Welcome to SiswaDiet'}</h1><p class="mut">${up?'Create an account to save your plan.':'Plan meals around your student budget.'}</p>${CFG_OK?'':'<div class="bn e"><b>Firebase isn’t set up yet.</b> Paste your firebaseConfig into the file first.</div>'}
 <form id="af" class="card" style="width:100%;text-align:left" novalidate>${up?'<div class="f" style="margin-top:0"><label for="an">Name or nickname</label><input id="an" maxlength="30" autocomplete="nickname"></div>':''}<div class="f"><label for="ae">Email</label><input id="ae" type="email" inputmode="email" autocomplete="email"></div><div class="f"><label for="ap">Password (6+ characters)</label><input id="ap" type="password" autocomplete="${up?'new-password':'current-password'}"></div><label class="row mt sm"><input type="checkbox" id="as" style="width:20px;min-height:0"> Show password</label><p class="er mt" id="aer" role="alert"></p><button class="btn" id="abtn">${up?'Create account':'Log in'}</button></form>
@@ -320,11 +404,13 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
  else if(a=='next'){
   errs=val(step,S.P);
   if(Object.keys(errs).length){R();$('#vw .er')?.scrollIntoView({block:'center'});return}
-  if(reviewEdit){reviewEdit=false;save();go('rev')}
+  if(profileEdit){profileEdit=false;save();go('app','prof')}
+  else if(reviewEdit){reviewEdit=false;save();go('rev')}
   else if(step<4){step++;S.setupStep=step;save();go('wiz')}
   else{S.setupStep=step;save();go('rev')}
  }
- else if(a=='back'){if(reviewEdit){reviewEdit=false;go('rev')}else if(step>0){step--;S.setupStep=step;save();go('wiz')}else go(S.plan?'app':'welcome')}
+ else if(a=='back'){if(profileEdit){profileEdit=false;go('app','prof')}else if(reviewEdit){reviewEdit=false;go('rev')}else if(step>0){step--;S.setupStep=step;save();go('wiz')}else go(S.plan?'app':'welcome')}
+ else if(a=='profileedit'){profileEdit=true;reviewEdit=false;step=+v;errs={};go('wiz')}
  else if(a=='edit'){reviewEdit=V=='rev'||V=='res';step=+v;errs={};go('wiz')}
  else if(a=='gen'){if(!missing().length)gen()}
  else if(a=='setbudgen'){S.P.bud=+v;gen()}
