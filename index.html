@@ -216,6 +216,7 @@ html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:
 .nutrition-meter.is-over::-moz-progress-bar{background:var(--err)}
 .nutrition-over-label{display:block;margin-top:6px;color:var(--err);font-size:12px;font-weight:800;line-height:1.3}
 .nutrition-count .nutrition-over-label{margin-top:0}
+.plan-goal-notice{text-align:left;width:100%}.plan-goal-notice p{line-height:1.45}
 </style></head><body><div id="app" class="app"></div><div id="sh"></div><div id="toast" role="status" aria-live="polite"></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -348,7 +349,7 @@ const b3=()=>`<h2>Food preferences</h2><div class="f"><span class="lb">Dietary p
 const tier=b=>!(b>0)?null:b<A.minAny?'none':!A.good.some(c=>c.rm<=b)?'part':new Set(A.good.filter(c=>c.rm<=b).flatMap(c=>c.m.map(m=>m.id))).size<12?'tight':'good';
 function bfeed(){const b=S.P.bud,T=A.T,g=GN();if(A.none)return'<div class="bn e"><b>Too few meals match your food choices.</b> Go back and remove some dislikes.</div>';
  const need=`<p class="mut sm mt">For “${g}” we aim for about ${T.pro} g protein and ${T.kLo}+ kcal a day. These are rough targets, not medical advice.</p>`,t=tier(b),sg=A.sg;
- const m={none:['e',`No complete day fits ${rm(b)}. The cheapest complete day for your food choices costs ${rm(A.minAny)}.`],part:['w',sg?`${rm(b)} is below the ${rm(sg[0])} our meal list needs to fully reach “${g}”. You’ll get the closest match, not the full goal.`:`Our meal list can’t fully reach “${g}” with your food choices. You’ll get the closest match.`],tight:['k',`This works, but choices are limited. About ${rm(sg?sg[1]:b)} a day gives more variety.`],good:['k',`Comfortable for “${g}”. You’ll get plenty of variety.`]}[t];
+ const m={none:['e',`No complete day fits ${rm(b)}. The cheapest complete day for your food choices costs ${rm(A.minAny)}.`],part:['w',`This budget covers a complete day, but it doesn’t cover meals that meet both estimated calorie and protein targets. ${goalBudgetReason(b,A.minGoal)}`],tight:['k',`This works, but choices are limited. About ${rm(sg?sg[1]:b)} a day gives more variety.`],good:['k',`Comfortable for “${g}”. You’ll get plenty of variety.`]}[t];
  return(t?`<div class="bn ${m[0]}">${m[1]}</div>`:'<p class="mut sm mt">Enter a budget to check it against your goal.</p>')+need}
 const b4=()=>{A=analyse(S.P);const sg=A.sg;return`<h2>Daily food budget</h2><p class="mut">How much can you spend on food each day?</p><div class="f"><label for="bud">Budget per day (RM)</label><input id="bud" class="big" data-k="bud" type="number" inputmode="decimal" step="0.01" min="0.01" value="${S.P.bud??''}" placeholder="0.00">${er('bud')}</div>
 <div class="chs">${[...new Set([10,15,20,25,...(sg||[])])].sort((a,b)=>a-b).map(v=>`<button class="ch ${S.P.bud==v?'on':''}" data-a="setbud" data-v="${v}" aria-pressed="${S.P.bud==v}">${rm(v)}${sg&&v==sg[0]?' · goal minimum':sg&&v==sg[1]&&sg[1]!=sg[0]?' · recommended':''}</button>`).join('')}</div><div id="bfeed">${bfeed()}</div>`};
@@ -363,12 +364,31 @@ function run(){const pl=build(S.P),t=pl.tr,rj=Object.values(t.rej).reduce((a,b)=
  STP=[`Checking preferences: ${t.all} meals in our list`,`Applying safety filters: ${rj} removed, ${t.ok} kept`,`Matching meals to budget: ${t.fit} day options fit ${rm(S.P.bud)}`,`Building your week: ${pl.mode=='none'?'no complete day found':pl.mode=='full'?'meets your goal targets':'closest match to your goal'}`];
  const f=matchMedia('(prefers-reduced-motion:reduce)').matches,tk=()=>{if(V!='ana')return;anaN++;R();anaN<4?setTimeout(tk,f?0:600):setTimeout(()=>{V='res';foc=1;R()},f?0:700)};setTimeout(tk,f?0:400)}
 function gen(){V='ana';anaN=0;STP=[];R();setTimeout(run,40)}
-function vRes(){const p=PL,P=S.P,t=p.tr,sg=t.sg,ce=Math.ceil((t.minAny||0)*2)/2;
+function goalBudgetReason(budget,minimum){
+ if(minimum==null)return 'None of the meal combinations that match your food settings meet both targets. Increasing the budget alone won’t fix this with the current food list.';
+ if(minimum>budget)return 'The cheapest day in SiswaDiet that meets both targets and matches your food settings costs '+rm(minimum)+'. That’s '+rm(minimum-budget)+' more than your daily budget.';
+ return 'A different set of meals can meet both targets at this budget. Rebuild the plan to find a better match.';
+}
+function goalNotice(plan,profile,d,action=''){
+ const T=plan.tr.T, stats=mealStats(plan.days[d]),[proteinGap,calorieGap]=goalGap(stats,T);
+ const missed=plan.days.filter(ids=>goalGap(mealStats(ids),T).some(gap=>gap>0)).length;
+ const goal=LB[currentGoal(profile.goal)]||'your goal';
+ const title=proteinGap>0?'Meals fit your budget, but are short on protein':calorieGap>0?'Meals fit your budget, but miss the calorie target':'Some days miss your nutrition targets';
+ return `<section class="bn w plan-goal-notice" aria-label="Why this plan falls short">
+  <b>${title}</b>
+  <p class="sm mt">Breakfast, lunch and dinner fit within ${rm(profile.bud)} a day. Here’s how ${DAYS[d]} compares with the estimated targets for <b>${esc(goal)}</b>.</p>
+  ${proteinGap>0?`<p class="sm mt"><b>Protein:</b> ${nutritionNumber(stats.p)} g planned vs ${nutritionNumber(T.pro)} g target (${nutritionNumber(proteinGap)} g short).</p>`:''}
+  ${calorieGap>0?`<p class="sm mt"><b>Calories:</b> ${nutritionNumber(stats.k)} kcal planned vs ${nutritionNumber(T.kLo)}–${nutritionNumber(T.kHi)} kcal target (${nutritionNumber(calorieGap)} kcal ${stats.k<T.kLo?'short':'above the range'}).</p>`:''}
+  ${!proteinGap&&!calorieGap?`<p class="sm mt">${DAYS[d]} meets both targets. ${missed} of 7 days miss at least one target.</p>`:''}
+  <p class="sm mt">${goalBudgetReason(profile.bud,plan.tr.minGoal)}</p>${action}
+ </section>`;
+}
+function vRes(){const p=PL,P=S.P,t=p.tr,ce=Math.ceil((t.minAny||0)*2)/2;
  if(p.mode=='none')return`<div class="wel">${sisi('empty',120)}<h2>We couldn’t find a complete day</h2><p class="mut">${p.why=='pool'?'Your food choices leave too few meals in our list. Try removing some dislikes.':`Under ${rm(P.bud)} a day we can’t fit breakfast, lunch and dinner. The cheapest complete day for your food choices is ${rm(t.minAny)}.`}</p><p class="mut sm">Filters applied: allergies, ${LB[P.diet]} diet, dislikes and budget. We never relax allergy rules.</p>${p.why=='budget'?`<button class="btn" data-a="setbudgen" data-v="${ce}">Use ${rm(ce)} a day instead</button>`:''}<button class="btn s" data-a="edit" data-v="4">Change my budget</button><button class="btn s" data-a="edit" data-v="3">Change food choices</button></div>`;
- const pt=p.mode=='partial';return`<div class="wel">${sisi(pt?'budget':'celebrate',130)}<h1>${pt?'Your closest-match plan is ready':'Your meal plan is ready!'}</h1><p class="mut">${pt?`Within ${rm(P.bud)} a day this is the best match for “${GN()}” we can build from our meal list. It doesn’t fully reach the goal targets.`:`7 days of meals that fit ${rm(P.bud)} a day and your food rules.`}</p>
+ const pt=p.mode=='partial';return`<div class="wel">${sisi(pt?'budget':'celebrate',130)}<h1>${pt?'A plan that fits your budget':'Your meal plan is ready!'}</h1>${pt?goalNotice(p,P,day):`<p class="mut">7 days of meals that fit ${rm(P.bud)} a day and your food rules.</p>`}
 <div class="week-days">${DAYS.map((label,i)=>`<button class="dp ${i==day?'on':''}" aria-pressed="${i==day}" data-a="day" data-v="${i}">${label}</button>`).join('')}</div>
 <div class="card preview"><div class="row sp"><h3>Estimated day cost</h3><b>${rm(tot(p.days[day]))}</b></div>${p.days[day].map((id,i)=>`<div class="ml"><div><span class="mut sm">${SL[i]}</span><br><b>${esc(MB[id].n)}</b></div><b>${rm(MB[id].rm)}</b></div>`).join('')}</div>
-${pt&&sg?`<div class="bn w"><b>What would help?</b> In our list the cheapest day that reaches your “${GN()}” targets costs ${rm(t.minGoal)}. That is an estimate for this meal list, not a nutrition rule.</div><button class="btn s" data-a="setbudgen" data-v="${sg[0]}">Raise budget to ${rm(sg[0])} to meet goal</button>${P.goal!='maintain'?'<button class="btn o" data-a="goalbal">Switch to Maintain weight</button>':''}`:''}
+${pt&&t.minGoal>P.bud?`<button class="btn s" data-a="setbudgen" data-v="${t.minGoal}">Rebuild at ${rm(t.minGoal)} a day</button>`:''}
 <button class="btn" data-a="done">Open my plan</button><button class="lk" data-a="how">How recommendations work</button></div>`}
 
 /* ===== APP SCREENS ===== */
@@ -438,10 +458,11 @@ function todayBudgetCard(budget,planned,logs){
 }
 function vHome(){
  const P=S.P,pl=S.plan,d=wd(),ids=pl.days[d],pt=tot(ids),logs=S.logs.filter(l=>l.d==today());
- const next=ids.findIndex((id,i)=>!isLg(i,id));
+ const next=ids.findIndex((id,i)=>!isLg(i,id)),changed=JSON.stringify(pl.P)!==JSON.stringify(P);
  return`<div class="row sp"><div><h1>Hi, ${esc(P.name)}</h1><p class="mut">Today’s meal plan</p></div>${sisi(new Set(S.logs.filter(l=>l.d==today()&&l.s<3).map(l=>l.s)).size>=3?'celebrate':'wave',72)}</div>${S.sample?'<div class="bn w">You’re viewing a sample profile. Edit it in Profile to use your own details.</div>':''}
-${JSON.stringify(pl.P)!=JSON.stringify(P)?'<div class="bn w">Your details changed. <button class="lk" data-a="gen">Regenerate plan</button></div>':''}${pl.mode=='partial'?`<div class="bn w">Closest-match plan: your goal targets aren’t fully met within ${rm(P.bud)} a day. <button class="lk" data-a="how">See why</button></div>`:''}
+${changed?'<div class="bn w">Your details changed. <button class="lk" data-a="gen">Regenerate plan</button></div>':''}
 ${todayBudgetCard(P.bud,pt,logs)}
+${!changed&&pl.mode==='partial'?goalNotice(pl,P,d,pl.tr.minGoal>P.bud?`<button class="btn s" data-a="budget-preview" data-v="${pl.tr.minGoal}">Try ${rm(pl.tr.minGoal)} a day</button>`:pl.tr.minGoal==null?'<button class="btn s" data-a="profileedit" data-v="3">Review food preferences</button>':'<button class="btn s" data-a="gen">Rebuild meal plan</button>'):''}
 ${nutritionCards(logs,P)}
 ${next>=0?`<div class="card"><h3>Next meal to log</h3>${mrow(ids[next],next,d,1)}</div>`:''}
 
@@ -682,7 +703,7 @@ function budgetSheet(s){
  ${preview?.error?`<p class="er mt" role="alert">${preview.error}</p>`:''}
  ${next?`<div class="budget-compare"><div><span class="mut sm">Current budget</span><strong>${rm(current)}</strong><small class="mut">per day</small></div><div><span class="mut sm">New budget</span><strong>${rm(proposed)}</strong><small class="mut">per day</small></div></div>`:`<p class="mut sm mt">Current budget: ${rm(current)} per day.</p>`}
  ${next?.mode==='none'?`<div class="bn w">${next.why==='budget'?'This budget cannot cover breakfast, lunch and dinner. The cheapest day that fits your food settings costs '+rm(next.tr.minAny)+'.':'There aren’t enough meals that match your food settings.'}</div>`:''}
- ${next?.days?`<div class="bn ${next.mode==='full'?'k':'w'}"><b>${next.mode==='full'?'Fits your estimated nutrition goals':'Fits your budget with some nutrition trade-offs'}</b><p class="sm">Average planned cost per day: ${rm(average(S.plan))} → ${rm(average(next))}.</p></div>
+ ${next?.days?`${next.mode==='partial'?goalNotice(next,preview.profile,wd(),next.tr.minGoal>proposed?`<button class="btn s" data-a="budget-quick" data-v="${next.tr.minGoal}">Preview ${rm(next.tr.minGoal)} a day</button>`:''):'<div class="bn k"><b>Fits your estimated nutrition goals</b></div>'}<p class="sm mt">Average planned cost per day: ${rm(average(S.plan))} → ${rm(average(next))}.</p>
  <details class="card mt preview-days"><summary>See all seven days</summary>${next.days.map((ids,d)=>{
   const old=S.plan.days[d], changes=Math.max(old.length,ids.length)-ids.filter((id,i)=>id===old[i]).length;
   return `<details><summary>${DAYS[d]} · ${rm(tot(old))} → ${rm(tot(ids))} · ${changes===0?'No meal changes':changes+' meal slots changed'}</summary>
@@ -894,7 +915,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
   const d=D??wd(), i=I??1;
   sheet={t:'why',d,i,id:MB[v]?v:S.plan.days[d][i]};R();
  }
- else if(a==='budget-preview'){sheet={t:'budget',value:''};R()}
+ else if(a==='budget-preview'){const value=v||'';sheet={t:'budget',value,preview:value?makeBudgetPreview(value):null};R();if(value)$('#budget-result')?.focus()}
  else if((a==='budget-run'||a==='budget-quick')&&sheet?.t==='budget'){
   sheet.value=a==='budget-quick'?v:$('#whatif-budget').value;sheet.preview=makeBudgetPreview(sheet.value);R();$('#budget-result')?.focus();
  }
