@@ -74,6 +74,37 @@ nav button{flex:1;min-height:60px;border:0;background:none;color:var(--mut);font
 @keyframes tw{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1) rotate(20deg)}}
 @keyframes ht{0%{opacity:0;transform:translateY(6px) scale(.6)}30%{opacity:1}100%{opacity:0;transform:translateY(-18px) scale(1.1)}}
 @keyframes dt{0%,100%{opacity:.25;transform:scale(.7)}50%{opacity:1;transform:scale(1.1)}}}
+/* SiswaDiet campus planner */
+:root{--pri:#541b98;--ink:#25133e;--lav:#f0e4fc;--bg:#faf7fe;--card:#fff;--bd:#e8dbf3;--mut:#695779;--mw:#eff9ce;--mt:#3d5f08}
+:root[data-theme=dark]{--pri:#ab7be7;--ink:#faf1ff;--lav:#392252;--bg:#1d102c;--card:#271639;--bd:#49335e;--mut:#d3bfdf;--mw:#34401e;--mt:#d6efaa}
+h1{font-size:clamp(27px,7vw,35px);letter-spacing:-.045em}
+.row.sp{display:flex;cursor:auto;isolation:auto}.row.sp::after{content:none}
+.auth-view{background:radial-gradient(ellipse at top,var(--lav),transparent 65%)}
+.auth-view form{box-shadow:none;margin:0}
+.oc.on,.swap-option.on{background:var(--mw);border-color:var(--mt);color:var(--ink)}
+.budget-card{background:var(--lav);padding:20px}.budget-value{font-weight:800;font-size:34px;line-height:1.1}
+.budget-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bd);border-radius:14px;overflow:hidden;margin-top:14px}
+.budget-stats div{background:var(--card);padding:10px 12px}.budget-stats b{display:block}
+.week-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;width:100%}.week-days button{font-size:11px}
+.preview{width:100%;text-align:left;margin:0}.preview .ml{justify-content:space-between}
+.swap-option{margin-top:8px}
+nav button[aria-current=page]{color:var(--pri);background:var(--lav);border-radius:16px}
+@media(prefers-reduced-motion:no-preference){
+.logo{animation:logo-arrive .55s ease-out both}
+.sp-hero img{animation:bob 3.1s ease-in-out 2}
+.sp-goal img{animation:jump .85s ease-out 2}
+.sp-budget img{animation:tada 1.35s ease-in-out 1}
+.sp-meal img{animation:chew 1.25s ease-in-out 2}
+.sp-plan img{animation:wig 1.1s ease-in-out 2}
+.sp-think img{animation:sway 2.6s ease-in-out 2}
+.sp-muscle img{animation:pump 1.05s ease-in-out 2}
+.sp-rest img{animation:breathe 3.5s ease-in-out 2}
+.sp::after,.sp b{animation-iteration-count:2}
+.sp.hop img{animation:hop .6s ease-out}
+.sheet{animation:sheet-arrive .25s ease-out both}
+@keyframes logo-arrive{from{opacity:.2;transform:translateY(8px) scale(.96)}}
+@keyframes sheet-arrive{from{transform:translateY(28px);opacity:.65}}
+}
 </style></head><body><div id="app" class="app"></div><div id="sh"></div><div id="toast" role="status" aria-live="polite"></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -128,7 +159,7 @@ function build(P){const a=analyse(P);A=a;const rj={};Object.values(a.rej).forEac
  return{mode,days,tr,P:JSON.parse(JSON.stringify(P))}}
 function val(s,P){const e={};
  if(s==0){if(!P.name?.trim())e.name='Enter a name or nickname.';if(!(P.age>=13&&P.age<=80))e.age='Enter an age from 13 to 80.';if(!P.gen)e.gen='Choose one option, or “Prefer not to say”.';if(P.w&&!(P.w>=25&&P.w<=250))e.w='Weight should be 25 to 250 kg.';if(P.h&&!(P.h>=100&&P.h<=230))e.h='Height should be 100 to 230 cm.';if(P.goal=='light'&&P.age<18)e.goal='Lighter eating is for adults 18+. Pick another goal.'}
- if(s==1){if(!P.act)e.act='Choose your activity level.';if(!P.sleep)e.sleep='Sleep pattern is required. Choose one to continue.'}
+ if(s==1){if(!P.act)e.act='Choose your activity level.';}
  if(s==2&&!P.al.length)e.al='Select “None” or your allergies.';
  if(s==3&&!P.diet)e.diet='Choose a dietary pattern.';
  if(s==4&&!(P.bud>0&&P.bud<=1000))e.bud='Enter a daily budget above RM 0.';return e}
@@ -136,6 +167,7 @@ function val(s,P){const e={};
 /* ===== STATE ===== */
 const freshP=()=>({goal:'balanced',al:[],hn:[],dl:[]}),SAMPLE={name:'Aina',age:21,gen:'skip',w:58,h:160,goal:'muscle',act:'mod',ex:'strength',exf:'3-4',sleep:'7-8',al:['peanut'],hn:['none'],diet:'omni',dl:['anchovy'],bud:12};
 const freshS=()=>({v:2,P:freshP(),plan:null,logs:[],theme:null,sample:false}),lk=()=>KEY+':'+(U?U.uid:'x');
+let reviewEdit=false, signupName='', toastTimer;
 let U=null,S=freshS(),V='load',AM='in',AE='',AB=0,step=0,tab='home',day=0,sheet=null,errs={},A=null,PL=null,foc=0,anaN=0,STP=[],Q='',CF='all',SO=1,tmr;
 async function cloud(){try{await setDoc(doc(db,'users',U.uid,'app','state'),{json:JSON.stringify(S),updated:serverTimestamp()})}catch(e){toast('Could not sync. Saved on this device for now.','empty')}}
 const save=()=>{try{localStorage.setItem(lk(),JSON.stringify(S))}catch(e){}if(U){clearTimeout(tmr);tmr=setTimeout(cloud,800)}};
@@ -165,14 +197,14 @@ const chS=(k,v,t)=>`<button type="button" class="ch ${S.P[k]==v?'on':''}" data-a
 const chM=(k,v,t)=>`<button type="button" class="ch ${S.P[k].includes(v)?'on':''}" data-a="tog" data-k="${k}" data-v="${v}" aria-pressed="${S.P[k].includes(v)}">${t}</button>`;
 function tog(k,v){let a=S.P[k];const ex=['none','skip'];a=a.includes(v)?a.filter(x=>x!=v):ex.includes(v)&&(k=='al'||k=='hn')?[v]:[...a.filter(x=>!(k=='al'||k=='hn')||!ex.includes(x)),v];S.P[k]=a}
 
-const SV=['wave','sleep','empty','meal','budget'],TIP=['Hi! Tell me a little about you.','Your routine helps me match your day.','Safety first. I skip anything unsafe for you.','What do you like to eat?','Let’s find a budget that makes sense.'];
-const b0=()=>{const P=S.P;return`<h2>About you</h2>${fld('name','Name or nickname',P.name,'maxlength="30" autocomplete="nickname"')}${fld('age','Age',P.age,'type="number" inputmode="numeric" min="13" max="80"')}
+const SV=['wave','plan','empty','meal','budget'],TIP=['Hi! Tell me a little about you.','Your routine helps me match your day.','Safety first. I skip anything unsafe for you.','What do you like to eat?','Let’s find a budget that makes sense.'];
+const b0=()=>{const P=S.P;return`<h2>What’s your goal?</h2>${GOALS.map(([v,t,s])=>card('goal',v,t,s,v=='light'&&P.age<18)).join('')}<h3 class="mt">About you</h3>${fld('name','Name or nickname',P.name,'maxlength="30" autocomplete="nickname"')}${fld('age','Age',P.age,'type="number" inputmode="numeric" min="13" max="80"')}
 <div class="f"><span class="lb">Gender</span><div class="chs">${['woman','man','nb','self','skip'].map(v=>chS('gen',v,LB[v])).join('')}</div>${er('gen')}</div>${P.gen=='self'?fld('gt','Describe (optional)',P.gt,'maxlength="30"'):''}
 <div class="two">${fld('w','Weight, kg (optional)',P.w,'type="number" inputmode="decimal"')}${fld('h','Height, cm (optional)',P.h,'type="number" inputmode="numeric"')}</div>${er('w')}${er('h')}<p class="mut sm mt">Only used to roughly estimate how much food you need. Skip them if you prefer.</p>
-<div class="f"><span class="lb">Goal</span></div>${GOALS.map(([v,t,s])=>card('goal',v,t,s,v=='light'&&P.age<18)).join('')}${er('goal')}`};
+`};
 const b1=()=>`<h2>Your routine</h2><div class="f"><span class="lb">Daily activity</span></div>${ACTS.map(([v,t,s])=>card('act',v,t,s)).join('')}${er('act')}
 <div class="two">${sel('ex',['Exercise type (optional)',[['','Choose'],['strength','Strength'],['cardio','Cardio'],['sports','Sports'],['walk','Walking'],['other','Other'],['none','None']]])}${sel('exf',['Days per week (optional)',[['','Choose'],['0','Never'],['1-2','1–2'],['3-4','3–4'],['5+','5+']]])}</div>
-<div class="f"><span class="lb">Sleep pattern (required)</span><div class="chs">${['lt6','6-7','7-8','gt8','irr'].map(v=>chS('sleep',v,LB[v])).join('')}</div>${er('sleep')}</div>${['lt6','irr'].includes(S.P.sleep)?'<div class="bn k">Sleep only gives you a friendly tip. It never changes your meals.</div>':''}`;
+`;
 const b2=()=>`<h2>Health &amp; safety</h2><div class="f"><span class="lb">Food allergies (required)</span><div class="chs">${chM('al','none','None')}${ALG.map(([v,t])=>chM('al',v,t)).join('')}${chM('al','skip','Prefer not to say')}</div>${er('al')}</div>
 <div class="f"><span class="lb">Health notes (optional)</span><div class="chs">${chM('hn','none','None')}${HN.map(([v,t])=>chM('hn',v,t)).join('')}${chM('hn','skip','Prefer not to say')}</div></div>
 ${S.P.hn.some(x=>!['none','skip'].includes(x))?'<div class="bn w">Simple rules can’t check health conditions or medicines. Please ask a doctor or dietitian before changing how you eat.</div>':''}<p class="mut sm mt">If you list allergies or prefer not to say, meals with incomplete allergen data are hidden.</p>`;
@@ -183,36 +215,39 @@ function bfeed(){const b=S.P.bud,T=A.T,g=GN();if(A.none)return'<div class="bn e"
  const m={none:['e',`No complete day fits ${rm(b)}. The cheapest complete day for your food choices costs ${rm(A.minAny)}.`],part:['w',sg?`${rm(b)} is below the ${rm(sg[0])} our meal list needs to fully reach “${g}”. You’ll get the closest match, not the full goal.`:`Our meal list can’t fully reach “${g}” with your food choices. You’ll get the closest match.`],tight:['k',`This works, but choices are limited. About ${rm(sg?sg[1]:b)} a day gives more variety.`],good:['k',`Comfortable for “${g}”. You’ll get plenty of variety.`]}[t];
  return(t?`<div class="bn ${m[0]}">${m[1]}</div>`:'<p class="mut sm mt">Enter a budget to check it against your goal.</p>')+need}
 const b4=()=>{A=analyse(S.P);const sg=A.sg;return`<h2>Daily food budget</h2><p class="mut">How much can you spend on food each day?</p><div class="f"><label for="bud">Budget per day (RM)</label><input id="bud" class="big" data-k="bud" type="number" inputmode="decimal" step="0.01" min="0.01" value="${S.P.bud??''}" placeholder="0.00">${er('bud')}</div>
-<div class="chs">${[...new Set([10,15,20,25,...(sg||[])])].sort((a,b)=>a-b).map(v=>`<button class="ch" data-a="setbud" data-v="${v}">${rm(v)}${sg&&v==sg[0]?' · goal minimum':sg&&v==sg[1]&&sg[1]!=sg[0]?' · recommended':''}</button>`).join('')}</div><div id="bfeed">${bfeed()}</div>`};
+<div class="chs">${[...new Set([10,15,20,25,...(sg||[])])].sort((a,b)=>a-b).map(v=>`<button class="ch ${S.P.bud==v?'on':''}" data-a="setbud" data-v="${v}" aria-pressed="${S.P.bud==v}">${rm(v)}${sg&&v==sg[0]?' · goal minimum':sg&&v==sg[1]&&sg[1]!=sg[0]?' · recommended':''}</button>`).join('')}</div><div id="bfeed">${bfeed()}</div>`};
 
-function vWiz(){return`<div class="row sp"><button class="lk" data-a="back">${ic('back')} Back</button><span class="mut sm">Step ${step+1} of 5</span></div><div class="pb mt"><i style="width:${(step+1)*20}%"></i></div><div class="tip">${sisi(Object.keys(errs).length?'empty':step==0&&S.P.goal=='muscle'?'muscle':SV[step],64)}<p>${Object.keys(errs).length?'Almost there! Check the highlighted answers.':TIP[step]}</p></div>${[b0,b1,b2,b3,b4][step]()}<button class="btn mt" data-a="next">${step<4?'Continue':'Review my answers'}</button>`}
+function vWiz(){return`<div class="row sp"><button class="lk" data-a="back">${ic('back')} Back</button><span class="mut sm">Step ${step+1} of 5</span></div><div class="pb mt"><i style="width:${(step+1)*20}%"></i></div><div class="tip">${sisi(Object.keys(errs).length?'empty':step==0&&S.P.goal=='muscle'?'muscle':SV[step],64)}<p>${Object.keys(errs).length?'Almost there! Check the highlighted answers.':TIP[step]}</p></div>${[b0,b1,b2,b3,b4][step]()}<button class="btn mt" data-a="next">${reviewEdit?'Save and review':step<4?'Continue':'Review my answers'}</button>`}
 const missing=()=>[0,1,2,3,4].filter(s=>Object.keys(val(s,S.P)).length);
 function vRev(){const P=S.P,mi=missing(),L=a=>a.length?a.map(x=>LB[x]).join(', '):'None',row=(s,t,v)=>`<div class="ml"><div style="flex:1"><b>${t}</b><div class="mut sm">${v}</div></div><button class="lk" data-a="edit" data-v="${s}">Edit</button></div>`,mis='<span style="color:var(--err)">Missing</span>';
- return`<div class="row sp"><h1>Check your answers</h1>${sisi('plan',72)}</div><div class="card">${row(0,'About you',P.name&&P.age&&P.gen?`${esc(P.name)}, ${P.age}, ${LB[P.gen]}. Goal: ${GN()}`:mis)}${row(1,'Routine',P.act&&P.sleep?`${LB[P.act]}. Sleep: ${LB[P.sleep]}`:mis)}${row(2,'Health &amp; safety',P.al.length?`Allergies: ${L(P.al)}`:mis)}${row(3,'Food',P.diet?`${LB[P.diet]}. Dislikes: ${L(P.dl)}`:mis)}${row(4,'Budget',P.bud>0?`${rm(P.bud)} per day`:mis)}</div>
+ return`<div class="row sp"><h1>Check your answers</h1>${sisi('plan',72)}</div><div class="card">${row(0,'About you',P.name&&P.age&&P.gen?`${esc(P.name)}, ${P.age}, ${LB[P.gen]}. Goal: ${GN()}`:mis)}${row(1,'Routine',P.act?LB[P.act]:mis)}${row(2,'Health &amp; safety',P.al.length?`Allergies: ${L(P.al)}`:mis)}${row(3,'Food',P.diet?`${LB[P.diet]}. Dislikes: ${L(P.dl)}`:mis)}${row(4,'Budget',P.bud>0?`${rm(P.bud)} per day`:mis)}</div>
 <p class="mut sm mt">Your answers are saved to your account and cached on this device. You can export or delete them in Profile. This is a student project, not medical advice.</p><button class="btn" data-a="gen" ${mi.length?'disabled':''}>Generate my student meal plan</button>${mi.length?'<p class="er mt">Fill in the missing answers first.</p>':''}`}
 function vAna(){return`<div class="wel full">${sisi('thinking',130)}<h2>Working on your plan</h2><ul style="list-style:none;padding:0;text-align:left">${STP.map((t,i)=>`<li style="${i<anaN?'':'opacity:.45'}">${i<anaN?`<span class="ok">${ic('ok',16)}</span>`:'○ '}${t}</li>`).join('')}</ul></div>`}
-function run(){const pl=build(S.P),t=pl.tr,rj=Object.values(t.rej).reduce((a,b)=>a+b,0);PL=pl;if(pl.mode!='none')S.plan=pl;save();
+function run(){const pl=build(S.P),t=pl.tr,rj=Object.values(t.rej).reduce((a,b)=>a+b,0);PL=pl;if(pl.mode!='none')S.plan=pl;day=wd();save();
  STP=[`Checking preferences: ${t.all} meals in our list`,`Applying safety filters: ${rj} removed, ${t.ok} kept`,`Matching meals to budget: ${t.fit} day options fit ${rm(S.P.bud)}`,`Building your week: ${pl.mode=='none'?'no complete day found':pl.mode=='full'?'meets your goal targets':'closest match to your goal'}`];
  const f=matchMedia('(prefers-reduced-motion:reduce)').matches,tk=()=>{if(V!='ana')return;anaN++;R();anaN<4?setTimeout(tk,f?0:600):setTimeout(()=>{V='res';foc=1;R()},f?0:700)};setTimeout(tk,f?0:400)}
 function gen(){V='ana';anaN=0;STP=[];R();setTimeout(run,40)}
 function vRes(){const p=PL,P=S.P,t=p.tr,sg=t.sg,ce=Math.ceil((t.minAny||0)*2)/2;
  if(p.mode=='none')return`<div class="wel">${sisi('empty',120)}<h2>We couldn’t find a complete day</h2><p class="mut">${p.why=='pool'?'Your food choices leave too few meals in our list. Try removing some dislikes.':`Under ${rm(P.bud)} a day we can’t fit breakfast, lunch and dinner. The cheapest complete day for your food choices is ${rm(t.minAny)}.`}</p><p class="mut sm">Filters applied: allergies, ${LB[P.diet]} diet, dislikes and budget. We never relax allergy rules.</p>${p.why=='budget'?`<button class="btn" data-a="setbudgen" data-v="${ce}">Use ${rm(ce)} a day instead</button>`:''}<button class="btn s" data-a="edit" data-v="4">Change my budget</button><button class="btn s" data-a="edit" data-v="3">Change food choices</button></div>`;
  const pt=p.mode=='partial';return`<div class="wel">${sisi(pt?'budget':'celebrate',130)}<h1>${pt?'Your closest-match plan is ready':'Your meal plan is ready!'}</h1><p class="mut">${pt?`Within ${rm(P.bud)} a day this is the best match for “${GN()}” we can build from our meal list. It doesn’t fully reach the goal targets.`:`7 days of meals that fit ${rm(P.bud)} a day and your food rules.`}</p>
-<div class="card row sp" style="width:100%"><div class="tc"><b>${t.ok}</b><div class="mut sm">safe meals</div></div><div class="tc"><b>${rm(P.bud)}</b><div class="mut sm">per day</div></div><div class="tc"><b>${t.fit}</b><div class="mut sm">day options</div></div></div>
+<div class="week-days">${DAYS.map((label,i)=>`<button class="dp ${i==day?'on':''}" aria-pressed="${i==day}" data-a="day" data-v="${i}">${label}</button>`).join('')}</div>
+<div class="card preview"><div class="row sp"><h3>Estimated day cost</h3><b>${rm(tot(p.days[day]))}</b></div>${p.days[day].map((id,i)=>`<div class="ml"><div><span class="mut sm">${SL[i]}</span><br><b>${esc(MB[id].n)}</b></div><b>${rm(MB[id].rm)}</b></div>`).join('')}</div>
 ${pt&&sg?`<div class="bn w"><b>What would help?</b> In our list the cheapest day that reaches your “${GN()}” targets costs ${rm(t.minGoal)}. That is an estimate for this meal list, not a nutrition rule.</div><button class="btn s" data-a="setbudgen" data-v="${sg[0]}">Raise budget to ${rm(sg[0])} to meet goal</button>${P.goal!='balanced'?'<button class="btn o" data-a="goalbal">Switch to Balanced eating</button>':''}`:''}
-<button class="btn" data-a="done">View my plan</button><button class="lk" data-a="how">How recommendations work</button></div>`}
+<button class="btn" data-a="done">Open my plan</button><button class="lk" data-a="how">How recommendations work</button></div>`}
 
 /* ===== APP SCREENS ===== */
-const ring=(f,l)=>`<svg viewBox="0 0 120 120" width="130" height="130" role="img" aria-label="${rm(Math.abs(l))} ${l<0?'over':'left'} of today’s budget"><circle cx="60" cy="60" r="46" fill="none" stroke="var(--lav)" stroke-width="12"/><circle cx="60" cy="60" r="46" fill="none" stroke="${l<0?'var(--err)':'var(--pri)'}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${f*289} 289" transform="rotate(-90 60 60)"/><text x="60" y="58" text-anchor="middle" font-size="16" font-weight="800" fill="var(--ink)">${rm(Math.abs(l))}</text><text x="60" y="76" text-anchor="middle" font-size="11" fill="var(--mut)">${l<0?'over budget':'left today'}</text></svg>`;
+
 const isLg=(i,id)=>S.logs.find(x=>x.d==today()&&(i<3?x.s==i:x.s==3&&x.id==id));
 const mrow=(id,i,d,lg)=>{const m=MB[id];return`<div class="ml"><button class="pl" data-a="meal" data-v="${id}" data-i="${i}" data-d="${d}">${th(m)}<div><div class="mut sm">${SL[i]}</div><b>${esc(m.n)}</b><div class="mut sm">${rm(m.rm)} · ${m.p} g protein · ${m.k} kcal</div></div></button><div class="g">${lg?(isLg(i,id)?`<span class="ok">${ic('ok',16)} Logged</span>`:`<button class="btn bs" data-a="log" data-v="${id}" data-i="${i}" data-d="${d}">Log</button>`):''}<button class="lk" data-a="swap" data-i="${i}" data-d="${d}">Swap</button></div></div>`};
-function vHome(){const P=S.P,pl=S.plan,d=wd(),ids=pl.days[d],pt=tot(ids),sp=+S.logs.filter(l=>l.d==today()).reduce((t,l)=>t+l.rm,0).toFixed(2),left=+(P.bud-sp).toFixed(2),T=targets(P),mid=(T.kLo+T.kHi)/2,sm=k=>ids.reduce((t,i)=>t+MB[i][k],0),
+function vHome(){const P=S.P,pl=S.plan,d=wd(),ids=pl.days[d],pt=tot(ids),sp=+S.logs.filter(l=>l.d==today()).reduce((t,l)=>t+l.rm,0).toFixed(2),left=+(P.bud-sp).toFixed(2),next=ids.findIndex((id,i)=>!isLg(i,id)),T=targets(P),mid=(T.kLo+T.kHi)/2,sm=k=>ids.reduce((t,i)=>t+MB[i][k],0),
  bar=(l,v,t)=>`<div><div class="sm row sp"><span>${l}</span><b>${v}/${t} g</b></div><div class="pb mt" style="margin-top:4px"><i style="width:${Math.min(100,v/t*100)}%"></i></div></div>`;
- return`<div class="row sp"><div><p class="mut">Hello, ${esc(P.name)}</p><h1>Today</h1></div>${sisi(new Set(S.logs.filter(l=>l.d==today()&&l.s<3).map(l=>l.s)).size>=3?'celebrate':'wave',72)}</div>${S.sample?'<div class="bn w">You’re viewing a sample profile. Edit it in Profile to use your own details.</div>':''}
+ return`<div class="row sp"><div><h1>Hi, ${esc(P.name)}</h1><p class="mut">Today’s meal plan</p></div>${sisi(new Set(S.logs.filter(l=>l.d==today()&&l.s<3).map(l=>l.s)).size>=3?'celebrate':'wave',72)}</div>${S.sample?'<div class="bn w">You’re viewing a sample profile. Edit it in Profile to use your own details.</div>':''}
 ${JSON.stringify(pl.P)!=JSON.stringify(P)?'<div class="bn w">Your details changed. <button class="lk" data-a="gen">Regenerate plan</button></div>':''}${pl.mode=='partial'?`<div class="bn w">Closest-match plan: your goal targets aren’t fully met within ${rm(P.bud)} a day. <button class="lk" data-a="how">See why</button></div>`:''}
-<div class="card"><h3>Summary</h3><div class="row sp mt"><div class="tc"><b>${rm(pt)}</b><div class="mut sm">Planned</div></div>${ring(Math.min(1,sp/P.bud),left)}<div class="tc"><b>${rm(sp)}</b><div class="mut sm">Logged</div></div></div><div class="three mt">${bar('Carbs',sm('cb'),Math.round(mid*.5/4))}${bar('Protein',sm('p'),T.pro)}${bar('Fat',sm('f'),Math.round(mid*.3/9))}</div><p class="mut sm mt">Planned grams vs rough reference amounts. Estimates only.</p></div>
+<div class="card budget-card"><div class="budget-value">${rm(P.bud)}</div><p>Daily food budget</p><div class="budget-stats"><div><b>${rm(pt)}</b><span class="mut sm">Planned today</span></div><div><b>${rm(sp)}</b><span class="mut sm">Logged today</span></div></div><p class="sm mt">${rm(Math.abs(left))} ${left<0?'over budget':'left today'}</p></div>
+${next>=0?`<div class="card"><h3>Next meal to log</h3>${mrow(ids[next],next,d,1)}</div>`:''}
+<details class="card"><summary>Planned nutrition estimates</summary><div class="three mt">${bar('Carbs',sm('cb'),Math.round(mid*.5/4))}${bar('Protein',sm('p'),T.pro)}${bar('Fat',sm('f'),Math.round(mid*.3/9))}</div></details>
 <div class="card"><h3>Today’s meals</h3>${ids.map((id,i)=>mrow(id,i,d,1)).join('')}</div><div class="row mt"><button class="btn s" data-a="how">Why these meals?</button><button class="btn s" data-a="go" data-v="plan">View week</button></div>`}
-function vPlan(){const pl=S.plan,ids=pl.days[day],b=S.P.bud;return`<div class="row sp"><h1>Meal plan</h1>${sisi('plan',72)}</div><div class="row mt">${DAYS.map((x,i)=>`<button class="dp ${i==day?'on':''}" data-a="day" data-v="${i}" aria-pressed="${i==day}">${x}</button>`).join('')}</div>
+function vPlan(){const pl=S.plan,ids=pl.days[day],b=S.P.bud;return`<div class="row sp"><h1>Meal plan</h1>${sisi('plan',72)}</div><div class="week-days mt">${DAYS.map((x,i)=>`<button class="dp ${i==day?'on':''}" data-a="day" data-v="${i}" aria-pressed="${i==day}">${x}</button>`).join('')}</div>
 <div class="tot"><div class="card row sp" style="margin-top:10px"><b>${rm(tot(ids))} <span class="mut sm">of ${rm(b)}</span></b><span class="ok">${sisi('budget',40)} Within budget</span></div></div><div class="card" style="margin-top:6px">${ids.map((id,i)=>mrow(id,i,day,day==wd())).join('')}</div><p class="mut sm mt">Prices and nutrition are illustrative estimates. A swap that goes over budget is blocked.</p><button class="btn s" data-a="how">How this plan was made</button>`}
 function elist(){const o=elig(S.P).out.filter(m=>(CF=='all'||m.c==CF)&&m.n.toLowerCase().includes(Q.toLowerCase())).sort((a,b)=>(a.rm-b.rm)*SO);
  return o.length?o.map(m=>`<button class="pl ml" style="width:100%" data-a="meal" data-v="${m.id}">${th(m)}<div><b>${esc(m.n)}</b><div class="mut sm">${rm(m.rm)} est. · ${m.p} g protein · ${m.k} kcal</div></div></button>`).join(''):`<div class="tc">${sisi('empty',90)}<p class="mut">No safe meals match. Clear the search or filter.</p></div>`}
@@ -226,19 +261,31 @@ function vProf(){const P=S.P;return`<div class="row"><span class="th" style="bac
 <div class="card"><h3>Privacy &amp; limits</h3><p class="mut sm mt">Your plan and logs are saved to your SiswaDiet account (Google Firebase) and cached on this device. Meals, prices and nutrition are illustrative estimates, and this is not medical advice.</p><p class="mut sm mt">Installed version: ${esc(new Date(document.lastModified).toLocaleString('en-MY'))}</p></div>
 <button class="btn o" data-a="exit">Log out</button><button class="btn o" data-a="reset" style="color:var(--err)">Delete all my data</button>`}
 const vLoad=()=>`<div class="wel full">${sisi('load',130)}<p class="mut">Loading your account…</p></div>`;
-const vAuth=()=>{const up=AM=='up';return`<div class="wel"><img class="logo" style="width:140px" src="${LOGO}" alt="SiswaDiet logo"><p class="mut">${up?'Create an account to save your plan.':'Log in to continue.'}</p>${CFG_OK?'':'<div class="bn e"><b>Firebase isn’t set up yet.</b> Paste your firebaseConfig into the file first.</div>'}
+const vAuth=()=>{const up=AM=='up';return`<div class="wel auth-view"><img class="logo" style="width:140px" src="${LOGO}" alt="SiswaDiet logo"><h1>${up?'Create account':'Welcome to SiswaDiet'}</h1><p class="mut">${up?'Create an account to save your plan.':'Plan meals around your student budget.'}</p>${CFG_OK?'':'<div class="bn e"><b>Firebase isn’t set up yet.</b> Paste your firebaseConfig into the file first.</div>'}
 <form id="af" class="card" style="width:100%;text-align:left" novalidate>${up?'<div class="f" style="margin-top:0"><label for="an">Name or nickname</label><input id="an" maxlength="30" autocomplete="nickname"></div>':''}<div class="f"><label for="ae">Email</label><input id="ae" type="email" inputmode="email" autocomplete="email"></div><div class="f"><label for="ap">Password (6+ characters)</label><input id="ap" type="password" autocomplete="${up?'new-password':'current-password'}"></div><label class="row mt sm"><input type="checkbox" id="as" style="width:20px;min-height:0"> Show password</label><p class="er mt" id="aer" role="alert"></p><button class="btn" id="abtn">${up?'Create account':'Log in'}</button></form>
 <button class="lk" data-a="amode">${up?'I already have an account':'Create a new account'}</button>${up?'':'<button class="lk" data-a="areset">Forgot password?</button>'}</div>`};
 const vWel=()=>`<div class="wel full"><img class="logo" src="${LOGO}" alt="SiswaDiet logo"><h1>Eat smart.<br>Spend wisely.</h1><p class="mut">Meal ideas for student life, matched to your goal, food rules and daily budget.</p>${S.plan?`<button class="btn" data-a="cont">Continue as ${esc(S.P.name)}</button>`:'<button class="btn" data-a="start">Get started</button>'}<button class="btn s" data-a="sample">Try a sample profile</button><p class="mut sm">Signed in as ${esc(U?.email)}</p></div>`;
-const nav=()=>`<nav aria-label="Main">${[['home','Home'],['plan','Plan'],['explore','Explore'],['prog','Progress'],['prof','Profile']].map(([k,t])=>`<button data-a="go" data-v="${k}" class="${tab==k?'on':''}" ${tab==k?'aria-current="page"':''}>${ic(k)}${t}</button>`).join('')}</nav>`;
+const nav=()=>`<nav aria-label="Main">${[['home','Today'],['plan','Week'],['explore','Explore'],['prog','Progress'],['prof','Profile']].map(([k,t])=>`<button data-a="go" data-v="${k}" class="${tab==k?'on':''}" ${tab==k?'aria-current="page"':''}>${ic(k)}${t}</button>`).join('')}</nav>`;
 
 /* ===== SHEETS ===== */
 function whyL(m,ids){const P=S.P,n=S.plan.days.flat().filter(x=>x==m.id).length;return[`R1–R3 Safety: passes your allergy and ${LB[P.diet].toLowerCase()} filters${P.dl.length?' and avoids foods you dislike':''}.`,`R4 Budget: this day totals ${rm(tot(ids))}, within ${rm(P.bud)}.`,`R6 Goal (${GN()}): ${m.p} g protein${m.p>=MED[m.c]?', higher than a typical '+CN[m.c].toLowerCase()+' option.':'.'}`,`R5 Variety: used ${n}× this week.`]}
 function mealSheet(s){const m=MB[s.id],ids=s.d!=null?S.plan.days[s.d]:null;return`<div class="row">${th(m)}<div><h2>${esc(m.n)}</h2><div class="mut sm">${CN[m.c]} · estimated ${rm(m.rm)}</div></div></div><div class="two mt"><div class="card tc" style="margin:0"><b>${m.k}</b><div class="mut sm">kcal</div></div><div class="card tc" style="margin:0"><b>${m.p} g</b><div class="mut sm">protein</div></div><div class="card tc" style="margin:0"><b>${m.cb} g</b><div class="mut sm">carbs</div></div><div class="card tc" style="margin:0"><b>${m.f} g</b><div class="mut sm">fat</div></div></div>
 <p class="sm mt"><b>Ingredients:</b> ${m.ing.join(', ')}</p><p class="sm"><b>Allergens:</b> ${m.unk?'data incomplete (treated as unknown)':m.al.length?m.al.map(a=>LB[a]).join(', '):'none listed'}</p><h3 class="mt">Why recommended?</h3>${ids?`<ul class="sm">${whyL(m,ids).map(x=>`<li>${x}</li>`).join('')}</ul>`:'<p class="sm mut">This meal passes your allergy, diet and dislike filters. It isn’t in your plan unless shown on a day.</p>'}<p class="mut sm mt">Price and nutrition are illustrative estimates.</p>
 ${ids?`<button class="btn s" data-a="swap" data-i="${s.i}" data-d="${s.d}">Swap meal</button>`:''}<button class="btn" data-a="log" data-v="${m.id}" ${s.i!=null?`data-i="${s.i}"`:''}>Log as eaten</button>`}
-function swapSheet(s){const ids=S.plan.days[s.d],cur=MB[ids[s.i]],tt=tot(ids),b=S.P.bud,c=elig(S.P).out.filter(m=>m.c==cur.c&&!ids.includes(m.id)).sort((a,b)=>a.rm-b.rm);
- return`<h2>Swap ${SL[s.i].toLowerCase()}</h2><p class="mut sm">Only safe meals are shown, with the new day total.</p>${c.length?c.map(m=>{const nt=+(tt-cur.rm+m.rm).toFixed(2),ov=nt>b+1e-9;return`<div class="ml"><div style="flex:1"><b>${esc(m.n)}</b><div class="mut sm">${rm(m.rm)} · ${m.p} g protein · day total ${rm(nt)}</div>${ov?`<div class="sm er">Over budget by ${rm(nt-b)}. Raise your budget in Profile to use it.</div>`:''}</div><button class="btn bs" data-a="doswap" data-v="${m.id}" ${ov?'disabled':''}>Choose</button></div>`}).join(''):`<div class="tc mt">${sisi('empty',90)}<p class="mut">No other safe meals fit this slot.</p></div>`}`}
+function swapOptions(s){
+ const ids=S.plan.days[s.d], current=MB[ids[s.i]], total=tot(ids);
+ return elig(S.P).out.filter(m=>m.c==current.c&&!ids.includes(m.id)).sort((a,b)=>a.rm-b.rm)
+  .map(meal=>({meal,total:Math.round((total-current.rm+meal.rm)*100)/100}))
+  .filter(option=>option.total<=S.P.bud);
+}
+function swapSheet(s){
+ const options=swapOptions(s), selected=options.find(option=>option.meal.id==s.selected);
+ return `<div class="row sp"><h2>Swap ${SL[s.i].toLowerCase()}</h2>${sisi('plan',48)}</div>
+ <p class="mut sm">Choose a meal to see the updated day total.</p>
+ ${options.length?options.map(({meal,total})=>`<button class="oc swap-option ${s.selected==meal.id?'on':''}" aria-pressed="${s.selected==meal.id}" data-a="selectswap" data-v="${meal.id}"><b>${esc(meal.n)}</b><span class="mut sm">${rm(meal.rm)} · ${rm(total)} day total</span></button>`).join(''):`<div class="tc mt">${sisi('empty',70)}<p>No alternate meal fits your food filters and budget.</p></div>`}
+ ${selected?`<div class="bn w row sp"><b>New day total</b><b>${rm(selected.total)}</b></div>`:''}
+ <button class="btn" data-a="doswap" ${selected?'':'disabled'}>Confirm swap</button>`;
+}
 function logSheet(s){const sl=s.i!=null?Math.min(s.i,3):0,o=elig(S.P).out,id=s.v&&MB[s.v]?s.v:'';return`<div class="row sp"><h2>Log a meal</h2>${sisi('meal',56)}</div><div class="f"><label for="lsl">Meal time</label><select id="lsl">${['Breakfast','Lunch','Dinner','Snack'].map((t,i)=>`<option value="${i}" ${i==sl?'selected':''}>${t}</option>`).join('')}</select></div>
 <div class="f"><label for="lm">Meal</label><select id="lm">${o.map(m=>`<option value="${m.id}" ${m.id==id?'selected':''}>${esc(m.n)}</option>`).join('')}<option value="" ${id?'':'selected'}>Something else</option></select></div><div class="f"><label for="ln">Name (if something else)</label><input id="ln" maxlength="40"></div><div class="f"><label for="lc">Actual cost (RM)</label><input id="lc" type="number" inputmode="decimal" step="0.01" min="0" value="${id?MB[id].rm:''}"></div><p id="le" class="er" role="alert"></p><p class="mut sm mt">Meals you add yourself are not safety-checked. Logged today only.</p><button class="btn" data-a="savelog">Save log</button>`}
 function howSheet(){const t=(S.plan||PL)?.tr,r=t?.rej||{};return`<h2>How recommendations work</h2><p class="mut">SiswaDiet is a rule-based expert system. The same answers always give the same plan.</p><ol class="sm"><li><b>R1 Allergies.</b> Meals with your allergens are removed. Meals with incomplete allergen data are hidden if you list allergies or prefer not to say.</li><li><b>R2 Diet.</b> Vegan, vegetarian and pescatarian rules apply to every meal.</li><li><b>R3 Dislikes.</b> Disliked ingredients are skipped.</li><li><b>R4 Budget.</b> Breakfast + lunch + dinner (+ up to 2 snacks) must total no more than your daily budget. Nothing goes over.</li><li><b>R5 Variety.</b> Repeats are penalised across the week.</li><li><b>R6 Goal.</b> Days are ranked by how close they get to rough protein and calorie targets. “Goal minimum” is the cheapest day in this meal list that reaches them.</li></ol>
@@ -249,7 +296,7 @@ const shv=()=>`<div class="bk" data-a="bk"><div class="sheet" role="dialog" aria
 function R(){const f={load:vLoad,auth:vAuth,welcome:vWel,wiz:vWiz,rev:vRev,ana:vAna,res:vRes,app:()=>({home:vHome,plan:vPlan,explore:vExp,prog:vProg,prof:vProf}[tab])()}[V];
  $('#app').innerHTML=`<div class="v${foc?' nv':''}" id="vw" tabindex="-1">${f()}</div>${V=='app'?nav():''}`;$('#sh').innerHTML=sheet?shv():'';
  if(sheet)$('#sh .x').focus();else if(foc){$('#vw').focus({preventScroll:true});scrollTo(0,0);foc=0}}
-const toast=(m,v)=>{$('#toast').innerHTML=`<div class="toast">${v?sisi(v,40):''}<span>${esc(m)}</span></div>`;setTimeout(()=>$('#toast').innerHTML='',2400)};
+const toast=(m,v)=>{clearTimeout(toastTimer);$('#toast').innerHTML=`<div class="toast">${v?sisi(v,40):''}<span>${esc(m)}</span></div>`;toastTimer=setTimeout(()=>$('#toast').innerHTML='',2400)};
 const go=(v,t)=>{V=v;if(t)tab=t;sheet=null;foc=1;R()};
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a,v=t.dataset.v,k=t.dataset.k,I=t.dataset.i!=null?+t.dataset.i:null,D=t.dataset.d!=null?+t.dataset.d:null;
  if(a=='bk'){if(e.target==t){sheet=null;R()}return}
@@ -257,12 +304,18 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
  if(a=='start'){S.P=freshP();S.P.name=U?.displayName||'';S.sample=false;errs={};step=0;go('wiz')}
  else if(a=='cont')go('app','home');
  else if(a=='sample'){S.P=JSON.parse(JSON.stringify(SAMPLE));S.sample=true;gen()}
- else if(a=='pick'){S.P[k]=v;delete errs[k];R()}
- else if(a=='tog'){tog(k,v);R()}
- else if(a=='setbud'){S.P.bud=+v;$('#bud').value=v;$('#bfeed').innerHTML=bfeed();delete errs.bud;save()}
- else if(a=='next'){errs=val(step,S.P);if(Object.keys(errs).length)return R();save();if(step<4){step++;go('wiz')}else go('rev')}
- else if(a=='back'){if(step>0){step--;go('wiz')}else go(S.plan?'app':'welcome')}
- else if(a=='edit'){step=+v;errs={};go('wiz')}
+ else if(a=='pick'){S.P[k]=v;delete errs[k];save();R()}
+ else if(a=='tog'){tog(k,v);save();R()}
+ else if(a=='setbud'){S.P.bud=+v;delete errs.bud;save();R();$('#vw [data-a=setbud][aria-pressed=true]')?.focus()}
+ else if(a=='next'){
+  errs=val(step,S.P);
+  if(Object.keys(errs).length){R();$('#vw .er')?.scrollIntoView({block:'center'});return}
+  if(reviewEdit){reviewEdit=false;save();go('rev')}
+  else if(step<4){step++;S.setupStep=step;save();go('wiz')}
+  else{S.setupStep=step;save();go('rev')}
+ }
+ else if(a=='back'){if(reviewEdit){reviewEdit=false;go('rev')}else if(step>0){step--;S.setupStep=step;save();go('wiz')}else go(S.plan?'app':'welcome')}
+ else if(a=='edit'){reviewEdit=V=='rev'||V=='res';step=+v;errs={};go('wiz')}
  else if(a=='gen'){if(!missing().length)gen()}
  else if(a=='setbudgen'){S.P.bud=+v;gen()}
  else if(a=='goalbal'){S.P.goal='balanced';gen()}
@@ -276,7 +329,13 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
  else if(a=='meal'){sheet={t:'meal',id:v,i:I,d:D};R()}
  else if(a=='swap'){sheet={t:'swap',i:I,d:D};R()}
  else if(a=='log'){sheet={t:'log',v,i:I};R()}
- else if(a=='doswap'){S.plan.days[sheet.d][sheet.i]=v;save();toast('Swapped. Day total is now '+rm(tot(S.plan.days[sheet.d])),'plan');sheet=null;R()}
+ else if(a=='selectswap'){sheet.selected=v;R();$('#sh .swap-option.on')?.focus()}
+ else if(a=='doswap'){
+  const selected=swapOptions(sheet).find(option=>option.meal.id==sheet.selected);
+  if(!selected)return;
+  S.plan.days[sheet.d][sheet.i]=selected.meal.id;
+  save();sheet=null;R();toast('Meal swapped. New day total: '+rm(selected.total),'plan');
+ }
  else if(a=='savelog'){const id=$('#lm').value,n=$('#ln').value.trim(),c=parseFloat($('#lc').value),s=+$('#lsl').value;
   if(!id&&!n)return $('#le').textContent='Pick a meal or type a name.';if(!(c>=0))return $('#le').textContent='Enter the cost in RM, or 0.';
   S.logs=S.logs.filter(l=>!(l.d==today()&&(s<3?l.s==s:l.s==3&&l.id==id)));S.logs.push({d:today(),s,id:id||null,n:id?MB[id].n:n,rm:+c.toFixed(2),chk:!!id,t:Date.now()});save();sheet=null;const n3=new Set(S.logs.filter(l=>l.d==today()&&l.s<3).map(l=>l.s)).size;toast(n3>=3?'All 3 meals logged. Great day!':'Meal logged. Yum!',n3>=3?'celebrate':'meal');R()}
@@ -296,11 +355,11 @@ const fe=x=>{const c=x.code||'';return/invalid-credential|wrong-password|user-no
 document.addEventListener('submit',async e=>{if(e.target.id!='af')return;e.preventDefault();const em=$('#ae').value.trim(),pw=$('#ap').value,nm=$('#an')?.value.trim(),er=m=>{$('#aer').style.color='';$('#aer').textContent=m;$('#abtn').disabled=false};
  if(!CFG_OK)return er('Add your Firebase config to the file first.');if(!em||!pw)return er('Enter your email and password.');if(AM=='up'&&!nm)return er('Enter a name or nickname.');
  $('#abtn').disabled=true;$('#aer').textContent='';
- try{if(AM=='up'){const c=await createUserWithEmailAndPassword(auth,em,pw);await updateProfile(c.user,{displayName:nm});if(!S.P.name){S.P.name=nm;save()}}else await signInWithEmailAndPassword(auth,em,pw)}catch(x){er(fe(x))}});
+ try{if(AM=='up'){signupName=nm;const c=await createUserWithEmailAndPassword(auth,em,pw);await updateProfile(c.user,{displayName:nm});if(U?.uid==c.user.uid&&!S.P.name){S.P.name=nm;save()}}else await signInWithEmailAndPassword(auth,em,pw)}catch(x){signupName='';if($('#af'))er(fe(x))}});
 if(CFG_OK)onAuthStateChanged(auth,async u=>{U=u;if(!u){S=freshS();PL=null;V='auth';document.documentElement.dataset.theme='';return R()}
  V='load';R();let d=null;try{const g=await getDoc(doc(db,'users',u.uid,'app','state'));if(g.exists())d=JSON.parse(g.data().json)}catch(e){}
  if(!d)try{d=JSON.parse(localStorage.getItem(lk()))}catch(e){}
- S=d&&d.v==2?d:freshS();if(!S.P.name)S.P.name=u.displayName||'';PL=S.plan;V=S.plan?'app':'welcome';tab='home';day=wd();document.documentElement.dataset.theme=S.theme||'';R()});
+ S=d&&d.v==2?d:freshS();if(!S.P.name)S.P.name=u.displayName||signupName||'';signupName='';reviewEdit=false;errs={};step=Number.isInteger(S.setupStep)&&S.setupStep>=0&&S.setupStep<=4?S.setupStep:0;PL=S.plan;V=S.plan?'app':'wiz';tab='home';day=wd();document.documentElement.dataset.theme=S.theme||'';R()});
 else{V='auth';R()}
 </script><script>
 /* Auto-update: remembers the page's version stamp when the app opens, then re-checks GitHub. Nothing to edit when you update. */
