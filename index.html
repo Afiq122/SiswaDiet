@@ -1,319 +1,258 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#2f7d4f">
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#6258E8">
 <title>SiswaDiet</title>
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg">
-<link rel="apple-touch-icon" href="icon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="SiswaDiet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f3f7ef;--ink:#1e2b22;--mute:#5d6d62;--green:#2f7d4f;--chilli:#e4572e;--card:#fff;--line:#d9e4d5}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Nunito Sans",system-ui,sans-serif;padding:env(safe-area-inset-top) 0 calc(72px + env(safe-area-inset-bottom))}
-h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.15;margin:0 0 .5rem}
-main{max-width:520px;margin:0 auto;padding:16px}
-.brand{font:800 2rem "Bricolage Grotesque",sans-serif;color:var(--green)}
-.brand b{color:var(--chilli)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
-label{display:block;font-weight:600;margin:12px 0 4px}
-input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff;color:var(--ink)}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-button{font:600 1rem "Nunito Sans",sans-serif;border:0;border-radius:10px;padding:12px 16px;background:var(--green);color:#fff;width:100%;margin-top:16px;cursor:pointer}
-button.ghost{background:transparent;color:var(--green);border:1px solid var(--green)}
-button.link{background:none;color:var(--green);width:auto;padding:4px;margin:8px 0 0;text-decoration:underline}
-:focus-visible{outline:3px solid var(--chilli);outline-offset:2px}
-.msg{color:var(--chilli);min-height:1.4em;margin:8px 0 0;font-size:.95rem}
-.big{font:800 2.6rem "Bricolage Grotesque",sans-serif;color:var(--green)}
-.tag{display:inline-block;background:#e6f1e2;color:var(--green);border-radius:99px;padding:2px 10px;font-weight:600;font-size:.9rem}
-.why li{margin-bottom:6px}
-.meal{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
-.meal:first-of-type{border-top:0}
-small,.mute{color:var(--mute)}
-nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:#fff;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
-nav button{margin:0;border-radius:0;background:none;color:var(--mute);flex:1;padding:14px 4px}
-nav button.on{color:var(--green);box-shadow:inset 0 3px 0 var(--green)}
-.hide{display:none!important}
-@media (prefers-reduced-motion:no-preference){.card{transition:transform .15s}}
-</style>
-</head>
-<body>
-<main>
-
-<!-- LOGIN / REGISTER -->
-<section id="auth" class="hide">
-  <div class="brand">Siswa<b>Diet</b></div>
-  <p class="mute">Diet advice for students, based on your body and your budget.</p>
-  <div class="card">
-    <h2 id="authTitle">Log in</h2>
-    <div id="nameWrap" class="hide"><label for="name">Name</label><input id="name" autocomplete="name"></div>
-    <label for="email">Email</label><input id="email" type="email" autocomplete="email">
-    <label for="pass">Password (6+ characters)</label><input id="pass" type="password" autocomplete="current-password">
-    <p class="msg" id="authMsg" role="alert"></p>
-    <button id="authBtn">Log in</button>
-    <button class="link" id="switchBtn">Create a new account</button>
-    <button class="link" id="resetBtn">Forgot password?</button>
-  </div>
-</section>
-
-<!-- APP -->
-<section id="app" class="hide">
-  <div class="brand">Siswa<b>Diet</b></div>
-  <p class="mute" id="hello"></p>
-
-  <div id="tabForm">
-    <form class="card" id="form">
-      <h2>Your details</h2>
-      <div class="row">
-        <div><label for="age">Age</label><input id="age" type="number" min="10" max="80" required></div>
-        <div><label for="gender">Gender</label><select id="gender"><option value="female">Female</option><option value="male">Male</option></select></div>
-      </div>
-      <div class="row">
-        <div><label for="weight">Weight (kg)</label><input id="weight" type="number" step="0.1" min="25" max="250" required></div>
-        <div><label for="height">Height (cm)</label><input id="height" type="number" min="120" max="230" required></div>
-      </div>
-      <label for="activity">Activity level</label>
-      <select id="activity">
-        <option value="1.2">Low: mostly sitting, lectures</option>
-        <option value="1.375" selected>Light: walking around campus</option>
-        <option value="1.55">Moderate: exercise 3 to 5 days a week</option>
-        <option value="1.725">High: hard exercise most days</option>
-      </select>
-      <label for="goal">Goal</label>
-      <select id="goal"><option value="auto">Let SiswaDiet decide</option><option value="lose">Lose weight</option><option value="maintain">Maintain weight</option><option value="gain">Gain weight</option></select>
-      <label for="budget">Daily food budget</label>
-      <select id="budget"><option value="low">Tight (under RM 10)</option><option value="mid">Normal (RM 10 to 20)</option></select>
-      <label for="allergy">Allergies</label>
-      <select id="allergy" multiple size="4"><option value="egg">Egg</option><option value="peanut">Peanut</option><option value="milk">Milk</option><option value="seafood">Seafood</option></select>
-      <small>Hold Ctrl or tap multiple to choose more than one.</small>
-      <button type="submit">Get my diet plan</button>
-    </form>
-  </div>
-
-  <div id="tabResult" class="hide"></div>
-
-  <div id="tabHistory" class="hide">
-    <div class="card"><h2>My history</h2><div id="histList" class="mute">Loading…</div></div>
-  </div>
-
-  <p class="mute"><small>For education only. This is not medical advice. See a doctor or dietitian for health problems.</small></p>
-  <button class="ghost" id="logout">Log out</button>
-</section>
-</main>
-
-<nav id="nav" class="hide">
-  <button data-tab="Form" class="on">Details</button>
-  <button data-tab="Result">Plan</button>
-  <button data-tab="History">History</button>
-</nav>
-
+:root{--pri:#6258E8;--ink:#20233D;--lav:#F1EEFF;--mint:#40C9A2;--mt:#0F7F5F;--mw:#E6FAF3;--cor:#FF8A78;--yel:#FFD66B;--bg:#F8F9FD;--card:#fff;--mut:#666D86;--bd:#E9EBF3;--err:#C9405A;--ew:#FDECEF;--yw:#FFF6DC;color-scheme:light}
+:root[data-theme=dark]{--ink:#F1F2FA;--lav:#2B2866;--mw:#12372F;--bg:#14162B;--card:#1E2140;--mut:#A9AEC8;--bd:#2D3156;--err:#FF8DA0;--ew:#3A1C2A;--yw:#3B3216;--mt:#5FE0BC;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 "Plus Jakarta Sans",system-ui,sans-serif}
+h1,h2,h3,p,ol,ul{margin:0}h1{font-size:28px;line-height:1.15;font-weight:800}h2{font-size:21px;font-weight:800}h3{font-size:16px;font-weight:800}ol,ul{padding-left:20px}li{margin-top:6px}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.app{max-width:520px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(100px + env(safe-area-inset-bottom))}
+.v{outline:0;animation:in .2s ease-out}@keyframes in{from{opacity:0;transform:translateY(8px)}}
+@media(prefers-reduced-motion:no-preference){.sisi{animation:fl 3s ease-in-out infinite}}@keyframes fl{50%{transform:translateY(-5px)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.mut{color:var(--mut)}.sm{font-size:13px}.row{display:flex;gap:10px;align-items:center}.sp{justify-content:space-between}.g{display:grid;gap:8px}.mt{margin-top:16px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tc{text-align:center}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:16px;box-shadow:0 6px 24px rgba(32,35,61,.06);margin-top:14px}
+.btn{min-height:52px;border:0;border-radius:16px;background:var(--pri);color:#fff;font-weight:800;padding:0 22px;width:100%;margin-top:8px;transition:transform .12s}
+.btn:active{transform:scale(.98)}.btn.s{background:var(--lav);color:var(--pri)}.btn.o{background:none;border:1.5px solid var(--bd);color:var(--ink)}.btn:disabled{opacity:.45;cursor:not-allowed}.btn.bs{min-height:44px;width:auto;padding:0 16px;font-size:14px;margin:0}
+.lk{background:none;border:0;color:var(--pri);font-weight:700;min-height:44px;padding:0 8px;display:inline-flex;align-items:center;gap:4px}
+.f{display:grid;gap:6px;margin-top:14px}.lb,.f label{font-weight:700;font-size:14px}
+input,select{width:100%;min-height:48px;border:1.5px solid var(--bd);border-radius:14px;background:var(--card);padding:0 14px}
+.big{font-size:40px;font-weight:800;text-align:center;min-height:72px}.er{color:var(--err);font-size:13px;font-weight:600}
+.oc{min-height:56px;text-align:left;border:1.5px solid var(--bd);border-radius:16px;background:var(--card);padding:10px 14px;display:grid;margin-top:8px;width:100%}.oc.on{border-color:var(--pri);background:var(--lav)}.oc small{color:var(--mut)}.oc:disabled{opacity:.45}
+.chs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.ch{min-height:44px;border:1.5px solid var(--bd);border-radius:99px;background:var(--card);padding:0 16px;font-weight:600}.ch.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.pb{height:8px;border-radius:4px;background:var(--lav);overflow:hidden}.pb i{display:block;height:100%;background:var(--pri);border-radius:4px;transition:width .3s}
+.tip{display:flex;gap:10px;align-items:center;background:var(--lav);border-radius:20px;padding:8px 14px;margin:12px 0}
+.bn{border-radius:14px;padding:12px 14px;margin-top:12px;font-size:14px}.bn.w{background:var(--yw)}.bn.e{background:var(--ew)}.bn.k{background:var(--mw)}
+.ml{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--bd)}.ml:first-child{border:0}.th{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;flex:none}
+.pl{display:flex;gap:12px;align-items:center;border:0;background:none;text-align:left;padding:0;flex:1}.ok{color:var(--mt);font-weight:800;display:inline-flex;align-items:center;gap:4px;font-size:13px}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;min-height:60px;border:0;background:none;color:var(--mut);font-size:11px;font-weight:700;display:grid;place-items:center;gap:2px;padding-top:6px}nav .on{color:var(--pri)}
+.bk{position:fixed;inset:0;background:rgba(20,22,43,.5);z-index:9;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:min(100%,520px);max-height:88vh;overflow:auto;border-radius:24px 24px 0 0;padding:12px 16px calc(20px + env(safe-area-inset-bottom));animation:in .2s}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;z-index:20;font-weight:600}
+.dp{flex:1;min-height:44px;border:1px solid var(--bd);border-radius:14px;background:var(--card);font-weight:700;font-size:13px;padding:0}.dp.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.tot{position:sticky;top:0;z-index:3;margin:0 -16px;padding:4px 16px;background:var(--bg)}
+.wel{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;background:linear-gradient(180deg,var(--lav),var(--bg));border-radius:28px;padding:28px 20px;margin-top:8px}.wel.full{min-height:calc(100vh - 48px);justify-content:center}.wel>*{max-width:100%}
+.bg2{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--bd)}.bg2.off{opacity:.5}.bars{display:grid;grid-template-columns:34px 1fr 62px;gap:8px;align-items:center;font-size:13px}
+</style></head><body><div id="app" class="app"></div><div id="sh"></div><div id="toast" role="status" aria-live="polite"></div>
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,sendPasswordResetEmail,updateProfile}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,setDoc,deleteDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+/* ===== PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web) ===== */
+const firebaseConfig={apiKey:"AIzaSyDHryM71YQreXyoNK8cJAcgJZSUnyYMqDA",authDomain:"siswadiet-4abc1.firebaseapp.com",projectId:"siswadiet-4abc1",storageBucket:"siswadiet-4abc1.firebasestorage.app",messagingSenderId:"937160576607",appId:"1:937160576607:web:823ba150a695c28dfb55ea"};
+const CFG_OK=firebaseConfig.apiKey!="PASTE_HERE",fbApp=initializeApp(firebaseConfig),auth=getAuth(fbApp),db=getFirestore(fbApp);
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nf=new Intl.NumberFormat('en-MY',{style:'currency',currency:'MYR'}),rm=n=>nf.format(n),KEY='siswadiet.v2';
+const ACT={sit:1.2,lgt:1.375,mod:1.55,vry:1.725},DL={vegan:0,veg:1,pesc:2,omni:3},DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],SL=['Breakfast','Lunch','Dinner','Snack','Snack'],CN={b:'Breakfast',ld:'Lunch / dinner',s:'Snack'};
+const GOALS=[['balanced','Balanced eating','Varied, regular meals'],['active','Support active lifestyle','Fuel busy, active days'],['muscle','Muscle support','Higher-protein picks'],['maintain','Maintain routine','Keep what works'],['light','Lighter eating','Adults 18+ only']];
+const ALG=[['egg','Egg'],['dairy','Dairy'],['peanut','Peanut'],['seafood','Fish / seafood'],['soy','Soy'],['gluten','Gluten']],HN=[['diabetes','Diabetes'],['bp','High blood pressure'],['chol','High cholesterol'],['meds','Takes regular medication']];
+const DIS=[['chicken','Chicken'],['beef','Beef'],['fish','Fish'],['anchovy','Anchovies'],['tofu','Tofu'],['tempeh','Tempeh'],['egg','Egg'],['oats','Oats'],['chickpea','Chickpeas'],['peanut','Peanuts']];
+const ACTS=[['sit','Mostly sitting','Lectures and study'],['lgt','Lightly active','Walking around campus'],['mod','Moderately active','Exercise 3 to 5 days a week'],['vry','Very active','Hard exercise most days']];
+const LB={};[...GOALS,...ALG,...HN,...DIS,...ACTS].forEach(a=>LB[a[0]]=a[1]);Object.assign(LB,{none:'None',skip:'Prefer not to say',woman:'Woman',man:'Man',nb:'Non-binary',self:'Self-describe','lt6':'Under 6 hours','6-7':'6–7 hours','7-8':'7–8 hours',gt8:'Over 8 hours',irr:'Irregular / varies',omni:'Omnivore',veg:'Vegetarian',vegan:'Vegan',pesc:'Pescatarian'});
+/* Illustrative sample meals: id,name,category,RM,kcal,protein,carbs,fat,allergens,min diet level(0 vegan..3 omni),ingredients */
+const MEALS=[['oat','Oats & banana','b',2.5,300,10,55,6,'gluten',0,'oats banana'],['eggt','Boiled eggs & wholemeal toast','b',3.5,300,16,28,14,'egg gluten',1,'egg bread'],['nlk','Nasi lemak, egg & ikan bilis','b',3.5,480,16,60,20,'egg seafood peanut',2,'rice egg anchovy peanut'],['eggs','Egg & cucumber sandwich','b',3.5,350,16,36,15,'egg gluten',1,'egg bread'],['tuns','Tuna sandwich','b',5,330,22,34,12,'seafood gluten egg',2,'fish bread'],['tofs','Tofu scramble on toast','b',4,290,17,28,12,'soy gluten',0,'tofu bread'],['pbt','Peanut butter toast & banana','b',3,340,12,44,13,'peanut gluten',0,'peanut bread banana'],['gyo','Greek yogurt & fruit','b',5.5,280,18,38,6,'dairy',1,'yogurt'],['rcd','Roti canai & dhal (2 pcs)','b',3.5,450,12,62,17,'gluten dairy',1,'bread dhal'],
+['chr','Steamed chicken rice','ld',7.5,520,32,62,15,'',3,'chicken rice'],['gcr','Grilled chicken & brown rice','ld',8.5,480,42,50,12,'',3,'chicken rice'],['tem','Tempeh stir-fry & rice','ld',5,460,24,55,16,'soy',0,'tempeh rice'],['efr','Egg fried rice & vegetables','ld',4.5,450,15,58,16,'egg soy',1,'egg rice'],['dal','Dhal curry & rice','ld',4.5,440,17,70,10,'',0,'dhal rice'],['fsh','Grilled fish, ulam & rice','ld',9,430,36,40,14,'seafood',2,'fish rice'],['bef','Beef stir-fry, broccoli & rice','ld',11,520,38,52,18,'soy',3,'beef rice'],['cwr','Chicken wrap & salad','ld',7,430,28,44,14,'gluten',3,'chicken bread'],['chk','Chickpea salad bowl','ld',6.5,410,17,55,14,'',0,'chickpea'],['sup','Sup ayam & rice','ld',8,420,30,48,10,'',3,'chicken rice'],['tfs','Tofu vegetable soup & rice','ld',5,390,20,52,11,'soy',0,'tofu rice'],['etn','Egg & tempeh nasi bungkus','ld',4,540,24,66,18,'egg soy',1,'egg tempeh rice'],['tbe','Tuna & egg rice bowl','ld',6.5,500,34,56,14,'seafood egg',2,'fish egg rice'],['ikk','Ikan kembung & rice','ld',6.5,480,30,52,14,'seafood',2,'fish rice'],['nc','Nasi campur, warung (mixed)','ld',6,650,25,80,25,'unknown',3,'rice chicken'],
+['bge','Boiled eggs (2)','s',1.5,150,12,1,10,'egg',1,'egg'],['soy','Soy milk (1 glass)','s',2,120,8,10,5,'soy',0,'soy'],['ban','Banana','s',1,100,1,26,0,'',0,'banana'],['pnt','Peanuts (handful)','s',2,200,8,6,17,'peanut',0,'peanut'],['ygt','Plain yogurt cup','s',2.5,100,6,8,4,'dairy',1,'yogurt'],['kcp','Boiled chickpeas','s',1.5,180,9,28,3,'',0,'chickpea'],['mlk','Milk (200 ml)','s',2,130,7,10,5,'dairy',1,'milk']];
+const MB={};MEALS.forEach(a=>MB[a[0]]={id:a[0],n:a[1],c:a[2],rm:a[3],k:a[4],p:a[5],cb:a[6],f:a[7],al:a[8].split(' ').filter(x=>x&&x!='unknown'),unk:a[8].includes('unknown'),lv:a[9],ing:a[10].split(' ')});
+const ML=Object.values(MB),med=c=>{const v=ML.filter(m=>m.c==c).map(m=>m.p).sort((a,b)=>a-b);return v[v.length>>1]},MED={b:med('b'),ld:med('ld'),s:med('s')};
 
-/* ===== 1. PASTE YOUR FIREBASE CONFIG HERE (Project settings > Your apps > Web) ===== */
-const firebaseConfig = {
-  apiKey: "AIzaSyDHryM71YQreXyoNK8cJAcgJZSUnyYMqDA",
-  authDomain: "siswadiet-4abc1.firebaseapp.com",
-  projectId: "siswadiet-4abc1",
-  storageBucket: "siswadiet-4abc1.firebasestorage.app",
-  messagingSenderId: "937160576607",
-  appId: "1:937160576607:web:823ba150a695c28dfb55ea"
-};
-const fb = initializeApp(firebaseConfig);
-const auth = getAuth(fb);
-const db = getFirestore(fb);
+/* ===== EXPERT SYSTEM: knowledge base above, inference below ===== */
+function elig(P){const out=[],rej={},al=P.al.filter(a=>a!='none'&&a!='skip');
+ ML.forEach(m=>{let r=0;if(m.lv>DL[P.diet])r='diet';else if(m.al.some(a=>al.includes(a)))r='allergen';else if(m.unk&&P.al.some(a=>a!='none'))r='unknown';else if(P.dl.some(x=>m.ing.includes(x)))r='dislike';r?rej[m.id]=r:out.push(m)});return{out,rej}}
+function targets(P){const w=P.w||60,h=P.h||165,g=P.goal,ad=(P.age||20)>=18,t=Math.round((10*w+6.25*h-5*(P.age||20)-78)*(ACT[P.act]||1.375));
+ const[pk,lo,hi]=g=='muscle'?[ad?1.6:1.2,.8,1.3]:g=='active'?[1.2,.85,1.2]:g=='light'?[1,.7,.95]:[.9,.7,1.1];
+ return{tdee:t,kLo:Math.max(g=='light'?1200:1100,Math.round(t*lo)),kHi:Math.round(t*hi),pro:Math.round(w*pk*.9)}}
+function combos(p){const sn=[{m:[],rm:0,k:0,p:0}];p.s.forEach((x,i)=>{sn.push({m:[x],rm:x.rm,k:x.k,p:x.p});for(let j=i+1;j<p.s.length;j++){const y=p.s[j];sn.push({m:[x,y],rm:x.rm+y.rm,k:x.k+y.k,p:x.p+y.p})}});
+ const o=[];for(const b of p.b)for(const l of p.ld)for(const d of p.ld){if(l==d)continue;for(const s of sn)o.push({m:[b,l,d,...s.m],rm:+(b.rm+l.rm+d.rm+s.rm).toFixed(2),k:b.k+l.k+d.k+s.k,p:b.p+l.p+d.p+s.p})}return o}
+function analyse(P){const{out,rej}=elig(P),T=targets(P),p={b:out.filter(m=>m.c=='b'),ld:out.filter(m=>m.c=='ld'),s:out.filter(m=>m.c=='s')};
+ if(!p.b.length||p.ld.length<2)return{out,rej,T,none:1,cs:[],good:[]};
+ const cs=combos(p),good=cs.filter(c=>c.k>=T.kLo&&c.k<=T.kHi&&c.p>=T.pro),c5=x=>Math.ceil(x*2)/2,minAny=cs.reduce((a,c)=>Math.min(a,c.rm),99);
+ const gs=[...good].sort((a,b)=>a.rm-b.rm),seen=new Set();let rec=null;for(const c of gs){c.m.forEach(m=>seen.add(m.id));if(seen.size>=12){rec=c.rm;break}}
+ return{out,rej,T,cs,good,minAny,minGoal:gs.length?gs[0].rm:null,sg:gs.length?[c5(gs[0].rm),c5(rec??gs[gs.length-1].rm)]:null}}
+const score=(c,T,b)=>Math.min(c.p/T.pro,1.15)*50+(1-Math.min(1,Math.abs(c.k-(T.kLo+T.kHi)/2)/T.kHi))*30+(b-c.rm)/b*10;
+function build(P){const a=analyse(P);A=a;const rj={};Object.values(a.rej).forEach(r=>rj[r]=(rj[r]||0)+1);
+ const tr={all:ML.length,ok:a.out.length,rej:rj,T:a.T,n:a.cs.length,minAny:a.minAny,minGoal:a.minGoal,sg:a.sg,fit:0};
+ if(a.none)return{mode:'none',tr,why:'pool'};
+ let pool=a.good.filter(c=>c.rm<=P.bud),mode='full';if(!pool.length){pool=a.cs.filter(c=>c.rm<=P.bud);mode='partial'}
+ tr.fit=pool.length;if(!pool.length)return{mode:'none',tr,why:'budget'};
+ const used={},days=[];for(let d=0;d<7;d++){let best,bs=-1e9;for(const c of pool){let s=score(c,a.T,P.bud);c.m.forEach(m=>s-=14*(used[m.id]||0));if(s>bs){bs=s;best=c}}
+  best.m.forEach(m=>used[m.id]=(used[m.id]||0)+1);days.push(best.m.map(m=>m.id))}
+ return{mode,days,tr,P:JSON.parse(JSON.stringify(P))}}
+function val(s,P){const e={};
+ if(s==0){if(!P.name?.trim())e.name='Enter a name or nickname.';if(!(P.age>=13&&P.age<=80))e.age='Enter an age from 13 to 80.';if(!P.gen)e.gen='Choose one option, or “Prefer not to say”.';if(P.w&&!(P.w>=25&&P.w<=250))e.w='Weight should be 25 to 250 kg.';if(P.h&&!(P.h>=100&&P.h<=230))e.h='Height should be 100 to 230 cm.';if(P.goal=='light'&&P.age<18)e.goal='Lighter eating is for adults 18+. Pick another goal.'}
+ if(s==1){if(!P.act)e.act='Choose your activity level.';if(!P.sleep)e.sleep='Sleep pattern is required. Choose one to continue.'}
+ if(s==2&&!P.al.length)e.al='Select “None” or your allergies.';
+ if(s==3&&!P.diet)e.diet='Choose a dietary pattern.';
+ if(s==4&&!(P.bud>0&&P.bud<=1000))e.bud='Enter a daily budget above RM 0.';return e}
 
-/* ===== 2. KNOWLEDGE BASE: meals (edit freely) ===== */
-const MEALS = [
-  { n: "Nasi + telur rebus + sayur kangkung", kcal: 480, rm: 5, budget: "low", goal: ["lose","maintain"], allergy: ["egg"] },
-  { n: "Nasi + tempe goreng + sayur", kcal: 520, rm: 4, budget: "low", goal: ["lose","maintain"], allergy: [] },
-  { n: "Nasi + ayam rebus + timun", kcal: 540, rm: 7, budget: "mid", goal: ["lose","maintain"], allergy: [] },
-  { n: "Oatmeal + pisang", kcal: 300, rm: 3, budget: "low", goal: ["lose","maintain"], allergy: [] },
-  { n: "Sup sayur + roti wholemeal", kcal: 350, rm: 5, budget: "low", goal: ["lose"], allergy: [] },
-  { n: "Ikan bakar + nasi + ulam", kcal: 560, rm: 9, budget: "mid", goal: ["lose","maintain"], allergy: ["seafood"] },
-  { n: "Nasi lemak + telur + kacang", kcal: 650, rm: 5, budget: "low", goal: ["gain","maintain"], allergy: ["egg","peanut"] },
-  { n: "Roti + peanut butter + susu", kcal: 580, rm: 4, budget: "low", goal: ["gain"], allergy: ["peanut","milk"] },
-  { n: "Mi goreng + telur mata + sayur", kcal: 620, rm: 5, budget: "low", goal: ["gain","maintain"], allergy: ["egg"] },
-  { n: "Nasi ayam + sup", kcal: 700, rm: 8, budget: "mid", goal: ["gain"], allergy: [] },
-  { n: "Bubur ayam + telur", kcal: 420, rm: 6, budget: "low", goal: ["lose","maintain","gain"], allergy: ["egg"] },
-  { n: "Smoothie pisang + susu + oat", kcal: 380, rm: 4, budget: "low", goal: ["gain","maintain"], allergy: ["milk"] }
-];
+/* ===== STATE ===== */
+const freshP=()=>({goal:'balanced',al:[],hn:[],dl:[]}),SAMPLE={name:'Aina',age:21,gen:'skip',w:58,h:160,goal:'muscle',act:'mod',ex:'strength',exf:'3-4',sleep:'7-8',al:['peanut'],hn:['none'],diet:'omni',dl:['anchovy'],bud:12};
+const freshS=()=>({v:2,P:freshP(),plan:null,logs:[],theme:null,sample:false}),lk=()=>KEY+':'+(U?U.uid:'x');
+let U=null,S=freshS(),V='load',AM='in',AE='',AB=0,step=0,tab='home',day=0,sheet=null,errs={},A=null,PL=null,foc=0,anaN=0,STP=[],Q='',CF='all',SO=1,tmr;
+async function cloud(){try{await setDoc(doc(db,'users',U.uid,'app','state'),{json:JSON.stringify(S),updated:serverTimestamp()})}catch(e){toast('Could not sync. Saved on this device for now.')}}
+const save=()=>{try{localStorage.setItem(lk(),JSON.stringify(S))}catch(e){}if(U){clearTimeout(tmr);tmr=setTimeout(cloud,800)}};
+const wd=()=>(new Date().getDay()+6)%7,today=()=>new Date().toLocaleDateString('en-CA'),tot=ids=>+ids.reduce((t,i)=>t+MB[i].rm,0).toFixed(2),GN=()=>LB[S.P.goal];day=wd();
 
-/* ===== 3. INFERENCE ENGINE: forward chaining ===== */
-// Each rule: IF condition(facts) THEN action(facts). The engine keeps firing rules until nothing new happens.
-const RULES = [
-  { id: "R1", text: "IF BMI < 18.5 THEN status = Underweight",
-    when: f => f.status === undefined && f.bmi < 18.5, then: f => (f.status = "Underweight") },
-  { id: "R2", text: "IF 18.5 <= BMI < 25 THEN status = Normal",
-    when: f => f.status === undefined && f.bmi >= 18.5 && f.bmi < 25, then: f => (f.status = "Normal") },
-  { id: "R3", text: "IF 25 <= BMI < 30 THEN status = Overweight",
-    when: f => f.status === undefined && f.bmi >= 25 && f.bmi < 30, then: f => (f.status = "Overweight") },
-  { id: "R4", text: "IF BMI >= 30 THEN status = Obese",
-    when: f => f.status === undefined && f.bmi >= 30, then: f => (f.status = "Obese") },
-  { id: "R5", text: "IF goal = auto AND status = Underweight THEN goal = gain",
-    when: f => f.goal === "auto" && f.status === "Underweight", then: f => (f.goal = "gain") },
-  { id: "R6", text: "IF goal = auto AND status = Normal THEN goal = maintain",
-    when: f => f.goal === "auto" && f.status === "Normal", then: f => (f.goal = "maintain") },
-  { id: "R7", text: "IF goal = auto AND status is Overweight or Obese THEN goal = lose",
-    when: f => f.goal === "auto" && (f.status === "Overweight" || f.status === "Obese"), then: f => (f.goal = "lose") },
-  { id: "R8", text: "IF goal is known THEN calories = TDEE + adjustment (lose -500, gain +300), minimum 1200 kcal",
-    when: f => f.goal !== "auto" && f.calories === undefined,
-    then: f => { const adj = { lose: -500, gain: 300, maintain: 0 }[f.goal]; f.calories = Math.max(1200, Math.round(f.tdee + adj)); } },
-  { id: "R9", text: "IF calories is known THEN protein = weight x (1.0 maintain, 1.2 lose/gain)",
-    when: f => f.calories !== undefined && f.protein === undefined,
-    then: f => (f.protein = Math.round(f.weight * (f.goal === "maintain" ? 1.0 : 1.2))) },
-  { id: "R10", text: "IF activity is low THEN advise a 20-minute walk daily",
-    when: f => f.activity === 1.2 && !f.tips.includes("walk"),
-    then: f => f.tips.push("walk") },
-  { id: "R11", text: "IF budget is tight THEN prefer meals costing RM 6 or less",
-    when: f => f.budget === "low" && !f.tips.includes("cheap"),
-    then: f => f.tips.push("cheap") },
-  { id: "R12", text: "IF the student has allergies THEN remove meals containing those allergens",
-    when: f => f.allergy.length > 0 && !f.tips.includes("allergy"),
-    then: f => f.tips.push("allergy") }
-];
+/* ===== MASCOT + ICONS ===== */
+function sisi(v='wave',s=110){const ln='stroke="#20233D" stroke-width="3" fill="none" stroke-linecap="round"';
+ const eye=v=='sleep'?`<path d="M42 70q6 5 12 0M66 70q6 5 12 0" ${ln}/>`:v=='celebrate'?`<path d="M42 72q6-7 12 0M66 72q6-7 12 0" ${ln}/>`:'<ellipse cx="48" cy="69" rx="4.5" ry="6.5" fill="#20233D"/><ellipse cx="72" cy="69" rx="4.5" ry="6.5" fill="#20233D"/>';
+ const mo=v=='empty'?`<path d="M54 89q6-5 12 0" ${ln}/>`:v=='thinking'?'<circle cx="62" cy="87" r="3" fill="#20233D"/>':`<path d="M53 84q7 8 14 0" ${ln}/>`;
+ const arm=v=='wave'||v=='celebrate'?'<ellipse cx="102" cy="62" rx="7" ry="13" transform="rotate(-25 102 62)" fill="#A79EFF"/>':'<ellipse cx="100" cy="88" rx="7" ry="13" transform="rotate(15 100 88)" fill="#A79EFF"/>';
+ const ex={thinking:'<circle cx="104" cy="22" r="3" fill="#6258E8"/><circle cx="112" cy="12" r="4" fill="#6258E8"/>',budget:'<circle cx="106" cy="52" r="11" fill="#FFD66B"/><text x="106" y="57" font-size="11" font-weight="800" text-anchor="middle" fill="#20233D">RM</text>',celebrate:'<circle cx="14" cy="30" r="3" fill="#FF8A78"/><circle cx="110" cy="28" r="3" fill="#40C9A2"/><circle cx="12" cy="60" r="3" fill="#FFD66B"/>',sleep:'<text x="98" y="30" font-size="16" font-weight="800" fill="#6258E8">z</text>',meal:'<rect x="28" y="102" width="64" height="7" rx="3" fill="#FFD66B"/><path d="M42 102a18 12 0 0 1 36 0z" fill="#fff" stroke="#E9EBF3"/>'}[v]||'';
+ return`<svg class="sisi" viewBox="0 0 120 132" width="${s}" height="${s*1.1}" role="img" aria-label="Sisi, the SiswaDiet student mascot"><ellipse cx="45" cy="124" rx="12" ry="6" fill="#8F84F5"/><ellipse cx="75" cy="124" rx="12" ry="6" fill="#8F84F5"/><rect x="26" y="34" width="68" height="88" rx="34" fill="#BDB5FF"/><ellipse cx="20" cy="88" rx="7" ry="13" transform="rotate(-15 20 88)" fill="#A79EFF"/>${arm}<path d="M38 36v10c0 7 44 7 44 0V36z" fill="#2E3260"/><path d="M60 16 102 30 60 44 18 30z" fill="#20233D"/><path d="M60 30 92 34v14" stroke="#FFD66B" stroke-width="3" fill="none"/><circle cx="92" cy="50" r="3.5" fill="#FFD66B"/><path d="M60 16c-2-9 6-14 14-12-1 9-6 14-14 12z" fill="#40C9A2"/>${eye}<ellipse cx="39" cy="81" rx="6" ry="3.6" fill="#FF8A78" opacity=".85"/><ellipse cx="81" cy="81" rx="6" ry="3.6" fill="#FF8A78" opacity=".85"/>${mo}${ex}</svg>`}
+const IC={home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',plan:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/>',explore:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/>',prog:'<path d="M5 20V11M12 20V4M19 20v-6"/>',prof:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>',ok:'<path d="M5 12l5 5 9-10"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',bowl:'<path d="M3 11h18a9 9 0 0 1-18 0zM8 7c0-2 2-2 2-4M14 7c0-2 2-2 2-4"/>',back:'<path d="M15 5l-7 7 7 7"/>'};
+const ic=(n,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+const th=m=>`<div class="th" style="background:${{b:'var(--yw)',ld:'var(--lav)',s:'var(--mw)'}[m.c]};color:${{b:'#B7791F',ld:'var(--pri)',s:'var(--mt)'}[m.c]}">${ic('bowl',26)}</div>`;
 
-const TIPS = {
-  walk: "Your activity is low, so walk for 20 minutes a day, for example between classes.",
-  cheap: "On a tight budget, tempe, eggs, oats and seasonal vegetables give the most nutrition per ringgit.",
-  allergy: "Meals with your allergens have been removed from the list."
-};
+/* ===== FORM HELPERS ===== */
+const er=k=>errs[k]?`<p class="er" role="alert">${esc(errs[k])}</p>`:'';
+const fld=(k,l,v,a='')=>`<div class="f"><label for="${k}">${l}</label><input id="${k}" data-k="${k}" value="${esc(v)}" ${a}>${er(k)}</div>`;
+const sel=(k,o)=>`<div class="f"><label for="${k}">${o[0]}</label><select id="${k}" data-k="${k}">${o[1].map(([v,t])=>`<option value="${v}" ${(S.P[k]||'')==v?'selected':''}>${t}</option>`).join('')}</select></div>`;
+const card=(k,v,t,s,d)=>`<button type="button" class="oc ${S.P[k]==v?'on':''}" data-a="pick" data-k="${k}" data-v="${v}" aria-pressed="${S.P[k]==v}" ${d?'disabled':''}><b>${t}</b>${s?`<small>${s}</small>`:''}</button>`;
+const chS=(k,v,t)=>`<button type="button" class="ch ${S.P[k]==v?'on':''}" data-a="pick" data-k="${k}" data-v="${v}" aria-pressed="${S.P[k]==v}">${t}</button>`;
+const chM=(k,v,t)=>`<button type="button" class="ch ${S.P[k].includes(v)?'on':''}" data-a="tog" data-k="${k}" data-v="${v}" aria-pressed="${S.P[k].includes(v)}">${t}</button>`;
+function tog(k,v){let a=S.P[k];const ex=['none','skip'];a=a.includes(v)?a.filter(x=>x!=v):ex.includes(v)&&(k=='al'||k=='hn')?[v]:[...a.filter(x=>!(k=='al'||k=='hn')||!ex.includes(x)),v];S.P[k]=a}
 
-function infer(input) {
-  const f = { ...input, tips: [] };
-  f.bmi = +(f.weight / ((f.height / 100) ** 2)).toFixed(1);
-  f.bmr = 10 * f.weight + 6.25 * f.height - 5 * f.age + (f.gender === "male" ? 5 : -161);
-  f.tdee = Math.round(f.bmr * f.activity);
-  const why = [`Facts: BMI = ${f.bmi}, BMR = ${Math.round(f.bmr)} kcal, TDEE = ${f.tdee} kcal`];
-  let fired = true, guard = 0;
-  const done = new Set();
-  while (fired && guard++ < 50) {
-    fired = false;
-    for (const r of RULES) {
-      if (!done.has(r.id) && r.when(f)) { r.then(f); done.add(r.id); fired = true; why.push(`${r.id}: ${r.text}`); }
-    }
-  }
-  const price = f.budget === "low" ? 6 : 99;
-  f.meals = MEALS.filter(m => m.goal.includes(f.goal) && m.rm <= price && !m.allergy.some(a => f.allergy.includes(a)));
-  f.why = why;
-  return f;
-}
+const SV=['wave','sleep','thinking','meal','budget'],TIP=['Hi! Tell me a little about you.','Your routine helps me match your day.','Safety first. I skip anything unsafe for you.','What do you like to eat?','Let’s find a budget that makes sense.'];
+const b0=()=>{const P=S.P;return`<h2>About you</h2>${fld('name','Name or nickname',P.name,'maxlength="30" autocomplete="nickname"')}${fld('age','Age',P.age,'type="number" inputmode="numeric" min="13" max="80"')}
+<div class="f"><span class="lb">Gender</span><div class="chs">${['woman','man','nb','self','skip'].map(v=>chS('gen',v,LB[v])).join('')}</div>${er('gen')}</div>${P.gen=='self'?fld('gt','Describe (optional)',P.gt,'maxlength="30"'):''}
+<div class="two">${fld('w','Weight, kg (optional)',P.w,'type="number" inputmode="decimal"')}${fld('h','Height, cm (optional)',P.h,'type="number" inputmode="numeric"')}</div>${er('w')}${er('h')}<p class="mut sm mt">Only used to roughly estimate how much food you need. Skip them if you prefer.</p>
+<div class="f"><span class="lb">Goal</span></div>${GOALS.map(([v,t,s])=>card('goal',v,t,s,v=='light'&&P.age<18)).join('')}${er('goal')}`};
+const b1=()=>`<h2>Your routine</h2><div class="f"><span class="lb">Daily activity</span></div>${ACTS.map(([v,t,s])=>card('act',v,t,s)).join('')}${er('act')}
+<div class="two">${sel('ex',['Exercise type (optional)',[['','Choose'],['strength','Strength'],['cardio','Cardio'],['sports','Sports'],['walk','Walking'],['other','Other'],['none','None']]])}${sel('exf',['Days per week (optional)',[['','Choose'],['0','Never'],['1-2','1–2'],['3-4','3–4'],['5+','5+']]])}</div>
+<div class="f"><span class="lb">Sleep pattern (required)</span><div class="chs">${['lt6','6-7','7-8','gt8','irr'].map(v=>chS('sleep',v,LB[v])).join('')}</div>${er('sleep')}</div>${['lt6','irr'].includes(S.P.sleep)?'<div class="bn k">Sleep only gives you a friendly tip. It never changes your meals.</div>':''}`;
+const b2=()=>`<h2>Health &amp; safety</h2><div class="f"><span class="lb">Food allergies (required)</span><div class="chs">${chM('al','none','None')}${ALG.map(([v,t])=>chM('al',v,t)).join('')}${chM('al','skip','Prefer not to say')}</div>${er('al')}</div>
+<div class="f"><span class="lb">Health notes (optional)</span><div class="chs">${chM('hn','none','None')}${HN.map(([v,t])=>chM('hn',v,t)).join('')}${chM('hn','skip','Prefer not to say')}</div></div>
+${S.P.hn.some(x=>!['none','skip'].includes(x))?'<div class="bn w">Simple rules can’t check health conditions or medicines. Please ask a doctor or dietitian before changing how you eat.</div>':''}<p class="mut sm mt">If you list allergies or prefer not to say, meals with incomplete allergen data are hidden.</p>`;
+const b3=()=>`<h2>Food preferences</h2><div class="f"><span class="lb">Dietary pattern</span></div>${[['omni','Omnivore','Eats everything'],['veg','Vegetarian','No meat or fish'],['vegan','Vegan','No animal products'],['pesc','Pescatarian','Fish, no meat']].map(([v,t,s])=>card('diet',v,t,s)).join('')}${er('diet')}<div class="f"><span class="lb">Foods you dislike (optional)</span><div class="chs">${DIS.map(([v,t])=>chM('dl',v,t)).join('')}</div></div>`;
+const tier=b=>!(b>0)?null:b<A.minAny?'none':!A.good.some(c=>c.rm<=b)?'part':new Set(A.good.filter(c=>c.rm<=b).flatMap(c=>c.m.map(m=>m.id))).size<12?'tight':'good';
+function bfeed(){const b=S.P.bud,T=A.T,g=GN();if(A.none)return'<div class="bn e"><b>Too few meals match your food choices.</b> Go back and remove some dislikes.</div>';
+ const need=`<p class="mut sm mt">For “${g}” we aim for about ${T.pro} g protein and ${T.kLo}+ kcal a day. These are rough targets, not medical advice.</p>`,t=tier(b),sg=A.sg;
+ const m={none:['e',`No complete day fits ${rm(b)}. The cheapest complete day for your food choices costs ${rm(A.minAny)}.`],part:['w',sg?`${rm(b)} is below the ${rm(sg[0])} our meal list needs to fully reach “${g}”. You’ll get the closest match, not the full goal.`:`Our meal list can’t fully reach “${g}” with your food choices. You’ll get the closest match.`],tight:['k',`This works, but choices are limited. About ${rm(sg?sg[1]:b)} a day gives more variety.`],good:['k',`Comfortable for “${g}”. You’ll get plenty of variety.`]}[t];
+ return(t?`<div class="bn ${m[0]}">${m[1]}</div>`:'<p class="mut sm mt">Enter a budget to check it against your goal.</p>')+need}
+const b4=()=>{A=analyse(S.P);const sg=A.sg;return`<h2>Daily food budget</h2><p class="mut">How much can you spend on food each day?</p><div class="f"><label for="bud">Budget per day (RM)</label><input id="bud" class="big" data-k="bud" type="number" inputmode="decimal" step="0.01" min="0.01" value="${S.P.bud??''}" placeholder="0.00">${er('bud')}</div>
+<div class="chs">${[...new Set([10,15,20,25,...(sg||[])])].sort((a,b)=>a-b).map(v=>`<button class="ch" data-a="setbud" data-v="${v}">${rm(v)}${sg&&v==sg[0]?' · goal minimum':sg&&v==sg[1]&&sg[1]!=sg[0]?' · recommended':''}</button>`).join('')}</div><div id="bfeed">${bfeed()}</div>`};
 
-/* ===== 4. UI ===== */
-const $ = id => document.getElementById(id);
-let mode = "login", last = null;
+function vWiz(){return`<div class="row sp"><button class="lk" data-a="back">${ic('back')} Back</button><span class="mut sm">Step ${step+1} of 5</span></div><div class="pb mt"><i style="width:${(step+1)*20}%"></i></div><div class="tip">${sisi(SV[step],64)}<p>${TIP[step]}</p></div>${[b0,b1,b2,b3,b4][step]()}<button class="btn mt" data-a="next">${step<4?'Continue':'Review my answers'}</button>`}
+const missing=()=>[0,1,2,3,4].filter(s=>Object.keys(val(s,S.P)).length);
+function vRev(){const P=S.P,mi=missing(),L=a=>a.length?a.map(x=>LB[x]).join(', '):'None',row=(s,t,v)=>`<div class="ml"><div style="flex:1"><b>${t}</b><div class="mut sm">${v}</div></div><button class="lk" data-a="edit" data-v="${s}">Edit</button></div>`,mis='<span style="color:var(--err)">Missing</span>';
+ return`<h1>Check your answers</h1><div class="card">${row(0,'About you',P.name&&P.age&&P.gen?`${esc(P.name)}, ${P.age}, ${LB[P.gen]}. Goal: ${GN()}`:mis)}${row(1,'Routine',P.act&&P.sleep?`${LB[P.act]}. Sleep: ${LB[P.sleep]}`:mis)}${row(2,'Health &amp; safety',P.al.length?`Allergies: ${L(P.al)}`:mis)}${row(3,'Food',P.diet?`${LB[P.diet]}. Dislikes: ${L(P.dl)}`:mis)}${row(4,'Budget',P.bud>0?`${rm(P.bud)} per day`:mis)}</div>
+<p class="mut sm mt">Your answers are saved to your account and cached on this device. You can export or delete them in Profile. This is a student project, not medical advice.</p><button class="btn" data-a="gen" ${mi.length?'disabled':''}>Generate my student meal plan</button>${mi.length?'<p class="er mt">Fill in the missing answers first.</p>':''}`}
+function vAna(){return`<div class="wel full">${sisi('thinking',130)}<h2>Working on your plan</h2><ul style="list-style:none;padding:0;text-align:left">${STP.map((t,i)=>`<li style="${i<anaN?'':'opacity:.45'}">${i<anaN?`<span class="ok">${ic('ok',16)}</span>`:'○ '}${t}</li>`).join('')}</ul></div>`}
+function run(){const pl=build(S.P),t=pl.tr,rj=Object.values(t.rej).reduce((a,b)=>a+b,0);PL=pl;if(pl.mode!='none')S.plan=pl;save();
+ STP=[`Checking preferences: ${t.all} meals in our list`,`Applying safety filters: ${rj} removed, ${t.ok} kept`,`Matching meals to budget: ${t.fit} day options fit ${rm(S.P.bud)}`,`Building your week: ${pl.mode=='none'?'no complete day found':pl.mode=='full'?'meets your goal targets':'closest match to your goal'}`];
+ const f=matchMedia('(prefers-reduced-motion:reduce)').matches,tk=()=>{if(V!='ana')return;anaN++;R();anaN<4?setTimeout(tk,f?0:600):setTimeout(()=>{V='res';foc=1;R()},f?0:700)};setTimeout(tk,f?0:400)}
+function gen(){V='ana';anaN=0;STP=[];R();setTimeout(run,40)}
+function vRes(){const p=PL,P=S.P,t=p.tr,sg=t.sg,ce=Math.ceil((t.minAny||0)*2)/2;
+ if(p.mode=='none')return`<div class="wel">${sisi('empty',120)}<h2>We couldn’t find a complete day</h2><p class="mut">${p.why=='pool'?'Your food choices leave too few meals in our list. Try removing some dislikes.':`Under ${rm(P.bud)} a day we can’t fit breakfast, lunch and dinner. The cheapest complete day for your food choices is ${rm(t.minAny)}.`}</p><p class="mut sm">Filters applied: allergies, ${LB[P.diet]} diet, dislikes and budget. We never relax allergy rules.</p>${p.why=='budget'?`<button class="btn" data-a="setbudgen" data-v="${ce}">Use ${rm(ce)} a day instead</button>`:''}<button class="btn s" data-a="edit" data-v="4">Change my budget</button><button class="btn s" data-a="edit" data-v="3">Change food choices</button></div>`;
+ const pt=p.mode=='partial';return`<div class="wel">${sisi(pt?'budget':'celebrate',130)}<h1>${pt?'Your closest-match plan is ready':'Your meal plan is ready!'}</h1><p class="mut">${pt?`Within ${rm(P.bud)} a day this is the best match for “${GN()}” we can build from our meal list. It doesn’t fully reach the goal targets.`:`7 days of meals that fit ${rm(P.bud)} a day and your food rules.`}</p>
+<div class="card row sp" style="width:100%"><div class="tc"><b>${t.ok}</b><div class="mut sm">safe meals</div></div><div class="tc"><b>${rm(P.bud)}</b><div class="mut sm">per day</div></div><div class="tc"><b>${t.fit}</b><div class="mut sm">day options</div></div></div>
+${pt&&sg?`<div class="bn w"><b>What would help?</b> In our list the cheapest day that reaches your “${GN()}” targets costs ${rm(t.minGoal)}. That is an estimate for this meal list, not a nutrition rule.</div><button class="btn s" data-a="setbudgen" data-v="${sg[0]}">Raise budget to ${rm(sg[0])} to meet goal</button>${P.goal!='balanced'?'<button class="btn o" data-a="goalbal">Switch to Balanced eating</button>':''}`:''}
+<button class="btn" data-a="done">View my plan</button><button class="lk" data-a="how">How recommendations work</button></div>`}
 
-function show(tab) {
-  ["Form","Result","History"].forEach(t => $("tab"+t).classList.toggle("hide", t !== tab));
-  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
-  if (tab === "History") loadHistory();
-}
-document.querySelectorAll("nav button").forEach(b => b.onclick = () => show(b.dataset.tab));
+/* ===== APP SCREENS ===== */
+const ring=(f,l)=>`<svg viewBox="0 0 120 120" width="130" height="130" role="img" aria-label="${rm(Math.abs(l))} ${l<0?'over':'left'} of today’s budget"><circle cx="60" cy="60" r="46" fill="none" stroke="var(--lav)" stroke-width="12"/><circle cx="60" cy="60" r="46" fill="none" stroke="${l<0?'var(--err)':'var(--pri)'}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${f*289} 289" transform="rotate(-90 60 60)"/><text x="60" y="58" text-anchor="middle" font-size="16" font-weight="800" fill="var(--ink)">${rm(Math.abs(l))}</text><text x="60" y="76" text-anchor="middle" font-size="11" fill="var(--mut)">${l<0?'over budget':'left today'}</text></svg>`;
+const isLg=(i,id)=>S.logs.find(x=>x.d==today()&&(i<3?x.s==i:x.s==3&&x.id==id));
+const mrow=(id,i,d,lg)=>{const m=MB[id];return`<div class="ml"><button class="pl" data-a="meal" data-v="${id}" data-i="${i}" data-d="${d}">${th(m)}<div><div class="mut sm">${SL[i]}</div><b>${esc(m.n)}</b><div class="mut sm">${rm(m.rm)} · ${m.p} g protein · ${m.k} kcal</div></div></button><div class="g">${lg?(isLg(i,id)?`<span class="ok">${ic('ok',16)} Logged</span>`:`<button class="btn bs" data-a="log" data-v="${id}" data-i="${i}" data-d="${d}">Log</button>`):''}<button class="lk" data-a="swap" data-i="${i}" data-d="${d}">Swap</button></div></div>`};
+function vHome(){const P=S.P,pl=S.plan,d=wd(),ids=pl.days[d],pt=tot(ids),sp=+S.logs.filter(l=>l.d==today()).reduce((t,l)=>t+l.rm,0).toFixed(2),left=+(P.bud-sp).toFixed(2),T=targets(P),mid=(T.kLo+T.kHi)/2,sm=k=>ids.reduce((t,i)=>t+MB[i][k],0),
+ bar=(l,v,t)=>`<div><div class="sm row sp"><span>${l}</span><b>${v}/${t} g</b></div><div class="pb mt" style="margin-top:4px"><i style="width:${Math.min(100,v/t*100)}%"></i></div></div>`;
+ return`<div class="row sp"><div><p class="mut">Hello, ${esc(P.name)}</p><h1>Today</h1></div>${sisi('wave',72)}</div>${S.sample?'<div class="bn w">You’re viewing a sample profile. Edit it in Profile to use your own details.</div>':''}
+${JSON.stringify(pl.P)!=JSON.stringify(P)?'<div class="bn w">Your details changed. <button class="lk" data-a="gen">Regenerate plan</button></div>':''}${pl.mode=='partial'?`<div class="bn w">Closest-match plan: your goal targets aren’t fully met within ${rm(P.bud)} a day. <button class="lk" data-a="how">See why</button></div>`:''}
+<div class="card"><h3>Summary</h3><div class="row sp mt"><div class="tc"><b>${rm(pt)}</b><div class="mut sm">Planned</div></div>${ring(Math.min(1,sp/P.bud),left)}<div class="tc"><b>${rm(sp)}</b><div class="mut sm">Logged</div></div></div><div class="three mt">${bar('Carbs',sm('cb'),Math.round(mid*.5/4))}${bar('Protein',sm('p'),T.pro)}${bar('Fat',sm('f'),Math.round(mid*.3/9))}</div><p class="mut sm mt">Planned grams vs rough reference amounts. Estimates only.</p></div>
+<div class="card"><h3>Today’s meals</h3>${ids.map((id,i)=>mrow(id,i,d,1)).join('')}</div><div class="row mt"><button class="btn s" data-a="how">Why these meals?</button><button class="btn s" data-a="go" data-v="plan">View week</button></div>`}
+function vPlan(){const pl=S.plan,ids=pl.days[day],b=S.P.bud;return`<div class="row sp"><h1>Meal plan</h1>${sisi('meal',72)}</div><div class="row mt">${DAYS.map((x,i)=>`<button class="dp ${i==day?'on':''}" data-a="day" data-v="${i}" aria-pressed="${i==day}">${x}</button>`).join('')}</div>
+<div class="tot"><div class="card row sp" style="margin-top:10px"><b>${rm(tot(ids))} <span class="mut sm">of ${rm(b)}</span></b><span class="ok">${ic('ok',16)} Within budget</span></div></div><div class="card" style="margin-top:6px">${ids.map((id,i)=>mrow(id,i,day,day==wd())).join('')}</div><p class="mut sm mt">Prices and nutrition are illustrative estimates. A swap that goes over budget is blocked.</p><button class="btn s" data-a="how">How this plan was made</button>`}
+function elist(){const o=elig(S.P).out.filter(m=>(CF=='all'||m.c==CF)&&m.n.toLowerCase().includes(Q.toLowerCase())).sort((a,b)=>(a.rm-b.rm)*SO);
+ return o.length?o.map(m=>`<button class="pl ml" style="width:100%" data-a="meal" data-v="${m.id}">${th(m)}<div><b>${esc(m.n)}</b><div class="mut sm">${rm(m.rm)} est. · ${m.p} g protein · ${m.k} kcal</div></div></button>`).join(''):`<div class="tc">${sisi('empty',90)}<p class="mut">No safe meals match. Clear the search or filter.</p></div>`}
+const vExp=()=>`<h1>Explore meals</h1><div class="f"><input id="q" data-k="q" type="search" placeholder="Search meals" value="${esc(Q)}" aria-label="Search meals"></div><div class="chs">${[['all','All'],['b','Breakfast'],['ld','Lunch & dinner'],['s','Snacks']].map(([v,t])=>`<button class="ch ${CF==v?'on':''}" data-a="cf" data-v="${v}" aria-pressed="${CF==v}">${t}</button>`).join('')}<button class="ch" data-a="so">Price: ${SO>0?'low to high':'high to low'}</button></div><p class="mut sm mt">${ML.length-elig(S.P).out.length} meals are hidden by your allergy, diet and dislike filters. Prices are estimates.</p><div class="card" id="elist">${elist()}</div>`;
+function vProg(){const wk=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-wd()+i);return d.toLocaleDateString('en-CA')}),by=wk.map(d=>+S.logs.filter(l=>l.d==d).reduce((t,l)=>t+l.rm,0).toFixed(2)),L=S.logs.filter(l=>wk.includes(l.d)),est=+L.reduce((t,l)=>t+(MB[l.id]?.rm||0),0).toFixed(2),act=+L.reduce((t,l)=>t+l.rm,0).toFixed(2),b=S.P.bud,mx=Math.max(b,...by),
+ bd=[['First plan','You built a meal plan.',!!S.plan],['First log','You logged a meal.',S.logs.length>0],['Full day','Logged breakfast, lunch and dinner on one day.',wk.some(d=>[0,1,2].every(s=>S.logs.some(l=>l.d==d&&l.s==s)))],['Variety','Logged 5 different meals in a week.',new Set(L.map(l=>l.id||l.n)).size>=5],['On budget','Logged a day within your budget.',by.some(v=>v>0&&v<=b)]];
+ return`<h1>Progress</h1>${L.length?'':`<div class="wel">${sisi('empty',90)}<p class="mut">Nothing logged yet. Tap Log on a meal in Home to start.</p></div>`}<div class="card"><h3>This week</h3><div class="two mt"><div><b>${L.length}</b><div class="mut sm">meals logged</div></div><div><b>${rm(act)}</b><div class="mut sm">spent (estimate ${rm(est)})</div></div></div><div class="bars mt">${wk.map((d,i)=>`<span>${DAYS[i]}</span><div class="pb"><i style="width:${by[i]/mx*100}%;${by[i]>b?'background:var(--err)':''}"></i></div><span>${rm(by[i])}</span>`).join('')}</div><p class="mut sm mt">Daily budget ${rm(b)}. Only meals you log are counted.</p></div>
+<div class="card"><h3>Achievements</h3>${bd.map(([t,d,o])=>`<div class="bg2 ${o?'':'off'}"><span class="th" style="background:${o?'var(--yw)':'var(--lav)'};width:40px;height:40px">${ic(o?'ok':'x',20)}</span><div><b>${t}</b><div class="mut sm">${d}</div></div></div>`).join('')}</div>`}
+function vProf(){const P=S.P;return`<div class="row"><span class="th" style="background:var(--pri);color:#fff;border-radius:50%;font-weight:800;font-size:22px">${esc((P.name||'?')[0].toUpperCase())}</span><div><h2>${esc(P.name)}</h2><p class="mut sm">${GN()} · ${LB[P.diet]} · ${rm(P.bud)} a day</p></div></div>
+<div class="card"><button class="btn" style="margin:0" data-a="edit" data-v="0">Edit my details</button><button class="btn s" data-a="theme">${S.theme=='dark'?'Switch to light mode':'Switch to dark mode'}</button><button class="btn s" data-a="how">How recommendations work</button><button class="btn s" data-a="export">Export my data (JSON)</button></div>
+<div class="card"><h3>Privacy &amp; limits</h3><p class="mut sm mt">Your plan and logs are saved to your SiswaDiet account (Google Firebase) and cached on this device. Meals, prices and nutrition are illustrative estimates, and this is not medical advice.</p></div>
+<button class="btn o" data-a="exit">Log out</button><button class="btn o" data-a="reset" style="color:var(--err)">Delete all my data</button>`}
+const vLoad=()=>`<div class="wel full">${sisi('thinking',120)}<p class="mut">Loading your account…</p></div>`;
+const vAuth=()=>{const up=AM=='up';return`<div class="wel">${sisi('wave',120)}<h1>Siswa<span style="color:var(--pri)">Diet</span></h1><p class="mut">${up?'Create an account to save your plan.':'Log in to continue.'}</p>${CFG_OK?'':'<div class="bn e"><b>Firebase isn’t set up yet.</b> Paste your firebaseConfig into the file first.</div>'}
+<form id="af" class="card" style="width:100%;text-align:left" novalidate>${up?'<div class="f" style="margin-top:0"><label for="an">Name or nickname</label><input id="an" maxlength="30" autocomplete="nickname"></div>':''}<div class="f"><label for="ae">Email</label><input id="ae" type="email" inputmode="email" autocomplete="email"></div><div class="f"><label for="ap">Password (6+ characters)</label><input id="ap" type="password" autocomplete="${up?'new-password':'current-password'}"></div><label class="row mt sm"><input type="checkbox" id="as" style="width:20px;min-height:0"> Show password</label><p class="er mt" id="aer" role="alert"></p><button class="btn" id="abtn">${up?'Create account':'Log in'}</button></form>
+<button class="lk" data-a="amode">${up?'I already have an account':'Create a new account'}</button>${up?'':'<button class="lk" data-a="areset">Forgot password?</button>'}</div>`};
+const vWel=()=>`<div class="wel full">${sisi('wave',150)}<h1>Eat smart.<br>Spend wisely.</h1><p class="mut">Meal ideas for student life, matched to your goal, food rules and daily budget.</p>${S.plan?`<button class="btn" data-a="cont">Continue as ${esc(S.P.name)}</button>`:'<button class="btn" data-a="start">Get started</button>'}<button class="btn s" data-a="sample">Try a sample profile</button><p class="mut sm">Signed in as ${esc(U?.email)}</p></div>`;
+const nav=()=>`<nav aria-label="Main">${[['home','Home'],['plan','Plan'],['explore','Explore'],['prog','Progress'],['prof','Profile']].map(([k,t])=>`<button data-a="go" data-v="${k}" class="${tab==k?'on':''}" ${tab==k?'aria-current="page"':''}>${ic(k)}${t}</button>`).join('')}</nav>`;
 
-function setMode(m) {
-  mode = m;
-  $("authTitle").textContent = m === "login" ? "Log in" : "Create account";
-  $("authBtn").textContent = m === "login" ? "Log in" : "Create account";
-  $("switchBtn").textContent = m === "login" ? "Create a new account" : "I already have an account";
-  $("nameWrap").classList.toggle("hide", m === "login");
-  $("authMsg").textContent = "";
-}
-$("switchBtn").onclick = () => setMode(mode === "login" ? "register" : "login");
+/* ===== SHEETS ===== */
+function whyL(m,ids){const P=S.P,n=S.plan.days.flat().filter(x=>x==m.id).length;return[`R1–R3 Safety: passes your allergy and ${LB[P.diet].toLowerCase()} filters${P.dl.length?' and avoids foods you dislike':''}.`,`R4 Budget: this day totals ${rm(tot(ids))}, within ${rm(P.bud)}.`,`R6 Goal (${GN()}): ${m.p} g protein${m.p>=MED[m.c]?', higher than a typical '+CN[m.c].toLowerCase()+' option.':'.'}`,`R5 Variety: used ${n}× this week.`]}
+function mealSheet(s){const m=MB[s.id],ids=s.d!=null?S.plan.days[s.d]:null;return`<div class="row">${th(m)}<div><h2>${esc(m.n)}</h2><div class="mut sm">${CN[m.c]} · estimated ${rm(m.rm)}</div></div></div><div class="two mt"><div class="card tc" style="margin:0"><b>${m.k}</b><div class="mut sm">kcal</div></div><div class="card tc" style="margin:0"><b>${m.p} g</b><div class="mut sm">protein</div></div><div class="card tc" style="margin:0"><b>${m.cb} g</b><div class="mut sm">carbs</div></div><div class="card tc" style="margin:0"><b>${m.f} g</b><div class="mut sm">fat</div></div></div>
+<p class="sm mt"><b>Ingredients:</b> ${m.ing.join(', ')}</p><p class="sm"><b>Allergens:</b> ${m.unk?'data incomplete (treated as unknown)':m.al.length?m.al.map(a=>LB[a]).join(', '):'none listed'}</p><h3 class="mt">Why recommended?</h3>${ids?`<ul class="sm">${whyL(m,ids).map(x=>`<li>${x}</li>`).join('')}</ul>`:'<p class="sm mut">This meal passes your allergy, diet and dislike filters. It isn’t in your plan unless shown on a day.</p>'}<p class="mut sm mt">Price and nutrition are illustrative estimates.</p>
+${ids?`<button class="btn s" data-a="swap" data-i="${s.i}" data-d="${s.d}">Swap meal</button>`:''}<button class="btn" data-a="log" data-v="${m.id}" ${s.i!=null?`data-i="${s.i}"`:''}>Log as eaten</button>`}
+function swapSheet(s){const ids=S.plan.days[s.d],cur=MB[ids[s.i]],tt=tot(ids),b=S.P.bud,c=elig(S.P).out.filter(m=>m.c==cur.c&&!ids.includes(m.id)).sort((a,b)=>a.rm-b.rm);
+ return`<h2>Swap ${SL[s.i].toLowerCase()}</h2><p class="mut sm">Only safe meals are shown, with the new day total.</p>${c.length?c.map(m=>{const nt=+(tt-cur.rm+m.rm).toFixed(2),ov=nt>b+1e-9;return`<div class="ml"><div style="flex:1"><b>${esc(m.n)}</b><div class="mut sm">${rm(m.rm)} · ${m.p} g protein · day total ${rm(nt)}</div>${ov?`<div class="sm er">Over budget by ${rm(nt-b)}. Raise your budget in Profile to use it.</div>`:''}</div><button class="btn bs" data-a="doswap" data-v="${m.id}" ${ov?'disabled':''}>Choose</button></div>`}).join(''):`<div class="tc mt">${sisi('empty',90)}<p class="mut">No other safe meals fit this slot.</p></div>`}`}
+function logSheet(s){const sl=s.i!=null?Math.min(s.i,3):0,o=elig(S.P).out,id=s.v&&MB[s.v]?s.v:'';return`<h2>Log a meal</h2><div class="f"><label for="lsl">Meal time</label><select id="lsl">${['Breakfast','Lunch','Dinner','Snack'].map((t,i)=>`<option value="${i}" ${i==sl?'selected':''}>${t}</option>`).join('')}</select></div>
+<div class="f"><label for="lm">Meal</label><select id="lm">${o.map(m=>`<option value="${m.id}" ${m.id==id?'selected':''}>${esc(m.n)}</option>`).join('')}<option value="" ${id?'':'selected'}>Something else</option></select></div><div class="f"><label for="ln">Name (if something else)</label><input id="ln" maxlength="40"></div><div class="f"><label for="lc">Actual cost (RM)</label><input id="lc" type="number" inputmode="decimal" step="0.01" min="0" value="${id?MB[id].rm:''}"></div><p id="le" class="er" role="alert"></p><p class="mut sm mt">Meals you add yourself are not safety-checked. Logged today only.</p><button class="btn" data-a="savelog">Save log</button>`}
+function howSheet(){const t=(S.plan||PL)?.tr,r=t?.rej||{};return`<h2>How recommendations work</h2><p class="mut">SiswaDiet is a rule-based expert system. The same answers always give the same plan.</p><ol class="sm"><li><b>R1 Allergies.</b> Meals with your allergens are removed. Meals with incomplete allergen data are hidden if you list allergies or prefer not to say.</li><li><b>R2 Diet.</b> Vegan, vegetarian and pescatarian rules apply to every meal.</li><li><b>R3 Dislikes.</b> Disliked ingredients are skipped.</li><li><b>R4 Budget.</b> Breakfast + lunch + dinner (+ up to 2 snacks) must total no more than your daily budget. Nothing goes over.</li><li><b>R5 Variety.</b> Repeats are penalised across the week.</li><li><b>R6 Goal.</b> Days are ranked by how close they get to rough protein and calorie targets. “Goal minimum” is the cheapest day in this meal list that reaches them.</li></ol>
+${t?`<div class="card sm"><h3>Your last run</h3><p>${t.ok} of ${t.all} meals kept. Removed: ${r.allergen||0} allergen, ${r.unknown||0} unknown data, ${r.diet||0} diet, ${r.dislike||0} dislike.</p><p>${t.n} complete days checked, ${t.fit} fit your budget. Targets: about ${t.T.pro} g protein, ${t.T.kLo}–${t.T.kHi} kcal.${t.minGoal!=null?` Cheapest day reaching them: ${rm(t.minGoal)}.`:' No day in this list reaches them.'}</p></div>`:''}<p class="mut sm mt">Limits: meals, prices and nutrition are illustrative estimates, not a verified database. Under-18 profiles never get weight-loss targets. Ask a doctor or dietitian about health conditions.</p>`}
+const shv=()=>`<div class="bk" data-a="bk"><div class="sheet" role="dialog" aria-modal="true" aria-label="Details"><div class="row sp"><span></span><button class="lk x" data-a="close" aria-label="Close">${ic('x')}</button></div>${{meal:mealSheet,swap:swapSheet,log:logSheet,how:howSheet}[sheet.t](sheet)}</div></div>`;
 
-function friendly(e) {
-  const c = e.code || "";
-  if (c.includes("invalid-credential") || c.includes("wrong-password") || c.includes("user-not-found")) return "Email or password is wrong. Check and try again.";
-  if (c.includes("email-already")) return "This email already has an account. Log in instead.";
-  if (c.includes("weak-password")) return "Password needs at least 6 characters.";
-  if (c.includes("invalid-email")) return "Enter a valid email address.";
-  if (c.includes("network")) return "No internet connection. Connect and try again.";
-  return "Something went wrong (" + c + ").";
-}
-
-$("authBtn").onclick = async () => {
-  const email = $("email").value.trim(), pass = $("pass").value;
-  $("authMsg").textContent = "";
-  try {
-    if (mode === "login") await signInWithEmailAndPassword(auth, email, pass);
-    else {
-      const cred = await createUserWithEmailAndPassword(auth, email, pass);
-      await updateProfile(cred.user, { displayName: $("name").value.trim() || "Student" });
-      $("hello").textContent = "Hello, " + (cred.user.displayName || "Student");
-    }
-  } catch (e) { $("authMsg").textContent = friendly(e); }
-};
-$("resetBtn").onclick = async () => {
-  const email = $("email").value.trim();
-  if (!email) { $("authMsg").textContent = "Type your email above first, then tap Forgot password."; return; }
-  try { await sendPasswordResetEmail(auth, email); $("authMsg").style.color = "#2f7d4f"; $("authMsg").textContent = "Reset link sent. Check your email."; }
-  catch (e) { $("authMsg").textContent = friendly(e); }
-};
-$("logout").onclick = () => signOut(auth);
-
-onAuthStateChanged(auth, user => {
-  $("auth").classList.toggle("hide", !!user);
-  $("app").classList.toggle("hide", !user);
-  $("nav").classList.toggle("hide", !user);
-  if (user) { $("hello").textContent = "Hello, " + (user.displayName || "Student"); show("Form"); }
-  else { $("authMsg").style.color = ""; setMode("login"); }
-});
-
-$("form").onsubmit = async e => {
-  e.preventDefault();
-  const input = {
-    age: +$("age").value, gender: $("gender").value, weight: +$("weight").value, height: +$("height").value,
-    activity: +$("activity").value, goal: $("goal").value, budget: $("budget").value,
-    allergy: [...$("allergy").selectedOptions].map(o => o.value)
-  };
-  const r = infer(input);
-  last = r;
-  const goalName = { lose: "Lose weight", maintain: "Maintain weight", gain: "Gain weight" }[r.goal];
-  $("tabResult").innerHTML = `
-    <div class="card">
-      <span class="tag">${r.status}</span> <span class="tag">${goalName}</span>
-      <div class="big">${r.calories} kcal</div>
-      <div class="mute">Daily target · Protein about ${r.protein} g · BMI ${r.bmi}</div>
-    </div>
-    <div class="card"><h3>Meal ideas</h3>
-      ${r.meals.length ? r.meals.map(m => `<div class="meal"><span>${m.n}</span><span class="mute">${m.kcal} kcal · RM ${m.rm}</span></div>`).join("")
-        : `<p class="mute">No meal matches your filters. Try changing budget or allergies.</p>`}
-    </div>
-    <div class="card"><h3>Tips</h3><ul>${r.tips.map(t => `<li>${TIPS[t]}</li>`).join("") || "<li>Keep eating balanced meals and drink water.</li>"}</ul></div>
-    <div class="card"><h3>Why this advice?</h3><ol class="why">${r.why.map(w => `<li>${w}</li>`).join("")}</ol></div>
-    <button id="saveBtn">Save to my history</button><p class="msg" id="saveMsg"></p>`;
-  show("Result");
-  $("saveBtn").onclick = save;
-};
-
-async function save() {
-  const u = auth.currentUser;
-  if (!u || !last) return;
-  try {
-    await addDoc(collection(db, "users", u.uid, "records"), {
-      date: new Date().toISOString().slice(0, 10), createdAt: serverTimestamp(),
-      weight: last.weight, height: last.height, bmi: last.bmi, status: last.status,
-      goal: last.goal, calories: last.calories
-    });
-    $("saveMsg").style.color = "#2f7d4f"; $("saveMsg").textContent = "Saved to your history.";
-  } catch (e) { $("saveMsg").style.color = ""; $("saveMsg").textContent = "Could not save. Check your connection and Firestore rules."; }
-}
-
-async function loadHistory() {
-  const u = auth.currentUser;
-  if (!u) return;
-  $("histList").textContent = "Loading…";
-  try {
-    const snap = await getDocs(query(collection(db, "users", u.uid, "records"), orderBy("createdAt", "desc")));
-    $("histList").innerHTML = snap.empty ? "No records yet. Get a diet plan, then tap Save."
-      : snap.docs.map(d => { const r = d.data(); return `<div class="meal"><span>${r.date}<br><small>${r.status} · BMI ${r.bmi}</small></span><span>${r.weight} kg<br><small>${r.calories} kcal</small></span></div>`; }).join("");
-  } catch (e) { $("histList").textContent = "Could not load history. Check your connection."; }
-}
-
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
-</script>
-</body>
-</html>
+/* ===== RENDER + EVENTS ===== */
+function R(){const f={load:vLoad,auth:vAuth,welcome:vWel,wiz:vWiz,rev:vRev,ana:vAna,res:vRes,app:()=>({home:vHome,plan:vPlan,explore:vExp,prog:vProg,prof:vProf}[tab])()}[V];
+ $('#app').innerHTML=`<div class="v" id="vw" tabindex="-1">${f()}</div>${V=='app'?nav():''}`;$('#sh').innerHTML=sheet?shv():'';
+ if(sheet)$('#sh .x').focus();else if(foc){$('#vw').focus({preventScroll:true});scrollTo(0,0);foc=0}}
+const toast=m=>{$('#toast').innerHTML=`<div class="toast">${esc(m)}</div>`;setTimeout(()=>$('#toast').innerHTML='',2400)};
+const go=(v,t)=>{V=v;if(t)tab=t;sheet=null;foc=1;R()};
+document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a,v=t.dataset.v,k=t.dataset.k,I=t.dataset.i!=null?+t.dataset.i:null,D=t.dataset.d!=null?+t.dataset.d:null;
+ if(a=='bk'){if(e.target==t){sheet=null;R()}return}
+ if(a=='start'){S.P=freshP();S.P.name=U?.displayName||'';S.sample=false;errs={};step=0;go('wiz')}
+ else if(a=='cont')go('app','home');
+ else if(a=='sample'){S.P=JSON.parse(JSON.stringify(SAMPLE));S.sample=true;gen()}
+ else if(a=='pick'){S.P[k]=v;delete errs[k];R()}
+ else if(a=='tog'){tog(k,v);R()}
+ else if(a=='setbud'){S.P.bud=+v;$('#bud').value=v;$('#bfeed').innerHTML=bfeed();delete errs.bud;save()}
+ else if(a=='next'){errs=val(step,S.P);if(Object.keys(errs).length)return R();save();if(step<4){step++;go('wiz')}else go('rev')}
+ else if(a=='back'){if(step>0){step--;go('wiz')}else go(S.plan?'app':'welcome')}
+ else if(a=='edit'){step=+v;errs={};go('wiz')}
+ else if(a=='gen'){if(!missing().length)gen()}
+ else if(a=='setbudgen'){S.P.bud=+v;gen()}
+ else if(a=='goalbal'){S.P.goal='balanced';gen()}
+ else if(a=='done'){day=wd();go('app','home')}
+ else if(a=='how'){sheet={t:'how'};R()}
+ else if(a=='close'){sheet=null;R()}
+ else if(a=='go'){day=tab=='plan'&&v=='plan'?day:wd();go('app',v)}
+ else if(a=='day'){day=+v;R()}
+ else if(a=='cf'){CF=v;R()}
+ else if(a=='so'){SO=-SO;R()}
+ else if(a=='meal'){sheet={t:'meal',id:v,i:I,d:D};R()}
+ else if(a=='swap'){sheet={t:'swap',i:I,d:D};R()}
+ else if(a=='log'){sheet={t:'log',v,i:I};R()}
+ else if(a=='doswap'){S.plan.days[sheet.d][sheet.i]=v;save();toast('Swapped. Day total is now '+rm(tot(S.plan.days[sheet.d])));sheet=null;R()}
+ else if(a=='savelog'){const id=$('#lm').value,n=$('#ln').value.trim(),c=parseFloat($('#lc').value),s=+$('#lsl').value;
+  if(!id&&!n)return $('#le').textContent='Pick a meal or type a name.';if(!(c>=0))return $('#le').textContent='Enter the cost in RM, or 0.';
+  S.logs=S.logs.filter(l=>!(l.d==today()&&(s<3?l.s==s:l.s==3&&l.id==id)));S.logs.push({d:today(),s,id:id||null,n:id?MB[id].n:n,rm:+c.toFixed(2),chk:!!id,t:Date.now()});save();sheet=null;toast('Meal logged');R()}
+ else if(a=='theme'){S.theme=S.theme=='dark'?'light':'dark';document.documentElement.dataset.theme=S.theme;save();R()}
+ else if(a=='export'){const l=document.createElement('a');l.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));l.download='siswadiet-data.json';l.click()}
+ else if(a=='exit')signOut(auth);
+ else if(a=='amode'){AM=AM=='in'?'up':'in';R()}
+ else if(a=='areset'){const em=$('#ae').value.trim(),er=$('#aer');if(!CFG_OK)return;if(!em)return er.textContent='Type your email above first.';sendPasswordResetEmail(auth,em).then(()=>{er.style.color='var(--mt)';er.textContent='Reset link sent. Check your email.'}).catch(x=>{er.style.color='';er.textContent=fe(x)})}
+ else if(a=='reset'){if(confirm('Delete all your SiswaDiet data? Your login stays.')){try{localStorage.removeItem(lk())}catch(x){}deleteDoc(doc(db,'users',U.uid,'app','state')).catch(()=>{});S=freshS();S.P.name=U?.displayName||'';PL=null;document.documentElement.dataset.theme='';go('welcome')}}});
+document.addEventListener('input',e=>{const t=e.target,k=t.dataset.k;if(t.id=='as'){$('#ap').type=t.checked?'text':'password';return}if(t.id=='lm'){$('#lc').value=MB[t.value]?.rm??'';return}if(!k)return;
+ if(k=='q'){Q=t.value;$('#elist').innerHTML=elist();return}
+ S.P[k]=['age','w','h','bud'].includes(k)?(t.value===''?undefined:+t.value):t.value;if(k=='bud')$('#bfeed').innerHTML=bfeed();
+ if(errs[k]){delete errs[k];t.parentNode.querySelector('.er')?.remove()}save()});
+document.addEventListener('keydown',e=>{if(e.key=='Escape'&&sheet){sheet=null;R()}});
+const fe=x=>{const c=x.code||'';return/invalid-credential|wrong-password|user-not-found/.test(c)?'Email or password is wrong. Check and try again.':/email-already/.test(c)?'This email already has an account. Log in instead.':/weak-password/.test(c)?'Password needs at least 6 characters.':/invalid-email/.test(c)?'Enter a valid email address.':/network/.test(c)?'No internet connection. Connect and try again.':/too-many/.test(c)?'Too many tries. Wait a minute and try again.':'Something went wrong ('+c+').'};
+document.addEventListener('submit',async e=>{if(e.target.id!='af')return;e.preventDefault();const em=$('#ae').value.trim(),pw=$('#ap').value,nm=$('#an')?.value.trim(),er=m=>{$('#aer').style.color='';$('#aer').textContent=m;$('#abtn').disabled=false};
+ if(!CFG_OK)return er('Add your Firebase config to the file first.');if(!em||!pw)return er('Enter your email and password.');if(AM=='up'&&!nm)return er('Enter a name or nickname.');
+ $('#abtn').disabled=true;$('#aer').textContent='';
+ try{if(AM=='up'){const c=await createUserWithEmailAndPassword(auth,em,pw);await updateProfile(c.user,{displayName:nm});if(!S.P.name){S.P.name=nm;save()}}else await signInWithEmailAndPassword(auth,em,pw)}catch(x){er(fe(x))}});
+if(CFG_OK)onAuthStateChanged(auth,async u=>{U=u;if(!u){S=freshS();PL=null;V='auth';document.documentElement.dataset.theme='';return R()}
+ V='load';R();let d=null;try{const g=await getDoc(doc(db,'users',u.uid,'app','state'));if(g.exists())d=JSON.parse(g.data().json)}catch(e){}
+ if(!d)try{d=JSON.parse(localStorage.getItem(lk()))}catch(e){}
+ S=d&&d.v==2?d:freshS();if(!S.P.name)S.P.name=u.displayName||'';PL=S.plan;V=S.plan?'app':'welcome';tab='home';day=wd();document.documentElement.dataset.theme=S.theme||'';R()});
+else{V='auth';R()}
+</script></body></html>
