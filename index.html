@@ -296,6 +296,70 @@ html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:
 .mode-switch{margin-inline-start:auto;border-radius:99px;width:33px;height:18px;background:var(--bd);padding:2px;display:flex}.mode-switch::after{content:"";width:14px;height:14px;border-radius:50%;background:var(--card)}[aria-checked=true] .mode-switch{background:var(--panel)}[aria-checked=true] .mode-switch::after{margin-inline-start:auto}
 @media(max-width:370px){.app.dashboard{padding-inline:14px}.week-actions{grid-template-columns:1fr}.action-tile{gap:5px;font-size:12px}.setting-grid{grid-template-columns:1fr}.setting-grid .action-tile{flex-direction:row;align-items:center;justify-content:flex-start;min-height:44px}}
 @media(prefers-reduced-motion:reduce){.dashboard *,.sheet *{animation:none!important;transition:none!important}}
+/* Today dashboard */
+.dashboard.today-page{padding-inline:clamp(12px,3.6vw,20px);background:radial-gradient(ellipse 90% 250px at 87% 0%,var(--today-glow),transparent),var(--today-surface)}
+.today-page{--today-surface:#f7f3fd;--today-glow:#e8dcfa;--today-panel:#fff;--today-note:#f0e7fa;--today-pill:#f6effc;--today-ink:#24133d;--today-muted:#6a5685;--today-line:#e7dbf1;--today-green:#2e6413;--today-green-bg:#edf6e2;--today-red:#b71f46;--today-red-bg:#ffe7ed;--today-accent:#5c259b;color:var(--today-ink)}
+:root[data-theme=dark] .today-page{--today-surface:#1b1426;--today-glow:#36244d;--today-panel:#252034;--today-note:#302540;--today-pill:#33274a;--today-ink:#fcf6ff;--today-muted:#ccb9e3;--today-line:#4d3c60;--today-green:#b9e992;--today-green-bg:#294025;--today-red:#ff9db2;--today-red-bg:#48243d;--today-accent:#d2adff}
+.today-page .today-heading{min-height:clamp(102px,29vw,147px);margin:0;padding-inline:10px 0;gap:0}
+.today-heading h1{font-size:clamp(25px,6.6vw,37px);letter-spacing:-.035em}
+.today-heading p{color:var(--today-muted);font-size:clamp(13px,3.65vw,18px)}
+.today-heading>.sp{max-width:36%;flex-shrink:0}
+.today-heading>.sp img{max-width:100%;object-fit:contain;object-position:center bottom}
+.dashboard.today-page .today-budget{margin-top:0;padding:clamp(10px,2.6vw,15px);border:0;background:radial-gradient(ellipse at 48% -25%,#9b75c0 0%,transparent 67%),linear-gradient(148deg,#7654a0,#422478 76%,#331a66);box-shadow:0 9px 25px #58308a35;color:white}
+.today-page .budget-head{gap:8px;margin:0;padding-inline:4px;align-items:center}
+.today-page .budget-head h2,.today-page .budget-head .btn{display:inline-flex;align-items:center;gap:6px;line-height:1.15}
+.today-page .budget-head h2{font-size:clamp(13px,3.5vw,17px);flex:1}
+.today-page .budget-head h2 svg,.today-page .budget-head .btn svg{flex:none}
+.today-page .budget-head .btn{width:auto;min-height:44px;margin:0;padding:4px clamp(8px,2.3vw,14px);border:0;border-radius:99px;background:#f6edff;color:#30164d;font-size:clamp(11px,3vw,14px);white-space:nowrap}
+.today-page .budget-head .btn svg{color:#64329c}
+.today-page .budget-hero{padding:13px 5px 12px;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:6px}
+.today-page .budget-amount{margin:0}
+.today-page .budget-amount p{margin:0;color:#fff;font-size:clamp(12px,3.6vw,17px);line-height:1.35}
+.today-page .budget-value{color:#fff;font-size:clamp(29px,9vw,56px);letter-spacing:-.05em;line-height:1.12;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.today-gauge{position:relative;text-align:center;line-height:1.15}
+.today-gauge svg{display:block;width:100%;max-height:107px}
+.today-gauge path{fill:none;stroke-width:10;stroke-linecap:round}
+.today-gauge-track{stroke:#dcc9ef88}.today-gauge-fill{transition:stroke-dasharray .28s ease}
+.today-gauge-label{position:absolute;inset:auto 0 5%;display:grid;gap:2px;color:#fff;font-size:clamp(10px,2.85vw,15px)}
+.today-gauge-label strong{font-size:clamp(18px,5.5vw,29px);font-weight:800}
+.today-page .budget-indicator{margin-top:0;background:linear-gradient(110deg,#fbf4ff,#ede2fb);color:#301b49;border:0;border-radius:17px}
+.today-page .budget-indicator summary{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.03fr) auto;align-items:center;min-height:54px;padding:9px 10px;gap:8px;font-size:clamp(11px,3vw,15px);line-height:1.25}
+.today-page .today-budget-state{display:flex;align-items:center;gap:6px;color:#2b5418;font-weight:800}
+.today-page [data-status=at] .today-budget-state{color:#64401c}
+.today-page [data-status=over] .today-budget-state{color:#a52249}
+.today-budget-state .state-icon{display:grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:linear-gradient(145deg,#a7dc56,#48851d);color:white}
+[data-status=over] .state-icon{background:#b92351}[data-status=at] .state-icon{background:#866224}
+.today-budget-spent{display:grid;gap:1px;border-inline-start:1px solid #cbbadd;padding-inline-start:8px}
+.today-budget-arrow{display:flex}.today-page .budget-indicator[open] .today-budget-arrow{transform:rotate(90deg)}
+.today-page .budget-breakdown .mut{color:#5b4773}.today-page .budget-breakdown .lk{color:#5c259b}
+.today-page .nutrition-card{background:var(--today-panel);border-color:var(--today-line);padding:clamp(12px,4vw,21px);border-radius:21px;box-shadow:0 5px 14px #37166011;--nutr:var(--today-accent);--err:var(--today-red);--lav:var(--today-line)}
+.today-page .nutrition-card .mut{color:var(--today-muted)}
+.today-page .nutrition-title{align-items:center}
+.today-page .nutrition-main h2{font-size:clamp(19px,5.2vw,26px)}
+.today-page .nutrition-main svg,.today-macro-title svg{color:var(--today-accent);flex:none}
+.today-nutrition-day{width:auto;min-height:44px;max-width:43%;padding-inline:9px;border:1px solid var(--today-line);border-radius:999px;background:var(--today-pill);color:var(--today-muted);font-size:clamp(11px,3.2vw,14px)}
+.today-page .nutrition-count{margin-top:7px;align-items:center}
+.today-page .nutrition-count strong{font-size:clamp(25px,7vw,39px);letter-spacing:-.04em}
+.today-page .nutrition-over-label,.today-page .nutrition-note-pill{border-radius:99px;padding:4px 7px;line-height:1.2}
+.today-page .nutrition-over-label{color:var(--today-red);background:var(--today-red-bg);font-size:clamp(10px,2.8vw,13px)}
+.today-page .nutrition-note-pill{color:var(--today-green);background:var(--today-green-bg);font-size:clamp(9px,2.6vw,12px)}
+.today-page .nutrition-note-pill.minimum{color:var(--today-accent);background:var(--today-note)}
+.today-page .nutrition-note-pill svg{vertical-align:-2px}
+.today-page .nutrition-meter{height:11px}
+.today-page .nutrition-meter.is-over::-webkit-progress-value{background:linear-gradient(90deg,#e86b90,#d92050)}
+.today-page .nutrition-macros{gap:clamp(4px,2vw,10px)}
+.today-page .nutrition-macros>div+div{padding-inline-start:clamp(5px,2vw,10px);border-color:var(--today-line)}
+.today-macro-title{display:flex;gap:4px;align-items:center}
+.today-page .today-macro-title h3{font-size:clamp(11px,3.25vw,16px);margin:0}
+.today-page .nutrition-macros .nutrition-meter{height:7px;margin:8px 0 6px}
+.today-page .nutrition-macros b{display:block;font-size:clamp(15px,4.35vw,23px);line-height:1.2;letter-spacing:-.035em;white-space:normal}
+.today-page .nutrition-macros .mut{display:block;font-size:clamp(11px,3.35vw,15px);margin-top:2px}
+.today-page .nutrition-info{display:flex;gap:7px;align-items:center;color:var(--today-muted);background:var(--today-note)}
+.today-page .nutrition-info svg{flex:none}
+.today-page nav{background:var(--today-panel);color:var(--today-muted);border-color:var(--today-line);border-radius:22px 22px 0 0}
+.today-page nav button{color:var(--today-muted)}
+.today-page nav button.on{color:var(--today-accent);background:var(--today-note)}
+.today-page nav button.on svg{fill:currentColor}
 </style></head><body><div id="app" class="app"></div><div id="sh"></div><div id="toast" role="status" aria-live="polite"></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -396,7 +460,7 @@ const EX={goal:'<b class="cf a"></b><b class="cf b"></b><b class="cf c"></b><b c
 function sisi(v='wave',s=110){const k=MAP[v]||v,h=k=='hero'?Math.round(s*1.15):s;
  if(k=='load')return`<div class="sp sp-load" style="width:${Math.round(h*.8)}px;height:${h}px" role="img" aria-label="${ALT.load}">${['front','side','back'].map(x=>`<img src="${SPR[x]}" alt="">`).join('')}</div>`;
  return`<div class="sp sp-${k}" style="height:${h}px" data-a="hop" role="img" aria-label="${ALT[k]||'Sisi'}"><img src="${SPR[k]}" alt="" draggable="false">${EX[k]||''}</div>`}
-const IC={home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',plan:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/>',explore:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/>',prog:'<path d="M5 20V11M12 20V4M19 20v-6"/>',prof:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>',ok:'<path d="M5 12l5 5 9-10"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',bowl:'<path d="M3 11h18a9 9 0 0 1-18 0zM8 7c0-2 2-2 2-4M14 7c0-2 2-2 2-4"/>',back:'<path d="M15 5l-7 7 7 7"/>'};
+const IC={fork:"<path d=\"M4 3v5a3 3 0 0 0 6 0V3M7 3v18M17 21V3c-2.6 1.5-4 4.5-4 8h4\"/>",swap:"<path d=\"M4 8h15l-4-4m5 12H5l4 4M19 8l-4 4m-10 4 4-4\"/>",next:"<path d=\"m9 5 7 7-7 7\"/>",info:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 11v5m0-8h.01\"/>",grain:"<path d=\"M3 21 18 6m-7 7C6 13 5 9 7 7c4 0 5 3 4 6zm3-3c-3-2-3-5 0-7 2 2 3 5 0 7zm-4 4c3-2 6-1 8 1-3 3-6 3-8-1zm5-5c2-1 4-1 6 1-2 3-5 3-6-1zm2-2c0-3 2-5 5-5 0 3-2 5-5 5z\"/>",drop:"<path d=\"M12 3C8.5 8 5 11.4 5 15a7 7 0 0 0 14 0c0-3.6-3.5-7-7-12Z\"/>",strength:"<path d=\"M12 12c2-2 5-2 7-.5 2 1.5 2 5.5.5 7-1.7 1.8-9.5 2.8-15 1-1-.3-1.6-1.4-1.4-2.4l1.7-8.9c.6-2.8 2-4.4 4.2-4.4 1.9 0 3 1 3 2.4 0 1-.6 1.7-1.7 1.8H9.1l-.5 5.8m2.4 2c.1-1.6.5-2.8 1-3.8\"/>",compass:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"m15.5 8.5-2 5-5 2 2-5z\"/>",home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',plan:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/>',explore:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/>',prog:'<path d="M5 20V11M12 20V4M19 20v-6"/>',prof:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>',ok:'<path d="M5 12l5 5 9-10"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',bowl:'<path d="M3 11h18a9 9 0 0 1-18 0zM8 7c0-2 2-2 2-4M14 7c0-2 2-2 2-4"/>',back:'<path d="M15 5l-7 7 7 7"/>'};
 const ic=(n,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
 const th=m=>`<div class="th" style="background:${{b:'var(--yw)',ld:'var(--lav)',s:'var(--mw)'}[m.c]};color:${{b:'#B7791F',ld:'var(--pri)',s:'var(--mt)'}[m.c]}">${ic('bowl',26)}</div>`;
 
@@ -490,31 +554,33 @@ function nutritionTotals(logs){
  }
  return totals;
 }
+let nutritionDay=0;
 function nutritionCards(logs,P){
  const totals=nutritionTotals(logs), T=targets(P);
  const energy=Math.max(1,Math.round((T.kLo+T.kHi)/2));
  const remaining=energy-totals.k;
  const overAmount=(value,target)=>Math.round((value-target)*100)/100;
- const overLabel=(amount,unit)=>`<span class="nutrition-over-label">${amount<.1?'Less than 0.1':nutritionNumber(amount)} ${unit} over target</span>`;
+ const overLabel=(amount,unit,short=false)=>`<span class="nutrition-over-label">${amount<.1?'&lt;0.1':'+'+nutritionNumber(amount)} ${unit}${short?'':' over target'}</span>`;
  const meter=(name,value,target,unit,minimum=false)=>{
   const over=!minimum&&overAmount(value,target)>0;
-  return `<progress class="nutrition-meter${over?' is-over':''}" aria-label="${name} daily target" aria-valuetext="${nutritionNumber(value)} of ${nutritionNumber(target)} ${unit}${over?', over target':''}" value="${Math.min(value,target)}" max="${target}"></progress>`;
+  return `<progress class="nutrition-meter${over?' is-over':''}" aria-label="${name} ${minimum?'daily minimum':'daily target'}" aria-valuetext="${nutritionNumber(value)} of ${nutritionNumber(target)} ${unit}${over?', over target':''}" value="${Math.min(value,target)}" max="${target}"></progress>`;
  };
- const macro=(name,value,target,minimum=false)=>{
+ const macro=(name,icon,value,target,minimum=false)=>{
   const over=overAmount(value,target);
-  return `<div><h3>${name}</h3><b>${nutritionNumber(value)} g</b> <span class="mut sm">/ ${target} g</span>${meter(name,value,target,'g',minimum)}${minimum?`<span class="nutrition-note-pill">${value>=target?'Target met':nutritionNumber(target-value)+' g to target'}</span>`:over>0?overLabel(over,'g'):'<span class="nutrition-note-pill">Within target</span>'}</div>`;
+  const proteinStatus=value>=target?(over>0?'+'+nutritionNumber(over)+' g above minimum':'Target met'):nutritionNumber(target-value)+' g to target';
+  return `<div><div class="today-macro-title">${ic(icon,17)}<h3>${name}</h3></div>${meter(name,value,target,'g',minimum)}<b>${nutritionNumber(value)} g</b><span class="mut sm">/ ${target} g</span>${minimum?`<span class="nutrition-note-pill minimum" aria-label="${value>=target?'Target met. ':''}${proteinStatus}">${proteinStatus}</span>`:over>0?overLabel(over,'g',true):`<span class="nutrition-note-pill">${ic('ok',12)} Within target</span>`}</div>`;
  };
- return `<section aria-label="Nutrition logged today">
+ return `<section aria-label="Nutrition logged ${nutritionDay?'yesterday':'today'}">
  <div class="card nutrition-card">
-  <div class="nutrition-title"><div class="nutrition-main">${authIcon('flame',21)}<h2>Calories</h2></div><span class="mut sm">Logged today</span></div>
-  <div class="nutrition-count"><span><strong>${nutritionNumber(totals.k)}</strong> <span class="mut sm">/ ${energy.toLocaleString('en-MY')} kcal</span></span>${overAmount(totals.k,energy)>0?overLabel(overAmount(totals.k,energy),'kcal'):`<span class="mut sm">${nutritionNumber(Math.max(0,remaining))} kcal left</span>`}</div>
+  <div class="nutrition-title"><div class="nutrition-main">${authIcon('flame',25)}<h2>Calories</h2></div><select id="today-nutrition-day" class="today-nutrition-day" aria-label="Day shown in nutrition summary"><option value="0"${nutritionDay?'':' selected'}>Today</option><option value="1"${nutritionDay?' selected':''}>Yesterday</option></select></div>
+  <div class="nutrition-count"><span><strong>${nutritionNumber(totals.k)}</strong> <span class="mut sm">/ ${energy.toLocaleString('en-MY')} kcal</span></span>${overAmount(totals.k,energy)>0?overLabel(overAmount(totals.k,energy),'kcal'):nutritionDay?'':`<span class="mut sm">${nutritionNumber(Math.max(0,remaining))} kcal left</span>`}</div>
   ${meter('Calories',totals.k,energy,'kcal')}
  </div>
  <div class="card nutrition-card"><div class="nutrition-macros">
-  ${macro('Carbs',totals.cb,Math.max(1,Math.round(energy*.5/4)))}
-  ${macro('Fat',totals.f,Math.max(1,Math.round(energy*.3/9)))}
-  ${macro('Protein',totals.p,Math.max(1,T.pro),true)}
- </div><p class="mut sm nutrition-info">Estimated from meals logged today.${totals.unknown?' Custom meals without nutrition values are excluded.':''}</p></div>
+  ${macro('Carbs','grain',totals.cb,Math.max(1,Math.round(energy*.5/4)))}
+  ${macro('Fat','drop',totals.f,Math.max(1,Math.round(energy*.3/9)))}
+  ${macro('Protein','strength',totals.p,Math.max(1,T.pro),true)}
+ </div><p class="mut sm nutrition-info">${ic('info',17)}<span>Estimated from meals logged ${nutritionDay?'yesterday':'today'}.${totals.unknown?' Custom meals without nutrition values are excluded.':''}</span></p></div>
  </section>`;
 }
 
@@ -526,14 +592,22 @@ function todayBudgetCard(budget,planned,logs){
  const statusLabel={under:'Under budget',at:'Budget reached',over:'Over budget'}[status];
  const usage=limit>0?spent/limit*100:spent>0?100:0;
  const percent=usage>100&&usage<101?'Over 100':usage<100&&usage>99?'Over 99':String(Math.round(usage));
+ const fill=Math.min(100,Math.max(0,usage)), arc='M 9 63 A 52 52 0 0 1 113 63';
+ const gaugeColor={under:'#a5e475',at:'#ffda8a',over:'#ffa1b8'}[status];
  return `<section class="card budget-card today-budget panel-purple" aria-labelledby="today-budget-title">
-  <div class="budget-head"><h2 id="today-budget-title">Daily food budget</h2><button class="btn s" data-a="budget-preview">Try a new budget</button></div>
-  <div class="budget-hero"><div class="budget-amount"><div class="budget-value">${rm(Math.abs(left)/100)}</div><p>${left<0?'over budget today':'left to spend today'}</p></div>${budgetGauge(Math.round(usage),status==='over'?'#FF9AB0':status==='at'?'#FFD58A':'#A6E17C')}</div>
+  <div class="budget-head"><h2 id="today-budget-title">${ic('fork',20)} Daily Food Budget</h2><button class="btn s" data-a="budget-preview">${ic('swap',17)} Try New Budget</button></div>
+  <div class="budget-hero">
+   <div class="budget-amount"><div class="budget-value">${rm(Math.abs(left)/100)}</div><p>${left<0?'over budget today':'left to spend today'}</p></div>
+   <div class="today-gauge" role="img" aria-label="${percent}% of ${rm(limit/100)} used">
+    <svg viewBox="0 0 122 73" aria-hidden="true"><path class="today-gauge-track" d="${arc}"/>${fill?`<path class="today-gauge-fill" d="${arc}" pathLength="100" stroke="${gaugeColor}" stroke-dasharray="${fill} 101"/>`:''}</svg>
+    <div class="today-gauge-label"><strong>${percent}%</strong><span>of ${rm(limit/100)}</span></div>
+   </div>
+  </div>
   <details class="budget-indicator" data-status="${status}">
    <summary>
-    <span class="budget-indicator-head"><b>${statusLabel}</b><span class="mut sm">${percent}% used</span></span>
-    <progress class="budget-meter" max="100" value="${Math.min(100,Math.max(0,usage))}" aria-label="Daily food budget used"></progress>
-    <span class="budget-indicator-caption mut sm"><span>${rm(spent/100)} spent of ${rm(limit/100)}</span><span>Breakdown <span class="budget-indicator-arrow" aria-hidden="true">⌄</span></span></span>
+    <span class="today-budget-state"><span class="state-icon">${ic(status==='under'?'ok':status==='over'?'x':'info',14)}</span>${statusLabel}</span>
+    <span class="today-budget-spent"><strong>${rm(spent/100)} spent</strong><span>of ${rm(limit/100)}</span></span>
+    <span class="today-budget-arrow">${ic('next',15)}</span>
    </summary>
    <div class="budget-breakdown">
     <dl><dt>Daily limit</dt><dd>${rm(limit/100)}</dd><dt>Planned meals</dt><dd>${rm(planned)}</dd>${['Breakfast','Lunch','Dinner','Snacks'].map((label,i)=>`<dt>${label}</dt><dd>${rm(logs.filter(log=>log.s===i).reduce((sum,log)=>sum+log.rm,0))}</dd>`).join('')}<dt class="total-line">Total spent</dt><dd class="total-line">${rm(spent/100)}</dd></dl>
@@ -545,11 +619,14 @@ function todayBudgetCard(budget,planned,logs){
 function vHome(){
  const P=S.P,pl=S.plan,d=wd(),ids=pl.days[d],pt=tot(ids),logs=S.logs.filter(l=>l.d==today());
  const next=ids.findIndex((id,i)=>!isLg(i,id)),changed=JSON.stringify(pl.P)!==JSON.stringify(P);
- return`${pageHead('Hi, '+esc(P.name),'Today’s meal plan',new Set(S.logs.filter(l=>l.d==today()&&l.s<3).map(l=>l.s)).size>=3?'celebrate':'wave')}${S.sample?'<div class="bn w">You’re viewing a sample profile. Edit it in Profile to use your own details.</div>':''}
+ const complete=new Set(logs.filter(log=>log.s<3).map(log=>log.s)).size>=3;
+ const nutritionDate=new Date();nutritionDate.setDate(nutritionDate.getDate()-nutritionDay);
+ const nutritionLogs=nutritionDay?S.logs.filter(log=>log.d===nutritionDate.toLocaleDateString('en-CA')):logs;
+ return`<header class="page-head today-heading"><div><h1>Hi, ${esc(P.name)}</h1><p>Today’s meal plan</p></div>${sisi(complete?'celebrate':'meal',122)}</header>${todayBudgetCard(P.bud,pt,logs)}
+ ${nutritionCards(nutritionLogs,P)}
+ ${S.sample?'<div class="bn w">You’re viewing a sample profile. Edit it in Profile to use your own details.</div>':''}
 ${changed?'<div class="bn w">Your details changed. <button class="lk" data-a="gen">Regenerate plan</button></div>':''}
-${todayBudgetCard(P.bud,pt,logs)}
 ${!changed&&pl.mode==='partial'?goalNotice(pl,P,d,pl.tr.minGoal>P.bud?`<button class="btn s" data-a="budget-preview" data-v="${pl.tr.minGoal}">Try ${rm(pl.tr.minGoal)} a day</button>`:pl.tr.minGoal==null?'<button class="btn s" data-a="profileedit" data-v="3">Review food preferences</button>':'<button class="btn s" data-a="gen">Rebuild meal plan</button>'):''}
-${nutritionCards(logs,P)}
 ${next>=0?`<div class="card"><h3>Next meal to log</h3>${mrow(ids[next],next,d,1)}</div>`:''}
 
 <div class="card"><h3>Today’s meals</h3>${ids.map((id,i)=>mrow(id,i,d,1)).join('')}</div>`}
@@ -723,7 +800,7 @@ function syncAuthViewport(app){
  app.style.setProperty('--auth-top',viewport.offsetTop+'px');
 }
 const vWel=()=>`<div class="wel full"><img class="logo" src="${LOGO}" alt="SiswaDiet logo"><h1>Eat smart.<br>Spend wisely.</h1><p class="mut">Meal ideas for student life, matched to your goal, food rules and daily budget.</p>${S.plan?`<button class="btn" data-a="cont">Continue as ${esc(S.P.name)}</button>`:'<button class="btn" data-a="start">Get started</button>'}<button class="btn s" data-a="sample">Try a sample profile</button><p class="mut sm">Signed in as ${esc(U?.email)}</p></div>`;
-const nav=()=>`<nav aria-label="Main">${[['home','Today'],['plan','Week'],['explore','Explore'],['prog','Progress'],['prof','Profile']].map(([k,t])=>`<button data-a="go" data-v="${k}" class="${tab==k?'on':''}" ${tab==k?'aria-current="page"':''}>${ic(k)}${t}</button>`).join('')}</nav>`;
+const nav=()=>`<nav aria-label="Main">${[['home','Today'],['plan','Week'],['explore','Explore'],['prog','Progress'],['prof','Profile']].map(([k,t])=>`<button data-a="go" data-v="${k}" class="${tab==k?'on':''}" ${tab==k?'aria-current="page"':''}>${ic(tab==='home'&&k==='explore'?'compass':k)}${t}</button>`).join('')}</nav>`;
 
 /* ===== SHEETS ===== */
 function whyL(m,ids){
@@ -1039,7 +1116,7 @@ const shv=()=>`<div class="bk" data-a="bk"><div class="sheet" role="dialog" aria
 
 /* ===== RENDER + EVENTS ===== */
 function R(){const f={load:vLoad,auth:vAuth,welcome:vWel,wiz:vWiz,rev:vRev,ana:vAna,res:vRes,app:()=>({home:vHome,plan:vPlan,explore:vExp,prog:vProg,prof:vProf}[tab])()}[V];
- const app=$('#app');app.className=V==='auth'?'app auth-shell':V==='app'?'app dashboard':'app';syncAuthViewport(app);
+ const app=$('#app');app.className=V==='auth'?'app auth-shell':V==='app'?'app dashboard'+(tab==='home'?' today-page':''):'app';syncAuthViewport(app);
  app.innerHTML=`<div class="v${foc?' nv':''}" id="vw" tabindex="-1">${f()}</div>${V=='app'?nav():''}`;$('#sh').innerHTML=sheet?shv():'';
  if(sheet){if(sheet.t==='log')updateLogEstimate();$('#sh .x').focus()}else if(foc){$('#vw').focus({preventScroll:true});scrollTo(0,0);foc=0}}
 const toast=(m,v)=>{clearTimeout(toastTimer);$('#toast').innerHTML=`<div class="toast${m==='You have the latest version.'?' toast-single':''}">${v?sisi(v,40):''}<span>${esc(m)}</span></div>`;toastTimer=setTimeout(()=>$('#toast').innerHTML='',2400)};
@@ -1132,6 +1209,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
  }});
 document.addEventListener('change',e=>{
  const t=e.target;
+ if(t.id==='today-nutrition-day'){nutritionDay=t.value==='1'?1:0;R();$('#today-nutrition-day')?.focus({preventScroll:true});return}
  if(t.id==='food-sort'&&Object.hasOwn(foodSorters,t.value)){foodSort=t.value;$('#elist').innerHTML=elist();return}
  if(sheet?.t==='why'&&t.dataset.why){
   const key=t.dataset.why;
