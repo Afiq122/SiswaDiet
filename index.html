@@ -174,6 +174,14 @@ html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:
 .auth-privacy svg{color:var(--mt)}
 .auth-form #aer:empty{display:none}
 @media(max-height:700px){.auth-view{gap:12px}.auth-form.card{gap:8px}.auth-logo-frame{margin-bottom:3px}}
+.rule-picks{display:grid;gap:8px;margin-top:10px}
+.rule-picks .swap-option{margin:0}
+.rule-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.rule-badge{border-radius:99px;background:var(--lav);padding:3px 8px;font-size:11px}
+.rule-list{padding-left:20px}
+.rule-list li+li{margin-top:6px}
+.preview-days>details{border-top:1px solid var(--bd);padding:9px 0}
+.preview-days summary{cursor:pointer}
 </style></head><body><div id="app" class="app"></div><div id="sh"></div><div id="toast" role="status" aria-live="polite"></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -214,7 +222,7 @@ const MEALS=[['oat','Oats & banana','b',2.5,300,10,55,6,'gluten',0,'oats banana'
 ["pl-nasi-goreng","Nasi goreng (Fried rice)","ld",5.9,637,16.17,86.79,25.08,"unknown",3,"rice oil","1 plate (330 g)","https://myfcd.moh.gov.my/myfcd97/index.php/site/detail_product/221021/0/10/-1/0/0/"]
 ];
 const MB={};MEALS.forEach(a=>MB[a[0]]={id:a[0],n:a[1],c:a[2],rm:a[3],k:a[4],p:a[5],cb:a[6],f:a[7],al:a[8].split(' ').filter(x=>x&&x!='unknown'),unk:a[8].includes('unknown'),lv:a[9],ing:a[10].split(' '),portion:a[11],source:a[12]});
-const ML=Object.values(MB),med=c=>{const v=ML.filter(m=>m.c==c).map(m=>m.p).sort((a,b)=>a-b);return v[v.length>>1]},MED={b:med('b'),ld:med('ld'),s:med('s')};
+const ML=Object.values(MB);
 
 /* ===== EXPERT SYSTEM: knowledge base above, inference below ===== */
 function elig(P){const out=[],rej={},al=P.al.filter(a=>a!='none'&&a!='skip');
@@ -231,7 +239,7 @@ function analyse(P){const{out,rej}=elig(P),T=targets(P),p={b:out.filter(m=>m.c==
  const gs=[...good].sort((a,b)=>a.rm-b.rm),seen=new Set();let rec=null;for(const c of gs){c.m.forEach(m=>seen.add(m.id));if(seen.size>=12){rec=c.rm;break}}
  return{out,rej,T,cs,good,minAny,minGoal:gs.length?gs[0].rm:null,sg:gs.length?[c5(gs[0].rm),c5(rec??gs[gs.length-1].rm)]:null}}
 const score=(c,T,b)=>Math.min(c.p/T.pro,1.15)*50+(1-Math.min(1,Math.abs(c.k-(T.kLo+T.kHi)/2)/T.kHi))*30+(b-c.rm)/b*10;
-function build(P){const a=analyse(P);A=a;const rj={};Object.values(a.rej).forEach(r=>rj[r]=(rj[r]||0)+1);
+function build(P){const a=analyse(P);const rj={};Object.values(a.rej).forEach(r=>rj[r]=(rj[r]||0)+1);
  const tr={all:ML.length,ok:a.out.length,rej:rj,T:a.T,n:a.cs.length,minAny:a.minAny,minGoal:a.minGoal,sg:a.sg,fit:0};
  if(a.none)return{mode:'none',tr,why:'pool'};
  let pool=a.good.filter(c=>c.rm<=P.bud),mode='full';if(!pool.length){pool=a.cs.filter(c=>c.rm<=P.bud);mode='partial'}
@@ -373,7 +381,7 @@ ${next>=0?`<div class="card"><h3>Next meal to log</h3>${mrow(ids[next],next,d,1)
 
 <div class="card"><h3>Today’s meals</h3>${ids.map((id,i)=>mrow(id,i,d,1)).join('')}</div><div class="row mt"><button class="btn s" data-a="how">Why these meals?</button><button class="btn s" data-a="go" data-v="plan">View week</button></div>`}
 function vPlan(){const pl=S.plan,ids=pl.days[day],b=S.P.bud;return`<div class="row sp"><h1>Meal plan</h1>${sisi('plan',72)}</div><div class="week-days mt">${DAYS.map((x,i)=>`<button class="dp ${i==day?'on':''}" data-a="day" data-v="${i}" aria-pressed="${i==day}">${x}</button>`).join('')}</div>
-<div class="tot"><div class="card row sp" style="margin-top:10px"><b>${rm(tot(ids))} <span class="mut sm">of ${rm(b)}</span></b><span class="ok">${sisi('budget',40)} Within budget</span></div></div><div class="card" style="margin-top:6px">${ids.map((id,i)=>mrow(id,i,day,day==wd())).join('')}</div><p class="mut sm mt">Prices and nutrition are illustrative estimates. A swap that goes over budget is blocked.</p><button class="btn s" data-a="how">How this plan was made</button>`}
+<div class="tot"><div class="card row sp" style="margin-top:10px"><b>${rm(tot(ids))} <span class="mut sm">of ${rm(b)}</span></b><span class="${tot(ids)<=b?'ok':'er'}">${sisi('budget',40)} ${tot(ids)<=b?'Within budget':'Over current budget'}</span></div></div><div class="card" style="margin-top:6px">${ids.map((id,i)=>mrow(id,i,day,day==wd())).join('')}</div><p class="mut sm mt">Prices and nutrition are illustrative estimates. A swap that goes over budget is blocked.</p><button class="btn s" data-a="how">How this plan was made</button><button class="btn s" data-a="budget-preview">Preview a different budget</button>`}
 function elist(){
  const terms=Q.toLowerCase().trim().split(/\s+/).filter(Boolean);
  const options=elig(S.P).out.filter(m=>(CF==='all'||m.c===CF)&&terms.every(term=>m.n.toLowerCase().includes(term))).sort((a,b)=>(a.rm-b.rm)*SO);
@@ -382,7 +390,7 @@ function elist(){
  <button class="lk food-add" data-a="foodlog" data-v="${m.id}" aria-label="Log ${esc(m.n)}">+</button></div>`).join(''):`<div class="tc">${sisi('empty',90)}<p class="mut">No foods match. Clear your search or filter.</p></div>`;
 }
 const nutritionNumber=value=>Number(value.toFixed(1)).toLocaleString('en-MY');
-const vExp=()=>`<h1>Planner meals</h1>${scanConfigured()?'<button class="btn s" data-a="scanopen">Scan meal</button>':''}
+const vExp=()=>`<h1>Planner meals</h1><button class="btn s" data-a="inspect-food">Why this meal / why not?</button>${scanConfigured()?'<button class="btn s" data-a="scanopen">Scan meal</button>':''}
 <div class="f"><label for="q">Search foods</label><input id="q" data-k="q" type="search" placeholder="Try nasi putih or boiled egg" value="${esc(Q)}"></div>
 <div class="chs">${[['all','All'],['b','Breakfast'],['ld','Lunch &amp; dinner'],['s','Snacks &amp; sides']].map(([v,t])=>`<button class="ch ${CF==v?'on':''}" data-a="cf" data-v="${v}" aria-pressed="${CF==v}">${t}</button>`).join('')}<button class="ch" data-a="so">Price: ${SO>0?'low to high':'high to low'}</button></div>
 <p class="mut sm mt">Calories and prices are estimates. ${ML.length-elig(S.P).out.length} foods are hidden by your filters.</p>
@@ -390,7 +398,7 @@ const vExp=()=>`<h1>Planner meals</h1>${scanConfigured()?'<button class="btn s" 
 function vProg(){const wk=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-wd()+i);return d.toLocaleDateString('en-CA')}),by=wk.map(d=>+S.logs.filter(l=>l.d==d).reduce((t,l)=>t+l.rm,0).toFixed(2)),L=S.logs.filter(l=>wk.includes(l.d)),est=+L.reduce((t,l)=>t+(MB[l.id]?.rm||0),0).toFixed(2),act=+L.reduce((t,l)=>t+l.rm,0).toFixed(2),b=S.P.bud,mx=Math.max(b,...by),
  bd=[['First plan','You built a meal plan.',!!S.plan],['First log','You logged a meal.',S.logs.length>0],['Full day','Logged breakfast, lunch and dinner on one day.',wk.some(d=>[0,1,2].every(s=>S.logs.some(l=>l.d==d&&l.s==s)))],['Variety','Logged 5 different meals in a week.',new Set(L.map(l=>l.id||l.n)).size>=5],['On budget','Logged a day within your budget.',by.some(v=>v>0&&v<=b)]];
  return`<h1>Progress</h1>${L.length?'':`<div class="wel">${sisi('sleep',90)}<p class="mut">Nothing logged yet. Tap Log on a meal in Home to start.</p></div>`}<div class="card"><h3>This week</h3><div class="two mt"><div><b>${L.length}</b><div class="mut sm">meals logged</div></div><div><b>${rm(act)}</b><div class="mut sm">spent · ${rm(est)} estimated for planner meals</div></div></div><div class="bars mt">${wk.map((d,i)=>`<span>${DAYS[i]}</span><div class="pb"><i style="width:${by[i]/mx*100}%;${by[i]>b?'background:var(--err)':''}"></i></div><span>${rm(by[i])}</span>`).join('')}</div><p class="mut sm mt">Daily budget ${rm(b)}. Only meals you log are counted.</p></div>
-<div class="card"><h3>Achievements</h3>${bd.map(([t,d,o])=>`<div class="bg2 ${o?'':'off'}"><span class="th" style="background:${o?'var(--yw)':'var(--lav)'};width:40px;height:40px">${ic(o?'ok':'x',20)}</span><div><b>${t}</b><div class="mut sm">${d}</div></div></div>`).join('')}</div>`}
+${weeklyReviewCard()}<div class="card"><h3>Achievements</h3>${bd.map(([t,d,o])=>`<div class="bg2 ${o?'':'off'}"><span class="th" style="background:${o?'var(--yw)':'var(--lav)'};width:40px;height:40px">${ic(o?'ok':'x',20)}</span><div><b>${t}</b><div class="mut sm">${d}</div></div></div>`).join('')}</div>`}
 function profileItem(label,icon,action,value=null,danger=false){
  return `<button class="profile-item${danger?' danger':''}" data-a="${action}"${value===null?'':` data-v="${value}"`}>
  ${ic(icon,19)}<span>${label}</span><span class="profile-arrow" aria-hidden="true">›</span></button>`;
@@ -407,7 +415,8 @@ function vProf(){
   profileItem('Activity routine','prog','profileedit',1),
   profileItem('Allergies &amp; health','ok','profileedit',2),
   profileItem('Food preferences','bowl','profileedit',3),
-  profileItem('Daily budget','plan','profileedit',4)
+  profileItem('Daily budget','plan','profileedit',4),
+  profileItem('Budget what-if','plan','budget-preview')
  ])}
  ${profileGroup('Plan &amp; progress',[
   profileItem('Nutrition today','home','go','home'),
@@ -476,23 +485,174 @@ const vWel=()=>`<div class="wel full"><img class="logo" src="${LOGO}" alt="Siswa
 const nav=()=>`<nav aria-label="Main">${[['home','Today'],['plan','Week'],['explore','Explore'],['prog','Progress'],['prof','Profile']].map(([k,t])=>`<button data-a="go" data-v="${k}" class="${tab==k?'on':''}" ${tab==k?'aria-current="page"':''}>${ic(k)}${t}</button>`).join('')}</nav>`;
 
 /* ===== SHEETS ===== */
-function whyL(m,ids){const P=S.P,n=S.plan.days.flat().filter(x=>x==m.id).length;return[`R1–R3 Safety: passes your allergy and ${LB[P.diet].toLowerCase()} filters${P.dl.length?' and avoids foods you dislike':''}.`,`R4 Budget: this day totals ${rm(tot(ids))}, within ${rm(P.bud)}.`,`R6 Goal (${GN()}): ${m.p} g protein${m.p>=MED[m.c]?', higher than a typical '+CN[m.c].toLowerCase()+' option.':'.'}`,`R5 Variety: used ${n}× this week.`]}
+function whyL(m,ids){
+ const P=S.P, stats=mealStats(ids), over=stats.cents>Math.round(P.bud*100);
+ return [
+  ruleReason(elig(P).rej[m.id],m,P),
+  'Planned day total: '+rm(stats.cents/100)+(over?' exceeds ':' fits within ')+rm(P.bud)+'.',
+  'Goal fit: '+goalStatusText(stats,targets(P))+'.',
+  'Variety: this food appears '+S.plan.days.flat().filter(id=>id===m.id).length+' time(s) this week.'
+ ];
+}
 function mealSheet(s){const m=MB[s.id],ids=s.d!=null?S.plan.days[s.d]:null;return`<div class="row">${th(m)}<div><h2>${esc(m.n)}</h2><div class="mut sm">${CN[m.c]} · ${esc(m.portion||'1 serving')} · estimated ${rm(m.rm)}</div></div></div><div class="two mt"><div class="card tc" style="margin:0"><b>${m.k}</b><div class="mut sm">kcal</div></div><div class="card tc" style="margin:0"><b>${m.p} g</b><div class="mut sm">protein</div></div><div class="card tc" style="margin:0"><b>${m.cb} g</b><div class="mut sm">carbs</div></div><div class="card tc" style="margin:0"><b>${m.f} g</b><div class="mut sm">fat</div></div></div>
 <p class="sm mt"><b>Ingredients:</b> ${m.ing.join(', ')}</p><p class="sm"><b>Allergens:</b> ${m.unk?'data incomplete. Check with the vendor':m.al.length?m.al.map(a=>LB[a]).join(', '):'none listed'}</p>${m.source?`<p class="sm mt"><a href="${m.source}" target="_blank" rel="noopener">Nutrition reference</a></p>`:''}<h3 class="mt">Why recommended?</h3>${ids?`<ul class="sm">${whyL(m,ids).map(x=>`<li>${x}</li>`).join('')}</ul>`:'<p class="sm mut">This meal passes your allergy, diet and dislike filters. It isn’t in your plan unless shown on a day.</p>'}<p class="mut sm mt">Price and nutrition are illustrative estimates.</p>
-${ids?`<button class="btn s" data-a="swap" data-i="${s.i}" data-d="${s.d}">Swap meal</button>`:''}<button class="btn" data-a="log" data-v="${m.id}" ${s.i!=null?`data-i="${s.i}"`:''}>Log as eaten</button>`}
-function swapOptions(s){
- const ids=S.plan.days[s.d], current=MB[ids[s.i]], total=tot(ids);
- return elig(S.P).out.filter(m=>m.c==current.c&&!ids.includes(m.id)).sort((a,b)=>a.rm-b.rm)
-  .map(meal=>({meal,total:Math.round((total-current.rm+meal.rm)*100)/100}))
-  .filter(option=>option.total<=S.P.bud);
+${ids?`<button class="btn s" data-a="swap" data-i="${s.i}" data-d="${s.d}">Swap meal</button><button class="btn s" data-a="inspect-food" data-i="${s.i}" data-d="${s.d}" data-v="${m.id}">Check another meal</button>`:''}<button class="btn" data-a="log" data-v="${m.id}" ${s.i!=null?`data-i="${s.i}"`:''}>Log as eaten</button>`}
+
+function mealStats(ids){
+ return ids.reduce((result,id)=>{
+  const meal=MB[id];
+  result.cents+=Math.round(meal.rm*100);result.k+=meal.k;result.p+=meal.p;
+  return result;
+ },{cents:0,k:0,p:0});
+}
+function goalGap(stats,T){
+ return [Math.max(0,T.pro-stats.p),Math.max(T.kLo-stats.k,stats.k-T.kHi,0)];
+}
+function goalStatusText(stats,T){
+ const [protein,energy]=goalGap(stats,T);
+ const parts=[];
+ if(protein>0)parts.push(nutritionNumber(protein)+' g below the protein target');
+ if(energy>0)parts.push(nutritionNumber(energy)+' kcal '+(stats.k<T.kLo?'below':'above')+' the calorie range');
+ return parts.length?parts.join(' · '):'Meets the estimated protein and calorie targets';
+}
+function ruleReason(reason,meal,P){
+ const messages={
+  allergen:'Contains a listed allergen: '+meal.al.filter(id=>P.al.includes(id)).map(id=>LB[id]).join(', ')+'.',
+  diet:'Does not match your '+LB[P.diet]+' diet.',
+  unknown:'The allergen information is incomplete for your current allergy settings.',
+  dislike:'Contains an ingredient you asked to avoid.'
+ };
+ return messages[reason]||'Passes your current allergy, diet and dislike filters.';
+}
+function swapDecision(context,meal){
+ const {ids,base,filters,profile,slot}=context, current=MB[ids[slot]], others=ids.filter((_,i)=>i!==slot);
+ const next=mealStats([...others,meal.id]), budget=Math.round(profile.bud*100);
+ const reasons=[];
+ const rejected=filters.rej[meal.id];
+ if(rejected)reasons.push(ruleReason(rejected,meal,profile));
+ if(meal.c!==current.c)reasons.push('This food belongs to a different meal category.');
+ if(others.includes(meal.id))reasons.push('This food is already in another slot on this day.');
+ if(others.some(id=>filters.rej[id]))reasons.push('Another planned meal on this day no longer matches your filters. Regenerate your plan before swapping.');
+ if(next.cents>budget)reasons.push('The new day would exceed your budget by '+rm((next.cents-budget)/100)+'.');
+ return {meal,stats:next,total:next.cents/100,base,reasons};
+}
+function swapContext({d,i},plan=S.plan,profile=S.P){
+ const ids=plan.days[d];
+ return {ids,slot:i,profile,base:mealStats(ids),filters:elig(profile),target:targets(profile)};
+}
+function swapOptions(s,plan=S.plan,profile=S.P){
+ const context=swapContext(s,plan,profile);
+ const counts=plan.days.flat().reduce((map,id)=>map.set(id,(map.get(id)||0)+1),new Map());
+ return ML.filter(meal=>meal.c===MB[context.ids[s.i]].c&&meal.id!==context.ids[s.i])
+  .map(meal=>({...swapDecision(context,meal),used:counts.get(meal.id)||0}))
+  .filter(option=>!option.reasons.length);
+}
+function rankSwaps(options,T){
+ if(!options.length)return [];
+ const cost=(a,b)=>a.stats.cents-b.stats.cents||a.meal.n.localeCompare(b.meal.n);
+ const goal=(a,b)=>{
+  const ag=goalGap(a.stats,T),bg=goalGap(b.stats,T);
+  return ag[0]-bg[0]||ag[1]-bg[1]||cost(a,b);
+ };
+ const winners=[
+  ['Best goal match',[...options].sort(goal)[0]],
+  ['Lowest cost',[...options].sort(cost)[0]],
+  ['Most variety',[...options].sort((a,b)=>a.used-b.used||goal(a,b))[0]]
+ ];
+ const picks=new Map();
+ for(const [label,option] of winners){
+  if(!picks.has(option.meal.id))picks.set(option.meal.id,{...option,labels:[]});
+  picks.get(option.meal.id).labels.push(label);
+ }
+ return [...picks.values()];
+}
+function reasonInspector(s){
+ const ids=S.plan.days[s.d], meal=MB[s.id], context=swapContext(s);
+ const option=swapDecision(context,meal);
+ return `<h2>Why this meal?</h2><p class="mut sm">Check any food against one slot in your current plan.</p>
+ <div class="f"><label for="why-day">Day</label><select id="why-day" data-why="d">${DAYS.map((d,i)=>`<option value="${i}" ${i===s.d?'selected':''}>${d}</option>`).join('')}</select></div>
+ <div class="f"><label for="why-slot">Meal slot</label><select id="why-slot" data-why="i">${ids.map((id,i)=>`<option value="${i}" ${i===s.i?'selected':''}>${SL[i]} · ${esc(MB[id].n)}</option>`).join('')}</select></div>
+ <div class="f"><label for="why-food">Food to check</label><select id="why-food" data-why="id">${ML.map(m=>`<option value="${m.id}" ${m.id===s.id?'selected':''}>${esc(m.n)}</option>`).join('')}</select></div>
+ <div class="bn ${option.reasons.length?'w':'k'}"><b>${option.reasons.length?'Why it was excluded':meal.id===ids[s.i]?'Already planned for this slot':'Why it can fit'}</b>
+ ${option.reasons.length?`<ul class="rule-list">${option.reasons.map(reason=>`<li>${esc(reason)}</li>`).join('')}</ul>`:`<p>${esc(ruleReason(null,meal,S.P))} The day totals ${rm(option.total)} within your ${rm(S.P.bud)} budget.</p><p class="sm">${goalStatusText(option.stats,context.target)}.</p>`}</div>`;
 }
 function swapSheet(s){
- const options=swapOptions(s), selected=options.find(option=>option.meal.id==s.selected);
- return `<div class="row sp"><h2>Swap ${SL[s.i].toLowerCase()}</h2>${sisi('plan',48)}</div>
- <p class="mut sm">Choose a meal to see the updated day total.</p>
- ${options.length?options.map(({meal,total})=>`<button class="oc swap-option ${s.selected==meal.id?'on':''}" aria-pressed="${s.selected==meal.id}" data-a="selectswap" data-v="${meal.id}"><b>${esc(meal.n)}</b><span class="mut sm">${rm(meal.rm)} · ${rm(total)} day total</span></button>`).join(''):`<div class="tc mt">${sisi('empty',70)}<p>No alternate meal fits your food filters and budget.</p></div>`}
- ${selected?`<div class="bn w row sp"><b>New day total</b><b>${rm(selected.total)}</b></div>`:''}
- <button class="btn" data-a="doswap" ${selected?'':'disabled'}>Confirm swap</button>`;
+ const context=swapContext(s), options=swapOptions(s);
+ const recommended=rankSwaps(options,context.target), recommendedIds=new Set(recommended.map(o=>o.meal.id));
+ const rest=options.filter(o=>!recommendedIds.has(o.meal.id)).sort((a,b)=>a.total-b.total);
+ const selected=options.find(o=>o.meal.id===s.selected);
+ const available=(Math.round(S.P.bud*100)-context.base.cents+Math.round(MB[context.ids[s.i]].rm*100))/100;
+ const button=option=>`<button class="oc swap-option ${s.selected===option.meal.id?'on':''}" aria-pressed="${s.selected===option.meal.id}" data-a="selectswap" data-v="${option.meal.id}">
+ <b>${esc(option.meal.n)}</b><span class="mut sm">${rm(option.total)} for the day · ${nutritionNumber(option.stats.p)} g protein · ${nutritionNumber(option.stats.k)} kcal</span>
+ ${option.labels?`<span class="rule-badges">${option.labels.map(label=>`<span class="rule-badge">${label}</span>`).join('')}</span>`:''}</button>`;
+ return `<div class="row sp"><h2>Smart meal swap</h2>${sisi('plan',48)}</div>
+ <p class="mut sm">${SL[s.i]} replacement budget: ${rm(Math.max(0,available))}. Lowest cost, goal fit and weekly variety are compared separately.</p>
+ ${recommended.length?`<div class="rule-picks">${recommended.map(button).join('')}</div>`:'<div class="bn w">No replacement fits your current filters and budget.</div>'}
+ ${rest.length?`<details class="mt"><summary>Other eligible swaps</summary><div class="rule-picks">${rest.map(button).join('')}</div></details>`:''}
+ ${selected?`<div class="bn k"><b>New day total: ${rm(selected.total)}</b><p class="sm">${goalStatusText(selected.stats,context.target)}. This food appears ${selected.used} time(s) in the current week.</p></div>`:''}
+ <button class="btn" data-a="doswap" ${selected?'':'disabled'}>Confirm swap</button>
+ <button class="btn s" data-a="inspect-food" data-i="${s.i}" data-d="${s.d}" data-v="${s.selected||context.ids[s.i]}">Why this meal / why not?</button>
+ ${!options.length?'<button class="btn s" data-a="budget-preview">Preview a different budget</button>':''}`;
+}
+function makeBudgetPreview(value){
+ const text=String(value).trim(),budget=Number(text);
+ if(!text||!Number.isFinite(budget)||budget<.01||budget>1000||Math.abs(budget*100-Math.round(budget*100))>1e-7)
+  return {error:'Enter a daily budget between RM0.01 and RM1,000, with up to two decimal places.'};
+ if(missing().some(step=>step!==4))return {error:'Complete your profile and meal preferences before previewing a budget.'};
+ const profile={...S.P,bud:budget};
+ return {profile,plan:build(profile)};
+}
+function budgetSheet(s){
+ const preview=s.preview, next=preview?.plan;
+ return `<h2>Budget what-if</h2><p class="mut sm">Current budget: ${rm(S.P.bud)} per day. Preview another amount before deciding.</p>
+ <div class="f"><label for="whatif-budget">Daily budget (RM)</label><input id="whatif-budget" type="number" min=".01" max="1000" step=".01" inputmode="decimal" value="${esc(s.value)}"></div>
+ <button class="btn s" data-a="budget-run">Preview plan</button>
+ ${preview?.error?`<p class="er mt" role="alert">${preview.error}</p>`:''}
+ ${next?.mode==='none'?`<div class="bn w">${next.why==='budget'?'No complete day fits this budget. The cheapest compatible day costs '+rm(next.tr.minAny)+'.':'There aren’t enough meals that match your current filters.'}</div>`:''}
+ ${next?.days?`<div class="bn ${next.mode==='full'?'k':'w'}"><b>${next.mode==='full'?'Fits the estimated targets':'Closest match within budget'}</b><p class="sm">${next.mode==='full'?'All seven days meet the estimated calorie and protein targets.':'No complete day within this budget meets both estimated targets. Review the daily differences below.'}</p></div>
+ <div class="card mt preview-days">${next.days.map((ids,d)=>{
+  const old=S.plan.days[d], changes=Math.max(old.length,ids.length)-ids.filter((id,i)=>id===old[i]).length;
+  return `<details><summary>${DAYS[d]} · ${rm(tot(old))} → ${rm(tot(ids))} · ${changes} changed</summary>
+  <p class="mut sm">${goalStatusText(mealStats(ids),next.tr.T)}.</p><ul class="rule-list sm">${ids.map((id,i)=>`<li>${SL[i]}: ${old[i]&&old[i]!==id?esc(MB[old[i]].n)+' → ':''}${esc(MB[id].n)}</li>`).join('')}${old.slice(ids.length).map(id=>`<li>Removed ${esc(MB[id].n)}</li>`).join('')}</ul></details>`;
+ }).join('')}</div>
+ <button class="btn" data-a="budget-apply">Apply budget and replace weekly plan</button>`:''}`;
+}
+function weeklyReview(logs,now=new Date()){
+ const recent=Array.from({length:7},(_,i)=>{
+  const date=new Date(now);date.setDate(date.getDate()-i-1);
+  return {key:date.toLocaleDateString('en-CA'),day:(date.getDay()+6)%7};
+ });
+ const budget=Math.round(S.P.bud*100), complete=[];
+ for(const date of recent){
+  const dayLogs=logs.filter(log=>log.d===date.key);
+  if(![0,1,2].every(slot=>dayLogs.some(log=>log.s===slot)))continue;
+  const logged=dayLogs.reduce((sum,log)=>sum+Math.round(log.rm*100),0);
+  const planned=mealStats(S.plan.days[date.day]).cents;
+  complete.push({...date,logged,planned});
+ }
+ const over=complete.filter(item=>item.logged>budget);
+ const advice=[];
+ if(complete.length>=3&&over.length>=2){
+  const seen=new Set();
+  for(const {day} of over){
+   for(const [i,id] of S.plan.days[day].entries()){
+    const current=MB[id], base=mealStats(S.plan.days[day]).cents;
+    for(const option of swapOptions({d:day,i})){
+     const key=id+'|'+option.meal.id;
+     if(option.stats.cents>=base||seen.has(key))continue;
+     seen.add(key);advice.push({day,i,old:current.n,meal:option.meal,saving:(base-option.stats.cents)/100});
+    }
+   }
+  }
+ }
+ return {complete,over,advice:advice.sort((a,b)=>b.saving-a.saving).slice(0,3)};
+}
+function weeklyReviewCard(){
+ const {complete,over,advice}=weeklyReview(S.logs);
+ return `<section class="card mt"><h3>Weekly plan review</h3><p class="mut sm">Last 7 finished days. Logged costs are compared with your current budget and current plan for the same weekday.</p>
+ ${complete.length<3?`<p class="sm mt">Not enough information yet. You logged breakfast, lunch and dinner on ${complete.length} of the 3 days needed for a recommendation.</p>`:`<p class="sm mt"><b>${over.length} of ${complete.length} fully logged days</b> went over your current budget.</p>
+ <ul class="rule-list sm">${complete.map(item=>`<li>${item.key}: ${rm(item.logged/100)} logged · ${rm(item.planned/100)} planned</li>`).join('')}</ul>
+ ${over.length>=2?`<h4 class="mt">Lower-cost swaps to try next week</h4>${advice.length?`<ul class="rule-list sm">${advice.map(item=>`<li>${DAYS[item.day]} ${SL[item.i]}: ${esc(item.old)} → ${esc(item.meal.n)} · save ${rm(item.saving)} <button class="lk" data-a="swap" data-d="${item.day}" data-i="${item.i}" data-v="${item.meal.id}">Review swap</button></li>`).join('')}</ul>`:'<p class="mut sm">No cheaper swap fits your current filters and budget.</p>'}<button class="btn s" data-a="budget-preview">Preview a different budget</button>`:'<p class="mut sm mt">Your logs don’t show repeated overspending, so the current plan is a reasonable starting point.</p>'}`}</section>`;
 }
 function logSheet(s){
  const sl=s.i!=null?Math.min(s.i,3):0,o=elig(S.P).out,id=s.v&&MB[s.v]?s.v:'';return`<div class="row sp"><h2>Log a meal</h2>${sisi('meal',56)}</div><div class="f"><label for="lsl">Meal time</label><select id="lsl">${['Breakfast','Lunch','Dinner','Snack'].map((t,i)=>`<option value="${i}" ${i==sl?'selected':''}>${t}</option>`).join('')}</select></div>
@@ -613,7 +773,7 @@ function saveScan(scan){
  save();go('app','home');toast('Meal saved with estimated nutrition.','meal');
 }
 
-const shv=()=>`<div class="bk" data-a="bk"><div class="sheet" role="dialog" aria-modal="true" aria-label="Details"><div class="row sp"><span></span><button class="lk x" data-a="close" aria-label="Close">${ic('x')}</button></div>${{meal:mealSheet,swap:swapSheet,log:logSheet,scan:scanSheet,how:howSheet}[sheet.t](sheet)}</div></div>`;
+const shv=()=>`<div class="bk" data-a="bk"><div class="sheet" role="dialog" aria-modal="true" aria-label="Details"><div class="row sp"><span></span><button class="lk x" data-a="close" aria-label="Close">${ic('x')}</button></div>${{meal:mealSheet,swap:swapSheet,log:logSheet,scan:scanSheet,how:howSheet,why:reasonInspector,budget:budgetSheet}[sheet.t](sheet)}</div></div>`;
 
 /* ===== RENDER + EVENTS ===== */
 function R(){const f={load:vLoad,auth:vAuth,welcome:vWel,wiz:vWiz,rev:vRev,ana:vAna,res:vRes,app:()=>({home:vHome,plan:vPlan,explore:vExp,prog:vProg,prof:vProf}[tab])()}[V];
@@ -655,7 +815,21 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
  else if(a=='cf'){CF=v;R()}
  else if(a=='so'){SO=-SO;R()}
  else if(a=='meal'){sheet={t:'meal',id:v,i:I,d:D};R()}
- else if(a=='swap'){sheet={t:'swap',i:I,d:D};R()}
+ else if(a=='swap'){sheet={t:'swap',i:I,d:D,selected:v};R()}
+ else if(a==='inspect-food'){
+  const d=D??wd(), i=I??1;
+  sheet={t:'why',d,i,id:MB[v]?v:S.plan.days[d][i]};R();
+ }
+ else if(a==='budget-preview'){sheet={t:'budget',value:String(S.P.bud)};R()}
+ else if(a==='budget-run'&&sheet?.t==='budget'){
+  sheet.value=$('#whatif-budget').value;sheet.preview=makeBudgetPreview(sheet.value);R();
+ }
+ else if(a==='budget-apply'&&sheet?.t==='budget'&&sheet.preview?.plan?.days){
+  if($('#whatif-budget').value!==sheet.value)return;
+  const result=makeBudgetPreview(sheet.value);
+  if(!result.plan?.days){sheet.preview=result;R();return}
+  S.P.bud=result.profile.bud;S.plan=result.plan;PL=result.plan;day=wd();save();go('app','plan');toast('Budget and weekly plan updated.','plan');
+ }
  else if(a==='scanopen'&&scanConfigured()){sheet={t:'scan',slot:1,cost:'',items:null,busy:false};R()}
  else if(a==='scanrun'&&sheet?.t==='scan'){void analyzeScan(sheet)}
  else if(a==='scanadd'&&sheet?.t==='scan'){sheet.items??=[];if(sheet.items.length<8)sheet.items.push(emptyScanItem());R()}
@@ -663,11 +837,13 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
  else if(a==='scansave'&&sheet?.t==='scan'){saveScan(sheet)}
  else if(a=='foodlog'&&elig(S.P).out.some(m=>m.id===v)){sheet={t:'log',v,i:MB[v].c==='b'?0:MB[v].c==='s'?3:1,extra:true};R()}
  else if(a=='log'){sheet={t:'log',v,i:I};R()}
- else if(a=='selectswap'){sheet.selected=v;R();$('#sh .swap-option.on')?.focus()}
+ else if(a=='selectswap'){sheet.selected=v;R();const choice=$('#sh .swap-option.on');const details=choice?.closest('details');if(details)details.open=true;choice?.focus()}
  else if(a=='doswap'){
   const selected=swapOptions(sheet).find(option=>option.meal.id==sheet.selected);
   if(!selected)return;
   S.plan.days[sheet.d][sheet.i]=selected.meal.id;
+  const T=targets(S.P);
+  S.plan.mode=S.plan.days.every(ids=>goalGap(mealStats(ids),T).every(gap=>gap===0))?'full':'partial';
   save();sheet=null;R();toast('Meal swapped. New day total: '+rm(selected.total),'plan');
  }
  else if(a=='savelog'){
@@ -682,12 +858,22 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
  else if(a=='areset'){const em=$('#ae').value.trim(),er=$('#aer');if(!CFG_OK)return;if(!em)return er.textContent='Type your email above first.';sendPasswordResetEmail(auth,em).then(()=>{er.style.color='var(--mt)';er.textContent='Reset link sent. Check your email.'}).catch(x=>{er.style.color='';er.textContent=fe(x)})}
  else if(a=='reset'){if(confirm('Delete all your SiswaDiet data? Your login stays.')){try{localStorage.removeItem(lk())}catch(x){}deleteDoc(doc(db,'users',U.uid,'app','state')).catch(()=>{});S=freshS();S.P.name=U?.displayName||'';PL=null;document.documentElement.dataset.theme='';go('welcome')}}});
 document.addEventListener('change',e=>{
- const t=e.target,field=t.dataset.scan;
+ const t=e.target;
+ if(sheet?.t==='why'&&t.dataset.why){
+  const key=t.dataset.why;
+  sheet[key]=key==='id'?t.value:Number(t.value);
+  if(key==='d')sheet.i=Math.min(sheet.i,S.plan.days[sheet.d].length-1);
+  R();$('#'+t.id)?.focus();return;
+ }
+ const field=t.dataset.scan;
  if(sheet?.t!=='scan'||!field)return;
  if(field==='photo')void selectScanPhoto(sheet,t.files?.[0]);
  if(field==='id'){sheet.items[+t.dataset.i].id=t.value;R();$('#scan-food-'+t.dataset.i)?.focus()}
 });
 document.addEventListener('input',e=>{
+ if(sheet?.t==='budget'&&e.target.id==='whatif-budget'){
+  const apply=$('#sh [data-a=budget-apply]');if(apply)apply.disabled=e.target.value!==sheet.value;
+ }
  const field=e.target.dataset.scan;
  if(sheet?.t!=='scan'||!field)return;
  if(field==='slot')sheet.slot=+e.target.value;
