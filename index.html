@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#6C5CE7">
-<meta name="siswadiet-build" content="17">
+<meta name="siswadiet-build" content="18">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>SiswaDiet</title>
 <link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
@@ -454,6 +454,61 @@ html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:
 .food-facts span{display:inline-flex;align-items:center;gap:3px;padding:2px 5px;border-radius:7px;background:var(--lav);color:var(--pri);font-size:clamp(9px,2.8vw,12px);font-weight:700}
 .food-facts span:last-child{background:var(--mw);color:var(--mt)}
 .explore-page nav button.on{background:var(--lav);color:var(--pri)}
+/* Progress dashboard */
+.progress-view,.progress-view body{background:var(--bg)}
+.progress-view:not([data-theme=dark]){background:#f1e8fa}
+.progress-view:not([data-theme=dark]) body{min-height:100dvh;background:linear-gradient(#f1e8fa calc(env(safe-area-inset-top,0px) + 24px),#faf7fe 310px)}
+.dashboard.progress-page{padding-inline:clamp(12px,3.6vw,20px)}
+.progress-page .progress-heading{min-height:clamp(91px,25vw,131px);margin:0;padding-inline:5px 0}
+.progress-heading h1{font-size:clamp(27px,7vw,37px);letter-spacing:-.04em}
+.progress-heading p{font-size:clamp(12px,3.3vw,15px)}
+.progress-heading>.sp{max-width:29%;align-self:end}
+.progress-heading>.sp img{max-width:100%;object-fit:contain;object-position:bottom}
+.dashboard.progress-page .progress-summary{margin:0;position:relative;overflow:hidden;padding:clamp(13px,4vw,22px) clamp(12px,4.1vw,22px) 21px;background:radial-gradient(ellipse at 86% -18%,#ffffff29 0 28%,transparent 29%),radial-gradient(ellipse at 14% 121%,#ffffff20 0 24%,transparent 25%),linear-gradient(135deg,#7748ac,#49307b)}
+.progress-summary .progress-stats{margin-top:6px;gap:9px}
+.progress-summary .progress-stat{display:flex;align-items:center;gap:clamp(5px,2vw,10px);min-width:0}
+.progress-summary .progress-stat+div{padding-inline-start:8px}
+.progress-stat .progress-stat-icon,.progress-review-icon{display:grid;place-items:center;width:clamp(29px,9vw,44px);aspect-ratio:1;flex:none;border-radius:11px;background:#ffffff38}
+.progress-summary .progress-stat strong{font-size:clamp(15px,4.8vw,25px);line-height:1.25;letter-spacing:-.03em}
+.progress-summary .mut{color:#f8eeff;font-size:clamp(10px,3vw,14px)}
+.progress-page .spend-chart{position:relative;margin-top:-5px;padding:clamp(11px,3.4vw,19px);gap:7px}
+.progress-page .spend-row{grid-template-columns:clamp(29px,9vw,46px) minmax(35px,1fr) auto;min-height:25px;gap:9px;font-size:clamp(12px,3.35vw,16px)}
+.progress-page .spend-row>span:first-child{text-align:center}
+.progress-page .spend-row>span:last-child{min-width:clamp(67px,17vw,85px);padding-inline:4px}
+.progress-page .spend-row.today>span{background:var(--lav);border-radius:9px;padding-block:2px}
+.progress-page .spend-row .pb{height:10px;border-radius:999px}
+.progress-page .spend-row .pb i{border-radius:999px}
+.progress-page .progress-budget-note{display:flex;align-items:center;gap:7px;margin-top:5px}
+.progress-budget-note svg{flex:none}
+.progress-page .progress-review{padding:0;background:linear-gradient(140deg,var(--card),var(--bg))}
+.progress-review>summary{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px;padding:12px;list-style:none;cursor:pointer}
+.progress-review>summary::-webkit-details-marker{display:none}
+.progress-review-icon{background:var(--lav);color:var(--pri)}
+.progress-review>summary strong{display:block;font-size:clamp(14px,4.15vw,18px)}
+.progress-review>summary .mut{display:block;line-height:1.25;font-size:clamp(10px,3.2vw,14px)}
+.progress-review>summary>svg{color:var(--pri)}
+.progress-review[open]>summary>svg{transform:rotate(90deg)}
+.progress-review-body{padding:0 13px 13px}
+.progress-page .progress-achievements{padding:clamp(10px,3.4vw,17px)}
+.progress-achievements h3{display:flex;align-items:center;gap:7px;font-size:clamp(15px,4.45vw,22px)}
+.progress-achievements h3 svg{color:var(--pri)}
+.progress-achievements .achievement-count{white-space:nowrap;font-weight:800;font-size:clamp(9px,2.65vw,12px)}
+.progress-achievements .achievement-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(3px,1.5vw,9px);margin-top:10px}
+.progress-achievements .achievement-tile{padding:0;border:0;border-radius:14px;background:var(--bg)}
+.progress-achievements .achievement-tile[data-unlocked=true]{background:linear-gradient(155deg,var(--bg),var(--lav))}
+.progress-achievements .achievement-tile button{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;padding:10px 1px 7px;min-height:76px;text-align:center;border-radius:inherit}
+.progress-achievements .achievement-tile h4{font-size:clamp(9px,2.75vw,13px);margin:0;max-width:7ch;min-height:2.4em}
+.achievement-emblem{display:grid;place-items:center;width:34px;height:34px;color:var(--pri)}
+.achievement-emblem svg{stroke:#603493;fill:var(--badge-fill,#ebdbfa)}
+.achievement-emblem[data-icon=badge-log],.achievement-emblem[data-icon=badge-star]{--badge-fill:#ffda72}
+.achievement-emblem[data-icon=badge-target]{--badge-fill:#f7a9bc}
+.achievement-emblem[data-icon=badge-day]{--badge-fill:#d3b4f5}
+.achievement-tile[data-unlocked=false] .achievement-emblem{opacity:.62}
+.achievement-corner{position:absolute;right:2px;top:2px;display:grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--lav);color:var(--mut)}
+.achievement-tile[data-unlocked=true] .achievement-corner{background:#54962a;color:#fff}
+.achievement-hint{margin-top:6px;text-align:center}
+.achievement-detail-icon{padding:2px;background:var(--lav);border-radius:9px;flex:none}
+.progress-page nav button.on{background:var(--lav);color:var(--pri)}
 </style></head><body>
 <div id="update-slot" class="update-slot" hidden>
  <section class="update-card" aria-labelledby="update-title">
@@ -562,7 +617,7 @@ const EX={goal:'<b class="cf a"></b><b class="cf b"></b><b class="cf c"></b><b c
 function sisi(v='wave',s=110){const k=MAP[v]||v,h=k=='hero'?Math.round(s*1.15):s;
  if(k=='load')return`<div class="sp sp-load" style="width:${Math.round(h*.8)}px;height:${h}px" role="img" aria-label="${ALT.load}">${['front','side','back'].map(x=>`<img src="${SPR[x]}" alt="">`).join('')}</div>`;
  return`<div class="sp sp-${k}" style="height:${h}px" data-a="hop" role="img" aria-label="${ALT[k]||'Sisi'}"><img src="${SPR[k]}" alt="" draggable="false">${EX[k]||''}</div>`}
-const IC={scanframe:"<path d=\"M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3M12 8l1.2 2.8L16 12l-2.8 1.2L12 16l-1.2-2.8L8 12l2.8-1.2z\"/>",checklist:"<rect x=\"5\" y=\"5\" width=\"14\" height=\"16\" rx=\"2\"/><path d=\"M9 5V3h6v2M8 10l1 1 2-2m2 2h3m-8 5 1 1 2-2m2 2h3\"/>",sliders:"<path d=\"M3 7h4m4 0h10M3 17h10m4 0h4\"/><circle cx=\"9\" cy=\"7\" r=\"2\"/><circle cx=\"15\" cy=\"17\" r=\"2\"/>",grid:"<rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/>",sunrise:"<path d=\"M4 18h16M7 16a5 5 0 0 1 10 0m-5-8V5M5 10l2 2m10 0 2-2M2 15h2m16 0h2\"/>",cup:"<path d=\"M6 8h12l-2 13H8L6 8zm-1 0h14m-7 0 2-5h4\"/>",plus:"<path d=\"M12 5v14M5 12h14\"/>",fork:"<path d=\"M4 3v5a3 3 0 0 0 6 0V3M7 3v18M17 21V3c-2.6 1.5-4 4.5-4 8h4\"/>",swap:"<path d=\"M4 8h15l-4-4m5 12H5l4 4M19 8l-4 4m-10 4 4-4\"/>",next:"<path d=\"m9 5 7 7-7 7\"/>",info:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 11v5m0-8h.01\"/>",grain:"<path d=\"M3 21 18 6m-7 7C6 13 5 9 7 7c4 0 5 3 4 6zm3-3c-3-2-3-5 0-7 2 2 3 5 0 7zm-4 4c3-2 6-1 8 1-3 3-6 3-8-1zm5-5c2-1 4-1 6 1-2 3-5 3-6-1zm2-2c0-3 2-5 5-5 0 3-2 5-5 5z\"/>",drop:"<path d=\"M12 3C8.5 8 5 11.4 5 15a7 7 0 0 0 14 0c0-3.6-3.5-7-7-12Z\"/>",strength:"<path d=\"M12 12c2-2 5-2 7-.5 2 1.5 2 5.5.5 7-1.7 1.8-9.5 2.8-15 1-1-.3-1.6-1.4-1.4-2.4l1.7-8.9c.6-2.8 2-4.4 4.2-4.4 1.9 0 3 1 3 2.4 0 1-.6 1.7-1.7 1.8H9.1l-.5 5.8m2.4 2c.1-1.6.5-2.8 1-3.8\"/>",compass:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"m15.5 8.5-2 5-5 2 2-5z\"/>",home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',plan:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/>',explore:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/>',prog:'<path d="M5 20V11M12 20V4M19 20v-6"/>',prof:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>',ok:'<path d="M5 12l5 5 9-10"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',bowl:'<path d="M3 11h18a9 9 0 0 1-18 0zM8 7c0-2 2-2 2-4M14 7c0-2 2-2 2-4"/>',back:'<path d="M15 5l-7 7 7 7"/>'};
+const IC={"wallet":"<rect x=\"3\" y=\"5\" width=\"17\" height=\"15\" rx=\"3\"/><path d=\"M5 5l10-2 3 2M15 10h7v6h-7a3 3 0 0 1 0-6zM15 13h.01\"/>","trophy":"<path d=\"M8 3h8v7a4 4 0 0 1-8 0V3zm0 2H4v3a4 4 0 0 0 4 4m8-7h4v3a4 4 0 0 1-4 4m-4 2v6m-4 0h8v2H8z\"/>","badge-plan":"<rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"3\"/><path fill=\"none\" d=\"M3 10h18M8 3v4m8-4v4M7 14h1m3 0h1m3 0h1m-9 3h1m3 0h1\"/>","badge-log":"<path d=\"M3 11h18c-.5 5.4-3.2 8.3-6 8.8V21H9v-1.2c-2.8-.5-5.5-3.4-6-8.8zM13 11l5-7a2 2 0 0 1 3 2l-5 5\"/>","badge-day":"<path d=\"M3 16v-1a9 9 0 0 1 18 0v1H3zm-1 3h20M10 6a2 2 0 1 1 4 0\"/>","badge-star":"<path d=\"M12 2.8l2.7 5.5 6.1.9-4.4 4.3 1 6-5.4-2.8-5.4 2.8 1-6-4.4-4.3 6.1-.9z\"/>","badge-target":"<circle cx=\"11\" cy=\"13\" r=\"8\"/><circle cx=\"11\" cy=\"13\" r=\"5\" fill=\"#fff\"/><circle cx=\"11\" cy=\"13\" r=\"2\"/><path d=\"M11 13l9-9m-1-2v3h3\" fill=\"none\"/>",scanframe:"<path d=\"M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3M12 8l1.2 2.8L16 12l-2.8 1.2L12 16l-1.2-2.8L8 12l2.8-1.2z\"/>",checklist:"<rect x=\"5\" y=\"5\" width=\"14\" height=\"16\" rx=\"2\"/><path d=\"M9 5V3h6v2M8 10l1 1 2-2m2 2h3m-8 5 1 1 2-2m2 2h3\"/>",sliders:"<path d=\"M3 7h4m4 0h10M3 17h10m4 0h4\"/><circle cx=\"9\" cy=\"7\" r=\"2\"/><circle cx=\"15\" cy=\"17\" r=\"2\"/>",grid:"<rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/>",sunrise:"<path d=\"M4 18h16M7 16a5 5 0 0 1 10 0m-5-8V5M5 10l2 2m10 0 2-2M2 15h2m16 0h2\"/>",cup:"<path d=\"M6 8h12l-2 13H8L6 8zm-1 0h14m-7 0 2-5h4\"/>",plus:"<path d=\"M12 5v14M5 12h14\"/>",fork:"<path d=\"M4 3v5a3 3 0 0 0 6 0V3M7 3v18M17 21V3c-2.6 1.5-4 4.5-4 8h4\"/>",swap:"<path d=\"M4 8h15l-4-4m5 12H5l4 4M19 8l-4 4m-10 4 4-4\"/>",next:"<path d=\"m9 5 7 7-7 7\"/>",info:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 11v5m0-8h.01\"/>",grain:"<path d=\"M3 21 18 6m-7 7C6 13 5 9 7 7c4 0 5 3 4 6zm3-3c-3-2-3-5 0-7 2 2 3 5 0 7zm-4 4c3-2 6-1 8 1-3 3-6 3-8-1zm5-5c2-1 4-1 6 1-2 3-5 3-6-1zm2-2c0-3 2-5 5-5 0 3-2 5-5 5z\"/>",drop:"<path d=\"M12 3C8.5 8 5 11.4 5 15a7 7 0 0 0 14 0c0-3.6-3.5-7-7-12Z\"/>",strength:"<path d=\"M12 12c2-2 5-2 7-.5 2 1.5 2 5.5.5 7-1.7 1.8-9.5 2.8-15 1-1-.3-1.6-1.4-1.4-2.4l1.7-8.9c.6-2.8 2-4.4 4.2-4.4 1.9 0 3 1 3 2.4 0 1-.6 1.7-1.7 1.8H9.1l-.5 5.8m2.4 2c.1-1.6.5-2.8 1-3.8\"/>",compass:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"m15.5 8.5-2 5-5 2 2-5z\"/>",home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',plan:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/>',explore:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/>',prog:'<path d="M5 20V11M12 20V4M19 20v-6"/>',prof:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>',ok:'<path d="M5 12l5 5 9-10"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',bowl:'<path d="M3 11h18a9 9 0 0 1-18 0zM8 7c0-2 2-2 2-4M14 7c0-2 2-2 2-4"/>',back:'<path d="M15 5l-7 7 7 7"/>'};
 const ic=(n,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
 const th=m=>`<div class="th" style="background:${{b:'var(--yw)',ld:'var(--lav)',s:'var(--mw)'}[m.c]};color:${{b:'#B7791F',ld:'var(--pri)',s:'var(--mt)'}[m.c]}">${ic('bowl',26)}</div>`;
 
@@ -806,30 +861,39 @@ function achievements(){
  }
  const firstDate=[...S.logs].map(log=>log.d).sort()[0];
  return [
-  ['First Plan','Create your first meal plan.','plan',!!S.plan,S.plan?'Plan created':'Create a plan'],
-  ['First Log','Log your first meal.','bowl',S.logs.length>0,S.logs.length?'First meal logged':'Log a meal',firstDate],
-  ['Full Day','Log breakfast, lunch and dinner on the same day this week.','bowl',!!full,Math.max(...days.map(day=>new Set(day.logged.filter(log=>log.s<3).map(log=>log.s)).size))+' of 3 meal times logged on your most complete day',full?.key],
-  ['Variety','Log five different foods or meals this week.','explore',seen.size>=5,Math.min(5,seen.size)+' of 5 different foods or meals',varietyDate],
-  ['On Budget','Record meal spending within your daily limit on one day this week.','prog',!!within,within?rm(within.spent)+' spent on '+DAYS[within.i]:'No qualifying day logged',within?.key]
+  ['First Plan','Create your first meal plan.','badge-plan',!!S.plan,S.plan?'Plan created':'Create a plan'],
+  ['First Log','Log your first meal.','badge-log',S.logs.length>0,S.logs.length?'First meal logged':'Log a meal',firstDate],
+  ['Full Day','Log breakfast, lunch and dinner on the same day this week.','badge-day',!!full,Math.max(...days.map(day=>new Set(day.logged.filter(log=>log.s<3).map(log=>log.s)).size))+' of 3 meal times logged on your most complete day',full?.key],
+  ['Variety','Log five different foods or meals this week.','badge-star',seen.size>=5,Math.min(5,seen.size)+' of 5 different foods or meals',varietyDate],
+  ['On Budget','Record meal spending within your daily limit on one day this week.','badge-target',!!within,within?rm(within.spent)+' spent on '+DAYS[within.i]:'No qualifying day logged',within?.key]
  ];
+}
+function achievementEmblem(icon,extra=''){
+ return `<span class="achievement-emblem ${extra}" data-icon="${icon}" aria-hidden="true">${ic(icon,30)}</span>`;
 }
 function achievementSheet(s){
  const [name,description,icon,unlocked,progress,date]=achievements()[s.i];
- return `<div class="row">${ic(icon)}<h2>${name}</h2></div><p class="mt">${description}</p><p class="mut sm mt">${progress}</p><div class="bn ${unlocked?'k':'w'}">${unlocked?'Unlocked':'Locked'}${date?' · '+esc(date):''}</div>`;
+ const unlockedOn=date?new Date(date+'T12:00:00').toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'}):'';
+ return `<div class="row">${achievementEmblem(icon,'achievement-detail-icon')}<h2>${name}</h2></div><p class="mt">${description}</p><p class="mut sm mt">${progress}</p><div class="bn ${unlocked?'k':'w'}">${unlocked?'Unlocked':'Locked'}${unlockedOn?' · '+esc(unlockedOn):''}</div>`;
 }
 function vProg(){
  const {logs,budget,days,spent}=weekProgress(), badges=achievements();
- const max=Math.max(budget,...days.map(day=>day.spent));
- return `${pageHead('Progress','Track your meals, spending and achievements','celebrate')}
- <section class="card panel-purple progress-summary"><div class="row">${ic('plan')}<div><h2>This Week</h2><p class="mut sm">Mon – Sun</p></div></div>
- <div class="progress-stats"><div><strong>${logs.length}</strong><span class="mut sm">meals logged</span></div><div><strong>${rm(spent)}</strong><span class="mut sm">spent</span></div></div></section>
- <section class="card spend-chart" aria-label="Spending by day">${days.map(({i,logged,spent})=>`<div class="spend-row ${i===wd()?'today':''} ${spent>budget?'over':''}">
- <span>${DAYS[i]}</span><div class="pb" aria-hidden="true"><i style="width:${logged.length?spent/max*100:0}%;${spent>budget?'background:var(--err);':''}"></i></div>
- <span>${logged.length?rm(spent):'<span class="mut">No logs</span>'}${spent>budget?`<small style="display:block">${rm(spent-budget)} over</small>`:''}</span></div>`).join('')}
- <p class="mut sm inline-note">Daily budget: ${rm(budget)}. Only logged meals are counted.</p></section>
+ const max=Math.max(1,budget,...days.map(day=>day.spent));
+ const unlockedCount=badges.filter(badge=>badge[3]).length;
+ return `<header class="page-head progress-heading"><div><h1>Progress</h1><p>Track your meals, spending and achievements</p></div>${sisi('celebrate',103)}</header>
+ <section class="card panel-purple progress-summary"><div class="row">${ic('plan',27)}<div><h2>This Week</h2><p class="mut sm">Mon – Sun</p></div></div>
+ <div class="progress-stats">
+  <div class="progress-stat"><span class="progress-stat-icon">${ic('fork',21)}</span><div><strong>${logs.length}</strong><span class="mut sm">meals logged</span></div></div>
+  <div class="progress-stat"><span class="progress-stat-icon">${ic('wallet',22)}</span><div><strong>${rm(spent)}</strong><span class="mut sm">spent this week</span></div></div>
+ </div></section>
+ <section class="card spend-chart" aria-label="Spending by day">${days.map(({i,logged,spent})=>`<div class="spend-row ${i===wd()?'today':''} ${spent>budget?'over':''}" ${i===wd()?'aria-current="date"':''}>
+ <span>${DAYS[i]}</span><div class="pb" aria-hidden="true"><i style="width:${spent/max*100}%;${spent>budget?'background:var(--err);':''}"></i></div>
+ <span aria-label="${logged.length?rm(spent):'No meals logged'}">${rm(spent)}${spent>budget?`<small style="display:block">${rm(spent-budget)} over</small>`:''}</span></div>`).join('')}
+ <p class="mut sm inline-note progress-budget-note">${ic('info',17)}<span>Daily budget: ${rm(budget)}. Only meals you log are counted.</span></p></section>
  ${weeklyReviewCard()}
- <section class="card" aria-labelledby="achievements-title"><div class="row sp"><h3 id="achievements-title">Achievements</h3><span class="achievement-count">${badges.filter(([, , , unlocked])=>unlocked).length} / ${badges.length} unlocked</span></div>
- <ul class="achievement-grid">${badges.map(([name,description,icon,unlocked],i)=>`<li class="achievement-tile" data-unlocked="${unlocked}"><button type="button" data-a="achievement" data-i="${i}">${ic(icon,20)}<h4>${name}</h4><p class="mut sm">${description}</p><span class="achievement-status">${unlocked?ic('ok',14)+' Unlocked':authIcon('lock',14)+' Locked'}</span></button></li>`).join('')}</ul></section>`;
+ <section class="card progress-achievements" aria-labelledby="achievements-title"><div class="row sp"><h3 id="achievements-title">${ic('trophy',23)} Achievements</h3><span class="achievement-count">${unlockedCount} / ${badges.length} unlocked</span></div>
+ <ul class="achievement-grid">${badges.map(([name,,icon,unlocked],i)=>`<li class="achievement-tile" data-unlocked="${unlocked}"><button type="button" data-a="achievement" data-i="${i}" aria-haspopup="dialog" aria-label="${name}, ${unlocked?'unlocked':'locked'}. View details">${achievementEmblem(icon)}<span class="achievement-corner" aria-hidden="true">${unlocked?ic('ok',11):authIcon('lock',10)}</span><h4>${name}</h4></button></li>`).join('')}</ul>
+ <p class="mut sm achievement-hint">Tap a badge for details.</p></section>`;
 }
 function profileItem(label,description,icon,action,value=null){
  return `<button class="profile-item" data-a="${action}"${value===null?'':` data-v="${value}"`}>${ic(icon,19)}<span><b>${label}</b><small class="mut" style="display:block">${description}</small></span><span class="profile-arrow" aria-hidden="true">›</span></button>`;
@@ -913,7 +977,7 @@ function syncAuthViewport(app){
  app.style.setProperty('--auth-top',viewport.offsetTop+'px');
 }
 const vWel=()=>`<div class="wel full"><img class="logo" src="${LOGO}" alt="SiswaDiet logo"><h1>Eat smart.<br>Spend wisely.</h1><p class="mut">Meal ideas for student life, matched to your goal, food rules and daily budget.</p>${S.plan?`<button class="btn" data-a="cont">Continue as ${esc(S.P.name)}</button>`:'<button class="btn" data-a="start">Get started</button>'}<button class="btn s" data-a="sample">Try a sample profile</button><p class="mut sm">Signed in as ${esc(U?.email)}</p></div>`;
-const nav=()=>`<nav aria-label="Main">${[['home','Today'],['plan','Week'],['explore','Explore'],['prog','Progress'],['prof','Profile']].map(([k,t])=>`<button data-a="go" data-v="${k}" class="${tab==k?'on':''}" ${tab==k?'aria-current="page"':''}>${ic(['home','plan','explore'].includes(tab)&&k==='explore'?'compass':k)}${t}</button>`).join('')}</nav>`;
+const nav=()=>`<nav aria-label="Main">${[['home','Today'],['plan','Week'],['explore','Explore'],['prog','Progress'],['prof','Profile']].map(([k,t])=>`<button data-a="go" data-v="${k}" class="${tab==k?'on':''}" ${tab==k?'aria-current="page"':''}>${ic(['home','plan','explore','prog'].includes(tab)&&k==='explore'?'compass':k)}${t}</button>`).join('')}</nav>`;
 
 /* ===== SHEETS ===== */
 function whyL(m,ids){
@@ -1089,10 +1153,10 @@ function weeklyReview(logs,now=new Date()){
 }
 function weeklyReviewCard(){
  const {complete,over,advice}=weeklyReview(S.logs);
- return `<details class="card mt"><summary><strong>How did I spend?</strong><span class="mut sm" style="display:block">Last 7 finished days · Budget: ${rm(S.P.bud)} a day</span></summary>
+ return `<details class="card mt progress-review"><summary><span class="progress-review-icon">${ic('prog',22)}</span><span><strong>How did I spend?</strong><span class="mut sm">Last 7 finished days · Budget: ${rm(S.P.bud)} a day</span></span>${ic('next',19)}</summary><div class="progress-review-body">
  ${complete.length<3?`<p class="sm mt">Log breakfast, lunch and dinner on ${3-complete.length} more ${complete.length===2?'day':'days'} to get spending tips.</p>`:`<p class="sm mt"><b>${over.length} of ${complete.length} fully logged days</b> went over your current budget.</p>
  <details class="mt"><summary>See daily spending</summary><p class="mut sm">Planned amounts use your current meal plan.</p><ul class="rule-list sm">${complete.map(item=>`<li>${item.key}: ${rm(item.logged/100)} spent · ${rm(item.planned/100)} planned</li>`).join('')}</ul></details>
- ${over.length>=2?`<h4 class="mt">Ways to spend less</h4>${advice.length?`<ul class="rule-list sm">${advice.map(item=>`<li>${DAYS[item.day]} ${SL[item.i]}: ${esc(item.old)} → ${esc(item.meal.n)} · save ${rm(item.saving)} <button class="lk" data-a="swap" data-d="${item.day}" data-i="${item.i}" data-v="${item.meal.id}">Review swap</button></li>`).join('')}</ul>`:'<p class="mut sm">No cheaper swap fits your current filters and budget.</p>'}<button class="btn s" data-a="budget-preview">Try a new budget</button>`:'<p class="mut sm mt">No cheaper swaps suggested. Your logs show fewer than two days over budget.</p>'}`}</details>`;
+ ${over.length>=2?`<h4 class="mt">Ways to spend less</h4>${advice.length?`<ul class="rule-list sm">${advice.map(item=>`<li>${DAYS[item.day]} ${SL[item.i]}: ${esc(item.old)} → ${esc(item.meal.n)} · save ${rm(item.saving)} <button class="lk" data-a="swap" data-d="${item.day}" data-i="${item.i}" data-v="${item.meal.id}">Review swap</button></li>`).join('')}</ul>`:'<p class="mut sm">No cheaper swap fits your current filters and budget.</p>'}<button class="btn s" data-a="budget-preview">Try a new budget</button>`:'<p class="mut sm mt">No cheaper swaps suggested. Your logs show fewer than two days over budget.</p>'}`}</div></details>`;
 }
 function loggedMealsSheet(){
  const logs=S.logs.map((log,i)=>({log,i})).filter(({log})=>log.d===today());
@@ -1231,13 +1295,14 @@ const shv=()=>`<div class="bk" data-a="bk"><div class="sheet" role="dialog" aria
 /* ===== RENDER + EVENTS ===== */
 function R(){const f={load:vLoad,auth:vAuth,welcome:vWel,wiz:vWiz,rev:vRev,ana:vAna,res:vRes,app:()=>({home:vHome,plan:vPlan,explore:vExp,prog:vProg,prof:vProf}[tab])()}[V];
  const isToday=V==='app'&&tab==='home', root=document.documentElement;
- const isWeek=V==='app'&&tab==='plan', isExplore=V==='app'&&tab==='explore';
+ const isWeek=V==='app'&&tab==='plan', isExplore=V==='app'&&tab==='explore', isProgress=V==='app'&&tab==='prog';
  root.classList.toggle('today-view',isToday);
  root.classList.toggle('week-view',isWeek);
  root.classList.toggle('explore-view',isExplore);
+ root.classList.toggle('progress-view',isProgress);
  root.classList.toggle('dashboard-view',V==='app');
- $('meta[name="theme-color"]').content=isToday?(root.dataset.theme==='dark'?'#2d203f':'#efe6fa'):isWeek?(root.dataset.theme==='dark'?'#161020':'#f7f3fd'):isExplore?(root.dataset.theme==='dark'?'#161020':'#f1e8fa'):'#6C5CE7';
- const app=$('#app');app.className=V==='auth'?'app auth-shell':V==='app'?'app dashboard'+(isToday?' today-page':isWeek?' week-page':isExplore?' explore-page':''):'app';syncAuthViewport(app);
+ $('meta[name="theme-color"]').content=isToday?(root.dataset.theme==='dark'?'#2d203f':'#efe6fa'):isWeek?(root.dataset.theme==='dark'?'#161020':'#f7f3fd'):(isExplore||isProgress)?(root.dataset.theme==='dark'?'#161020':'#f1e8fa'):'#6C5CE7';
+ const app=$('#app');app.className=V==='auth'?'app auth-shell':V==='app'?'app dashboard'+(isToday?' today-page':isWeek?' week-page':isExplore?' explore-page':isProgress?' progress-page':''):'app';syncAuthViewport(app);
  app.innerHTML=`<div class="v${foc?' nv':''}" id="vw" tabindex="-1">${f()}</div>${V=='app'?nav():''}`;$('#sh').innerHTML=sheet?shv():'';
  if(sheet){if(sheet.t==='log')updateLogEstimate();$('#sh .x').focus()}else if(foc){$('#vw').focus({preventScroll:true});scrollTo(0,0);foc=0}}
 const toast=(m,v)=>{clearTimeout(toastTimer);$('#toast').innerHTML=`<div class="toast${m==='You have the latest version.'?' toast-single':''}">${v?sisi(v,40):''}<span>${esc(m)}</span></div>`;toastTimer=setTimeout(()=>$('#toast').innerHTML='',2400)};
@@ -1245,7 +1310,7 @@ const go=(v,t)=>{V=v;if(t)tab=t;sheet=null;foc=1;R()};
 globalThis.visualViewport?.addEventListener('resize',()=>syncAuthViewport($('#app')));
 globalThis.visualViewport?.addEventListener('scroll',()=>syncAuthViewport($('#app')));
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a,v=t.dataset.v,k=t.dataset.k,I=t.dataset.i!=null?+t.dataset.i:null,D=t.dataset.d!=null?+t.dataset.d:null;
- if(a=='bk'){if(e.target==t){sheet=null;R()}return}
+ if(a=='bk'){if(e.target==t){closeSheet()}return}
  if(a=='hop'){t.classList.remove('hop');void t.offsetWidth;t.classList.add('hop');return}
  if(a=='start'){S.P=freshP();S.P.name=U?.displayName||'';S.sample=false;errs={};step=0;go('wiz')}
  else if(a=='cont')go('app','home');
@@ -1269,7 +1334,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
  else if(a=='goalbal'){S.P.goal='maintain';gen()}
  else if(a=='done'){day=wd();go('app','home')}
  else if(a=='how'){sheet={t:'how'};R()}
- else if(a=='close'){sheet=null;R()}
+ else if(a=='close'){closeSheet()}
  else if(a=='go'){go('app',v)}
  else if(a=='day'){day=+v;R()}
  else if(a=='cf'){CF=v;R();$("[data-a='cf'][aria-pressed='true']")?.focus()}
@@ -1365,7 +1430,12 @@ document.addEventListener('input',e=>{const t=e.target,k=t.dataset.k;if(t.id=='a
   button.disabled=goalNeedsAdult(button.dataset.v)&&S.P.age>0&&S.P.age<18;
  }
  if(errs[k]){delete errs[k];t.parentNode.querySelector('.er')?.remove()}save()});
-document.addEventListener('keydown',e=>{if(e.key=='Escape'&&sheet){sheet=null;R()}});
+function closeSheet(){
+ const badge=sheet?.t==='achievement'?sheet.i:null;
+ sheet=null;R();
+ if(badge!==null)$('[data-a="achievement"][data-i="'+badge+'"]')?.focus({preventScroll:true});
+}
+document.addEventListener('keydown',e=>{if(e.key=='Escape'&&sheet)closeSheet()});
 document.addEventListener('siswadiet-update-failed',()=>toast('Update unavailable. Use Check for updates to retry.'));
 const fe=x=>{const c=x.code||'';return/invalid-credential|wrong-password|user-not-found/.test(c)?'Email or password is wrong. Check and try again.':/email-already/.test(c)?'This email already has an account. Log in instead.':/weak-password/.test(c)?'Password needs at least 6 characters.':/invalid-email/.test(c)?'Enter a valid email address.':/network/.test(c)?'No internet connection. Connect and try again.':/too-many/.test(c)?'Too many tries. Wait a minute and try again.':'Something went wrong ('+c+').'};
 document.addEventListener('submit',async e=>{if(e.target.id!='af')return;e.preventDefault();const em=$('#ae').value.trim(),pw=$('#ap').value,nm=$('#an')?.value.trim(),er=m=>{$('#aer').style.color='';$('#aer').textContent=m;$('#abtn').disabled=false};
