@@ -79,8 +79,6 @@ nav button{flex:1;min-height:60px;border:0;background:none;color:var(--mut);font
 :root[data-theme=dark]{--pri:#ab7be7;--ink:#faf1ff;--lav:#392252;--bg:#1d102c;--card:#271639;--bd:#49335e;--mut:#d3bfdf;--mw:#34401e;--mt:#d6efaa}
 h1{font-size:clamp(27px,7vw,35px);letter-spacing:-.045em}
 .row.sp{display:flex;cursor:auto;isolation:auto}.row.sp::after{content:none}
-.auth-view{background:radial-gradient(ellipse at top,var(--lav),transparent 65%)}
-.auth-view form{box-shadow:none;margin:0}
 .oc.on,.swap-option.on{background:var(--mw);border-color:var(--mt);color:var(--ink)}
 .budget-card{background:var(--lav);padding:20px}.budget-value{font-weight:800;font-size:34px;line-height:1.1}
 .budget-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bd);border-radius:14px;overflow:hidden;margin-top:14px}
@@ -143,6 +141,39 @@ html, body, .sheet {
 .toast-single{box-sizing:border-box;width:max-content;max-width:calc(100vw - 24px);padding:10px 16px;justify-content:center;text-align:center;white-space:nowrap;font-size:clamp(12px,4vw,16px)}
 .gender-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;max-width:360px;margin:8px auto 0}
 .gender-options .ch{display:flex;align-items:center;justify-content:center;min-height:48px;padding:8px 6px;text-align:center;line-height:1.25}
+/* Sign-in layout is isolated from the padding used by the planner tabs. */
+html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:none}
+.app.auth-shell{position:fixed;inset-inline:0;top:var(--auth-top,0px);height:100vh;height:var(--auth-height,100dvh);max-width:none;margin:0;padding:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;background:var(--bg)}
+.auth-shell::-webkit-scrollbar{display:none}
+.auth-shell #vw{min-height:100%;display:flex;align-items:flex-start;padding:calc(16px + env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
+.auth-view{width:min(100%,400px);margin:auto;display:grid;gap:clamp(12px,2.4dvh,24px);text-align:center}
+.auth-brand{display:grid;justify-items:center;gap:6px}
+.auth-logo-frame{display:grid;place-items:center;width:clamp(68px,11dvh,100px);aspect-ratio:1;border:1px solid var(--bd);border-radius:26%;background:var(--card);box-shadow:0 3px 8px rgba(41,21,59,.07);margin-bottom:8px}
+.auth-logo-frame img{display:block;width:78%;height:78%;object-fit:contain}
+.auth-brand h1{font-size:clamp(24px,6.65vw,30px);letter-spacing:-.045em}
+.auth-brand p{color:var(--mut);font-size:13px}
+.auth-form.card{margin:0;padding:clamp(13px,4vw,22px);text-align:left;box-shadow:0 3px 10px rgba(41,21,59,.08);border-radius:24px;display:grid;gap:12px}
+.auth-field{display:grid;gap:5px}
+.auth-field>label{font-size:13px;font-weight:800}
+.auth-entry{display:flex;align-items:center;gap:9px;min-height:46px;padding:0 12px;border:1px solid var(--bd);border-radius:13px;background:var(--bg);color:var(--mut)}
+.auth-entry:focus-within{outline:2px solid var(--pri);outline-offset:1px}
+.auth-entry svg{flex:none}
+.auth-entry input{width:100%;min-width:0;min-height:44px;padding:0;border:0;background:none;outline:none;color:var(--ink);font-size:16px}
+.auth-entry input:focus-visible{outline:none}
+.auth-tools{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0 8px;font-size:12px}
+.auth-tools label{display:flex;align-items:center;gap:7px;min-height:44px;cursor:pointer}
+.auth-tools input{width:16px;height:16px;min-height:0;accent-color:var(--pri);margin:0}
+.auth-tools .lk{padding:0;font-size:inherit}
+.auth-form .btn,.auth-alternate .btn{margin:0;min-height:45px;font-size:14px}
+.auth-form .btn{display:flex;align-items:center;justify-content:center;gap:8px}
+.auth-alternate{display:grid;gap:10px}
+.auth-divider{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:12px}
+.auth-divider::before,.auth-divider::after{content:"";height:1px;background:var(--bd);flex:1}
+.auth-alternate .btn{background:var(--card);color:var(--pri);border:1px solid var(--bd)}
+.auth-privacy{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--mut);font-size:11px}
+.auth-privacy svg{color:var(--mt)}
+.auth-form #aer:empty{display:none}
+@media(max-height:700px){.auth-view{gap:12px}.auth-form.card{gap:8px}.auth-logo-frame{margin-bottom:3px}}
 </style></head><body><div id="app" class="app"></div><div id="sh"></div><div id="toast" role="status" aria-live="polite"></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -395,9 +426,52 @@ function vProf(){
  <details class="card"><summary>Privacy &amp; limits</summary><p class="mut sm mt">Your plans and logs are saved in Firebase and cached on this device. Nutrition and prices are estimates.</p><p class="mut sm mt">Installed version: ${esc(new Date(document.lastModified).toLocaleString('en-MY'))}</p></details>`;
 }
 const vLoad=()=>`<div class="wel full">${sisi('load',130)}<p class="mut">Loading your account…</p></div>`;
-const vAuth=()=>{const up=AM=='up';return`<div class="wel auth-view"><img class="logo" style="width:140px" src="${LOGO}" alt="SiswaDiet logo"><h1>${up?'Create account':'Welcome to SiswaDiet'}</h1><p class="mut">${up?'Create an account to save your plan.':'Plan meals around your student budget.'}</p>${CFG_OK?'':'<div class="bn e"><b>Firebase isn’t set up yet.</b> Paste your firebaseConfig into the file first.</div>'}
-<form id="af" class="card" style="width:100%;text-align:left" novalidate>${up?'<div class="f" style="margin-top:0"><label for="an">Name or nickname</label><input id="an" maxlength="30" autocomplete="nickname"></div>':''}<div class="f"><label for="ae">Email</label><input id="ae" type="email" inputmode="email" autocomplete="email"></div><div class="f"><label for="ap">Password (6+ characters)</label><input id="ap" type="password" autocomplete="${up?'new-password':'current-password'}"></div><label class="row mt sm"><input type="checkbox" id="as" style="width:20px;min-height:0"> Show password</label><p class="er mt" id="aer" role="alert"></p><button class="btn" id="abtn">${up?'Create account':'Log in'}</button></form>
-<button class="lk" data-a="amode">${up?'I already have an account':'Create a new account'}</button>${up?'':'<button class="lk" data-a="areset">Forgot password?</button>'}</div>`};
+const authIcons={
+ mail:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/>',
+ lock:'<rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 1 1 8 0v3"/>',
+ arrow:'<path d="M4 12h15m-6-6 6 6-6 6"/>',
+ shield:'<path d="M12 22s7-3 7-10V5l-7-3-7 3v7c0 7 7 10 7 10Z"/><path d="m9 12 2 2 4-4"/>'
+};
+const authIcon=(name,size=17)=>`<svg aria-hidden="true" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${authIcons[name]}</svg>`;
+const vAuth=()=>{
+ const up=AM==='up';
+ return `<section class="auth-view" aria-labelledby="auth-title">
+  <header class="auth-brand">
+   <div class="auth-logo-frame"><img src="${LOGO}" alt="SiswaDiet logo"></div>
+   <h1 id="auth-title">${up?'Create your account':'Welcome to SiswaDiet'}</h1>
+   <p>${up?'Create an account to save your meal plan.':'Plan meals around your student budget.'}</p>
+  </header>
+  ${CFG_OK?'':'<div class="bn e">Firebase sign-in is not configured.</div>'}
+  <form id="af" class="card auth-form" novalidate>
+   ${up?'<div class="auth-field"><label for="an">Name or nickname</label><div class="auth-entry"><input id="an" maxlength="30" autocomplete="nickname" placeholder="Your name"></div></div>':''}
+   <div class="auth-field">
+    <label for="ae">Email</label>
+    <div class="auth-entry">${authIcon('mail')}<input id="ae" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com"></div>
+   </div>
+   <div class="auth-field">
+    <label for="ap">Password</label>
+    <div class="auth-entry">${authIcon('lock')}<input id="ap" type="password" autocomplete="${up?'new-password':'current-password'}" placeholder="${up?'At least 6 characters':'Enter your password'}"></div>
+   </div>
+   <div class="auth-tools">
+    <label for="as"><input type="checkbox" id="as">Show password</label>
+    ${up?'':'<button type="button" class="lk" data-a="areset">Forgot password?</button>'}
+   </div>
+   <p class="er" id="aer" role="alert"></p>
+   <button class="btn" type="submit" id="abtn">${up?'Create account':'Log in'} ${authIcon('arrow',16)}</button>
+  </form>
+  <div class="auth-alternate">
+   <div class="auth-divider">${up?'Already have an account?':'New to SiswaDiet?'}</div>
+   <button type="button" class="btn" data-a="amode">${up?'Back to log in':'Create a new account'}</button>
+  </div>
+  <p class="auth-privacy">${authIcon('shield',15)} Your meal plans stay private to you</p>
+ </section>`;
+};
+function syncAuthViewport(app){
+ const viewport=globalThis.visualViewport;
+ if(V!=='auth'||!viewport)return;
+ app.style.setProperty('--auth-height',viewport.height+'px');
+ app.style.setProperty('--auth-top',viewport.offsetTop+'px');
+}
 const vWel=()=>`<div class="wel full"><img class="logo" src="${LOGO}" alt="SiswaDiet logo"><h1>Eat smart.<br>Spend wisely.</h1><p class="mut">Meal ideas for student life, matched to your goal, food rules and daily budget.</p>${S.plan?`<button class="btn" data-a="cont">Continue as ${esc(S.P.name)}</button>`:'<button class="btn" data-a="start">Get started</button>'}<button class="btn s" data-a="sample">Try a sample profile</button><p class="mut sm">Signed in as ${esc(U?.email)}</p></div>`;
 const nav=()=>`<nav aria-label="Main">${[['home','Today'],['plan','Week'],['explore','Explore'],['prog','Progress'],['prof','Profile']].map(([k,t])=>`<button data-a="go" data-v="${k}" class="${tab==k?'on':''}" ${tab==k?'aria-current="page"':''}>${ic(k)}${t}</button>`).join('')}</nav>`;
 
@@ -543,10 +617,13 @@ const shv=()=>`<div class="bk" data-a="bk"><div class="sheet" role="dialog" aria
 
 /* ===== RENDER + EVENTS ===== */
 function R(){const f={load:vLoad,auth:vAuth,welcome:vWel,wiz:vWiz,rev:vRev,ana:vAna,res:vRes,app:()=>({home:vHome,plan:vPlan,explore:vExp,prog:vProg,prof:vProf}[tab])()}[V];
- $('#app').innerHTML=`<div class="v${foc?' nv':''}" id="vw" tabindex="-1">${f()}</div>${V=='app'?nav():''}`;$('#sh').innerHTML=sheet?shv():'';
+ const app=$('#app');app.className=V==='auth'?'app auth-shell':'app';syncAuthViewport(app);
+ app.innerHTML=`<div class="v${foc?' nv':''}" id="vw" tabindex="-1">${f()}</div>${V=='app'?nav():''}`;$('#sh').innerHTML=sheet?shv():'';
  if(sheet)$('#sh .x').focus();else if(foc){$('#vw').focus({preventScroll:true});scrollTo(0,0);foc=0}}
 const toast=(m,v)=>{clearTimeout(toastTimer);$('#toast').innerHTML=`<div class="toast${m==='You have the latest version.'?' toast-single':''}">${v?sisi(v,40):''}<span>${esc(m)}</span></div>`;toastTimer=setTimeout(()=>$('#toast').innerHTML='',2400)};
 const go=(v,t)=>{V=v;if(t)tab=t;sheet=null;foc=1;R()};
+globalThis.visualViewport?.addEventListener('resize',()=>syncAuthViewport($('#app')));
+globalThis.visualViewport?.addEventListener('scroll',()=>syncAuthViewport($('#app')));
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a,v=t.dataset.v,k=t.dataset.k,I=t.dataset.i!=null?+t.dataset.i:null,D=t.dataset.d!=null?+t.dataset.d:null;
  if(a=='bk'){if(e.target==t){sheet=null;R()}return}
  if(a=='hop'){t.classList.remove('hop');void t.offsetWidth;t.classList.add('hop');return}
