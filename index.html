@@ -79,7 +79,7 @@ nav button{flex:1;min-height:60px;border:0;background:none;color:var(--mut);font
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,sendPasswordResetEmail,updateProfile}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,doc,getDoc,setDoc,deleteDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-/* ===== PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web) ====== */
+/* ===== PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web) ===== */
 const firebaseConfig={
   apiKey:"AIzaSyDHryM71YQreXyoNK8cJAcgJZSUnyYMqDA",
   authDomain:"siswadiet-4abc1.firebaseapp.com",
@@ -222,8 +222,8 @@ function vProg(){const wk=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate
  return`<h1>Progress</h1>${L.length?'':`<div class="wel">${sisi('sleep',90)}<p class="mut">Nothing logged yet. Tap Log on a meal in Home to start.</p></div>`}<div class="card"><h3>This week</h3><div class="two mt"><div><b>${L.length}</b><div class="mut sm">meals logged</div></div><div><b>${rm(act)}</b><div class="mut sm">spent (estimate ${rm(est)})</div></div></div><div class="bars mt">${wk.map((d,i)=>`<span>${DAYS[i]}</span><div class="pb"><i style="width:${by[i]/mx*100}%;${by[i]>b?'background:var(--err)':''}"></i></div><span>${rm(by[i])}</span>`).join('')}</div><p class="mut sm mt">Daily budget ${rm(b)}. Only meals you log are counted.</p></div>
 <div class="card"><h3>Achievements</h3>${bd.map(([t,d,o])=>`<div class="bg2 ${o?'':'off'}"><span class="th" style="background:${o?'var(--yw)':'var(--lav)'};width:40px;height:40px">${ic(o?'ok':'x',20)}</span><div><b>${t}</b><div class="mut sm">${d}</div></div></div>`).join('')}</div>`}
 function vProf(){const P=S.P;return`<div class="row"><span class="th" style="background:var(--pri);color:#fff;border-radius:50%;font-weight:800;font-size:22px">${esc((P.name||'?')[0].toUpperCase())}</span><div><h2>${esc(P.name)}</h2><p class="mut sm">${GN()} · ${LB[P.diet]} · ${rm(P.bud)} a day</p></div></div>
-<div class="card"><button class="btn" style="margin:0" data-a="edit" data-v="0">Edit my details</button><button class="btn s" data-a="theme">${S.theme=='dark'?'Switch to light mode':'Switch to dark mode'}</button><button class="btn s" data-a="how">How recommendations work</button><button class="btn s" data-a="export">Export my data (JSON)</button></div>
-<div class="card"><h3>Privacy &amp; limits</h3><p class="mut sm mt">Your plan and logs are saved to your SiswaDiet account (Google Firebase) and cached on this device. Meals, prices and nutrition are illustrative estimates, and this is not medical advice.</p></div>
+<div class="card"><button class="btn" style="margin:0" data-a="edit" data-v="0">Edit my details</button><button class="btn s" data-a="upd">Check for updates</button><button class="btn s" data-a="theme">${S.theme=='dark'?'Switch to light mode':'Switch to dark mode'}</button><button class="btn s" data-a="how">How recommendations work</button><button class="btn s" data-a="export">Export my data (JSON)</button></div>
+<div class="card"><h3>Privacy &amp; limits</h3><p class="mut sm mt">Your plan and logs are saved to your SiswaDiet account (Google Firebase) and cached on this device. Meals, prices and nutrition are illustrative estimates, and this is not medical advice.</p><p class="mut sm mt">Installed version: ${esc(new Date(document.lastModified).toLocaleString('en-MY'))}</p></div>
 <button class="btn o" data-a="exit">Log out</button><button class="btn o" data-a="reset" style="color:var(--err)">Delete all my data</button>`}
 const vLoad=()=>`<div class="wel full">${sisi('load',130)}<p class="mut">Loading your account…</p></div>`;
 const vAuth=()=>{const up=AM=='up';return`<div class="wel"><img class="logo" style="width:140px" src="${LOGO}" alt="SiswaDiet logo"><p class="mut">${up?'Create an account to save your plan.':'Log in to continue.'}</p>${CFG_OK?'':'<div class="bn e"><b>Firebase isn’t set up yet.</b> Paste your firebaseConfig into the file first.</div>'}
@@ -283,6 +283,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
  else if(a=='theme'){S.theme=S.theme=='dark'?'light':'dark';document.documentElement.dataset.theme=S.theme;save();R()}
  else if(a=='export'){const l=document.createElement('a');l.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));l.download='siswadiet-data.json';l.click()}
  else if(a=='exit')signOut(auth);
+ else if(a=='upd'){toast('Checking for updates…');window.checkUpdate().then(r=>toast(r=='new'?'New version found. Tap the banner at the top.':r=='same'?'You have the latest version.':'Could not check. Try again when online.'))}
  else if(a=='amode'){AM=AM=='in'?'up':'in';R()}
  else if(a=='areset'){const em=$('#ae').value.trim(),er=$('#aer');if(!CFG_OK)return;if(!em)return er.textContent='Type your email above first.';sendPasswordResetEmail(auth,em).then(()=>{er.style.color='var(--mt)';er.textContent='Reset link sent. Check your email.'}).catch(x=>{er.style.color='';er.textContent=fe(x)})}
  else if(a=='reset'){if(confirm('Delete all your SiswaDiet data? Your login stays.')){try{localStorage.removeItem(lk())}catch(x){}deleteDoc(doc(db,'users',U.uid,'app','state')).catch(()=>{});S=freshS();S.P.name=U?.displayName||'';PL=null;document.documentElement.dataset.theme='';go('welcome')}}});
@@ -302,14 +303,16 @@ if(CFG_OK)onAuthStateChanged(auth,async u=>{U=u;if(!u){S=freshS();PL=null;V='aut
  S=d&&d.v==2?d:freshS();if(!S.P.name)S.P.name=u.displayName||'';PL=S.plan;V=S.plan?'app':'welcome';tab='home';day=wd();document.documentElement.dataset.theme=S.theme||'';R()});
 else{V='auth';R()}
 </script><script>
-/* Auto-update: compares this page's Last-Modified time with the server's. Nothing to edit when you update. */
+/* Auto-update: remembers the page's version stamp when the app opens, then re-checks GitHub. Nothing to edit when you update. */
 navigator.serviceWorker?.getRegistrations().then(r=>r.forEach(x=>x.unregister()));
-const RUNNING=Date.parse(document.lastModified);
-async function checkUpdate(){try{
- const r=await fetch(location.pathname,{method:'HEAD',cache:'no-store'}),lm=r.headers.get('last-modified'),srv=lm?Date.parse(lm):0;
- if(srv&&srv-RUNNING>2000&&!document.getElementById('upd')){const b=document.createElement('button');b.id='upd';b.textContent='New version available. Tap to update';
+const RUNNING=Date.parse(document.lastModified);let base=null;
+const stamp=async()=>{const r=await fetch(location.pathname,{method:'HEAD',cache:'no-store'}),lm=r.headers.get('last-modified');return{t:lm?Date.parse(lm):0,e:r.headers.get('etag')||''}};
+function banner(){if(document.getElementById('upd'))return;const b=document.createElement('button');b.id='upd';b.textContent='New version available. Tap to update';
  b.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:99;background:#6C5CE7;color:#fff;border:0;border-radius:99px;padding:12px 20px;font:700 14px system-ui;box-shadow:0 6px 20px rgba(0,0,0,.25)';
- b.onclick=()=>{location.href=location.pathname+'?v='+Date.now()};document.body.appendChild(b)}}catch(e){}}
-checkUpdate();document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});
+ b.onclick=()=>{location.href=location.pathname+'?v='+Date.now()};document.body.appendChild(b)}
+window.checkUpdate=async()=>{try{const n=await stamp();if(!n.t&&!n.e)return'unknown';
+ if(!base){base={t:n.t?Math.min(n.t,RUNNING||n.t):0,e:n.e}}
+ const ch=(n.t&&base.t&&n.t-base.t>2000)||(base.e&&n.e&&n.e!==base.e);if(ch)banner();return ch?'new':'same'}catch(e){return'error'}};
+checkUpdate();document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});setInterval(checkUpdate,120000);
 </script>
 </body></html>
