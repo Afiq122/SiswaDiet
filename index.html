@@ -212,6 +212,10 @@ html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:
 .budget-breakdown{margin:0;padding:12px 13px 13px;border-top:1px solid var(--bd)}
 .budget-breakdown dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:13px}
 .budget-breakdown dd{margin:0;text-align:right;font-weight:700}
+.nutrition-meter.is-over::-webkit-progress-value{background:var(--err)}
+.nutrition-meter.is-over::-moz-progress-bar{background:var(--err)}
+.nutrition-over-label{display:block;margin-top:6px;color:var(--err);font-size:12px;font-weight:800;line-height:1.3}
+.nutrition-count .nutrition-over-label{margin-top:0}
 </style></head><body><div id="app" class="app"></div><div id="sh"></div><div id="toast" role="status" aria-live="polite"></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -384,13 +388,21 @@ function nutritionCards(logs,P){
  const totals=nutritionTotals(logs), T=targets(P);
  const energy=Math.max(1,Math.round((T.kLo+T.kHi)/2));
  const remaining=energy-totals.k;
- const meter=(name,value,target)=>`<progress class="nutrition-meter" aria-label="${name}" value="${Math.min(value,target)}" max="${target}"></progress>`;
- const macro=(name,value,target)=>`<div><h3>${name}</h3><b>${nutritionNumber(value)} g</b> <span class="mut sm">/ ${target} g</span>${meter(name,value,target)}</div>`;
+ const overAmount=(value,target)=>Math.round((value-target)*100)/100;
+ const overLabel=(amount,unit)=>`<span class="nutrition-over-label">${amount<.1?'Less than 0.1':nutritionNumber(amount)} ${unit} over target</span>`;
+ const meter=(name,value,target,unit)=>{
+  const over=overAmount(value,target)>0;
+  return `<progress class="nutrition-meter${over?' is-over':''}" aria-label="${name} daily target" aria-valuetext="${nutritionNumber(value)} of ${nutritionNumber(target)} ${unit}${over?', over target':''}" value="${Math.min(value,target)}" max="${target}"></progress>`;
+ };
+ const macro=(name,value,target)=>{
+  const over=overAmount(value,target);
+  return `<div><h3>${name}</h3><b>${nutritionNumber(value)} g</b> <span class="mut sm">/ ${target} g</span>${meter(name,value,target,'g')}${over>0?overLabel(over,'g'):''}</div>`;
+ };
  return `<section aria-label="Nutrition logged today">
  <div class="card nutrition-card">
   <div class="nutrition-title"><h2>Calories</h2><span class="mut sm">Logged today</span></div>
-  <div class="nutrition-count"><span><strong>${nutritionNumber(totals.k)}</strong> <span class="mut sm">/ ${energy.toLocaleString('en-MY')} kcal</span></span><span class="mut sm">${nutritionNumber(Math.abs(remaining))} kcal ${remaining<0?'over target':'left'}</span></div>
-  ${meter('Calories',totals.k,energy)}
+  <div class="nutrition-count"><span><strong>${nutritionNumber(totals.k)}</strong> <span class="mut sm">/ ${energy.toLocaleString('en-MY')} kcal</span></span>${overAmount(totals.k,energy)>0?overLabel(overAmount(totals.k,energy),'kcal'):`<span class="mut sm">${nutritionNumber(Math.max(0,remaining))} kcal left</span>`}</div>
+  ${meter('Calories',totals.k,energy,'kcal')}
  </div>
  <div class="card nutrition-card"><div class="nutrition-macros">
   ${macro('Carbs',totals.cb,Math.max(1,Math.round(energy*.5/4)))}
