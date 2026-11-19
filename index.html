@@ -139,6 +139,7 @@ html, body, .sheet {
 .profile-item:focus-visible{outline-offset:-4px}.profile-item:hover{background:var(--lav)}
 .profile-item.danger{color:var(--err)}.profile-arrow{font-size:20px;color:var(--mut)}
 .food-add{font-size:24px;min-width:44px;border-radius:50%;background:var(--lav);justify-content:center}
+.scan-preview{display:block;width:100%;max-height:230px;object-fit:contain;border-radius:16px}
 </style></head><body><div id="app" class="app"></div><div id="sh"></div><div id="toast" role="status" aria-live="polite"></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -332,7 +333,7 @@ function elist(){
  <button class="lk food-add" data-a="foodlog" data-v="${m.id}" aria-label="Log ${esc(m.n)}">+</button></div>`).join(''):`<div class="tc">${sisi('empty',90)}<p class="mut">No foods match. Clear your search or filter.</p></div>`;
 }
 const nutritionNumber=value=>Number(value.toFixed(1)).toLocaleString('en-MY');
-const vExp=()=>`<h1>Planner meals</h1>
+const vExp=()=>`<h1>Planner meals</h1>${scanConfigured()?'<button class="btn s" data-a="scanopen">Scan meal</button>':''}
 <div class="f"><label for="q">Search foods</label><input id="q" data-k="q" type="search" placeholder="Try nasi putih or boiled egg" value="${esc(Q)}"></div>
 <div class="chs">${[['all','All'],['b','Breakfast'],['ld','Lunch &amp; dinner'],['s','Snacks &amp; sides']].map(([v,t])=>`<button class="ch ${CF==v?'on':''}" data-a="cf" data-v="${v}" aria-pressed="${CF==v}">${t}</button>`).join('')}<button class="ch" data-a="so">Price: ${SO>0?'low to high':'high to low'}</button></div>
 <p class="mut sm mt">Calories and prices are estimates. ${ML.length-elig(S.P).out.length} foods are hidden by your filters.</p>
@@ -406,7 +407,107 @@ function logSheet(s){
 <div class="f"><label for="lm">Meal</label><select id="lm">${o.map(m=>`<option value="${m.id}" ${m.id==id?'selected':''}>${esc(m.n)}</option>`).join('')}<option value="" ${id?'':'selected'}>Something else</option></select></div>${id&&MB[id].portion?`<p class="mut sm mt">Serving: ${esc(MB[id].portion)}</p>`:''}<div class="f"><label for="ln">Name (if something else)</label><input id="ln" maxlength="40"></div><div class="f"><label for="lc">Actual cost (RM)</label><input id="lc" type="number" inputmode="decimal" step="0.01" min="0" value="${id?MB[id].rm:''}"></div><p id="le" class="er" role="alert"></p><p class="mut sm mt">Meals you add yourself are not safety-checked. Logged today only.</p><button class="btn" data-a="savelog">Save log</button>`}
 function howSheet(){const t=(S.plan||PL)?.tr,r=t?.rej||{};return`<h2>How recommendations work</h2><p class="mut">SiswaDiet is a rule-based expert system. The same answers always give the same plan.</p><ol class="sm"><li><b>R1 Allergies.</b> Meals with your allergens are removed. Meals with incomplete allergen data are hidden if you list allergies or prefer not to say.</li><li><b>R2 Diet.</b> Vegan, vegetarian and pescatarian rules apply to every meal.</li><li><b>R3 Dislikes.</b> Disliked ingredients are skipped.</li><li><b>R4 Budget.</b> Breakfast + lunch + dinner (+ up to 2 snacks) must total no more than your daily budget. Nothing goes over.</li><li><b>R5 Variety.</b> Repeats are penalised across the week.</li><li><b>R6 Goal.</b> Days are ranked by how close they get to rough protein and calorie targets. “Goal minimum” is the cheapest day in this meal list that reaches them.</li></ol>
 ${t?`<div class="card sm"><h3>Your last run</h3><p>${t.ok} of ${t.all} meals kept. Removed: ${r.allergen||0} allergen, ${r.unknown||0} unknown data, ${r.diet||0} diet, ${r.dislike||0} dislike.</p><p>${t.n} complete days checked, ${t.fit} fit your budget. Targets: about ${t.T.pro} g protein, ${t.T.kLo}–${t.T.kHi} kcal.${t.minGoal!=null?` Cheapest day reaching them: ${rm(t.minGoal)}.`:' No day in this list reaches them.'}</p></div>`:''}<p class="mut sm mt">Limits: meals, prices and nutrition are illustrative estimates, not a verified database. Under-18 profiles never get weight-loss targets. Ask a doctor or dietitian about health conditions.</p>`}
-const shv=()=>`<div class="bk" data-a="bk"><div class="sheet" role="dialog" aria-modal="true" aria-label="Details"><div class="row sp"><span></span><button class="lk x" data-a="close" aria-label="Close">${ic('x')}</button></div>${{meal:mealSheet,swap:swapSheet,log:logSheet,how:howSheet}[sheet.t](sheet)}</div></div>`;
+
+const SCAN_ENDPOINT = ''; // Add the deployed Worker URL, ending in /scan.
+const scanConfigured=()=>Number(S.P.age)>=18&&/^https:\/\/[^/]+\/scan$/.test(SCAN_ENDPOINT);
+const emptyScanItem=()=>({id:'', servings:1});
+const scanMeals=()=>elig(S.P).out;
+function scanTotals(items){
+ const totals={k:0,p:0,cb:0,f:0};
+ for(const {id,servings} of items){
+  const food=MB[id];
+  if(!food||!Number.isFinite(servings)||servings<0.25||servings>10)continue;
+  for(const key of Object.keys(totals))totals[key]+=food[key]*servings;
+ }
+ return Object.fromEntries(Object.entries(totals).map(([key,value])=>[key,Math.round(value*100)/100]));
+}
+const scanSummary=items=>{
+ const {k,p,cb,f}=scanTotals(items);
+ return `Est. ${nutritionNumber(k)} kcal · ${nutritionNumber(p)} g protein · ${nutritionNumber(cb)} g carbs · ${nutritionNumber(f)} g fat`;
+};
+function scanSheet(scan){
+ const foodList=scanMeals();
+ return `<h2>Scan meal</h2>
+ <p class="mut sm mt">Use a plate-only photo. Leave faces, IDs and other personal information out of the shot.</p>
+ <div class="f"><label for="scan-file">Take a photo</label><input id="scan-file" data-scan="photo" type="file" accept="image/*" capture="environment" ${scan.busy?'disabled':''}></div>
+ <div class="f"><label for="scan-upload">Or choose a photo</label><input id="scan-upload" data-scan="photo" type="file" accept="image/*" ${scan.busy?'disabled':''}></div>
+ ${scan.preview?`<img class="scan-preview mt" src="${scan.preview}" alt="Meal photo preview">`:''}
+ <p class="mut sm mt">Analyze photo sends the picture to Google Gemini. Google may use free-tier submissions to improve its products. SiswaDiet saves only your confirmed meal log.</p>
+ ${scan.preview?`<button class="btn" data-a="scanrun" ${scan.busy?'disabled':''}>${scan.busy?'Analyzing photo…':'Analyze photo'}</button>`:''}
+ <p class="er mt" role="status">${esc(scan.message||'')}</p>
+ ${scan.items?`<h3 class="mt">Review foods and portions</h3>
+ <p class="mut sm">Select the foods you ate. A photo cannot confirm ingredients, allergens or serving sizes.</p>
+ ${scan.items.map(({id,servings},i)=>`<div class="card mt"><div class="f"><label for="scan-food-${i}">Food ${i+1}</label>
+  <select id="scan-food-${i}" data-scan="id" data-i="${i}"><option value="">Choose a food</option>${foodList.map(food=>`<option value="${food.id}" ${id===food.id?'selected':''}>${esc(food.n)}</option>`).join('')}</select></div>
+  <div class="f"><label for="scan-count-${i}">Servings ${MB[id]?.portion?`(${esc(MB[id].portion)} each)`:''}</label><input id="scan-count-${i}" data-scan="servings" data-i="${i}" type="number" min="0.25" max="10" step="any" inputmode="decimal" value="${Number.isFinite(servings)?servings:''}"></div>
+  <button class="lk" data-a="scanremove" data-i="${i}">Remove food</button></div>`).join('')}
+ ${scan.items.length<8?'<button class="btn s" data-a="scanadd">Add food</button>':''}
+ <p class="card mt" id="scan-total" aria-live="polite">${scanSummary(scan.items)}</p>
+ <div class="f"><label for="scan-slot">Meal time</label><select id="scan-slot" data-scan="slot">${['Breakfast','Lunch','Dinner','Snack'].map((label,i)=>`<option value="${i}" ${i===scan.slot?'selected':''}>${label}</option>`).join('')}</select></div>
+ <div class="f"><label for="scan-cost">Actual cost (RM)</label><input id="scan-cost" data-scan="cost" type="number" min="0" step=".01" inputmode="decimal" value="${esc(scan.cost)}"></div>
+ <button class="btn" data-a="scansave" ${scan.busy?'disabled':''}>Save to Today</button>`:''}
+ ${!scan.items&&!scan.busy?'<button class="btn s" data-a="scanadd">Choose foods manually</button>':''}`;
+}
+async function prepareScanPhoto(file){
+ if(!file.type.startsWith('image/')||file.size>18000000)throw Error('Choose an image under 18 MB.');
+ const url=URL.createObjectURL(file);
+ try{
+  const image=new Image();
+  image.src=url;
+  try{await image.decode()}catch{throw Error('This photo format could not be opened. Try a JPEG or take a new photo.')}
+  const ratio=Math.min(1,960/Math.max(image.width,image.height));
+  const canvas=document.createElement('canvas');
+  canvas.width=Math.max(1,Math.round(image.width*ratio));canvas.height=Math.max(1,Math.round(image.height*ratio));
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0,canvas.width,canvas.height);
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.78));
+  if(!blob||blob.size>750000)throw Error('This photo is too large. Try cropping to the plate.');
+  return blob;
+ }finally{URL.revokeObjectURL(url)}
+}
+async function selectScanPhoto(scan,file){
+ if(!file||scan.busy)return;
+ scan.busy=true;scan.message='Preparing photo…';scan.photo=null;scan.preview='';scan.items=null;R();
+ try{
+  scan.photo=await prepareScanPhoto(file);
+  scan.preview=await new Promise((resolve,reject)=>{
+   const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(Error('Could not preview that photo.'));reader.readAsDataURL(scan.photo);
+  });
+  scan.message='';
+ }catch(error){scan.message=error.message}
+ finally{scan.busy=false;if(sheet===scan)R()}
+}
+async function analyzeScan(scan){
+ if(!scanConfigured()||!U||!scan.photo||scan.busy)return;
+ scan.busy=true;scan.message='';R();
+ try{
+  const token=await U.getIdToken();
+  const response=await fetch(SCAN_ENDPOINT,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'image/jpeg'},body:scan.photo,signal:AbortSignal.timeout(30000)});
+  if(response.status===403)throw Error('Scanning is limited to approved adult demo accounts. Choose foods manually.');
+  if(response.status===429)throw Error('Scan limit reached. Try later or choose foods manually.');
+  if(!response.ok)throw Error('Could not analyze the photo. Try again or choose foods manually.');
+  const result=await response.json();
+  if(!Array.isArray(result.ids))throw Error('No scan result was available.');
+  const eligible=new Set(scanMeals().map(food=>food.id));
+  const ids=[...new Set(result.ids)].filter(id=>eligible.has(id)).slice(0,8);
+  scan.items=ids.length?ids.map(id=>({id,servings:1})):[emptyScanItem()];
+  scan.message=ids.length?'Check the suggestions, add any missed food, and adjust the servings.':'No matching foods passed your filters. Choose foods manually.';
+ }catch(error){scan.message=error.message;scan.items??=[emptyScanItem()]}
+ finally{scan.busy=false;if(sheet===scan)R()}
+}
+function saveScan(scan){
+ const eligible=new Set(scanMeals().map(food=>food.id));
+ if(scan.busy||!scan.items?.length)return;
+ if(scan.items.some(({id,servings})=>!eligible.has(id)||!Number.isFinite(servings)||servings<.25||servings>10)){
+  scan.message='Choose each food and enter 0.25 to 10 servings.';R();return;
+ }
+ const cost=Number(scan.cost);
+ if(!String(scan.cost).trim()||!Number.isFinite(cost)||cost<0){scan.message='Enter what you paid in RM, or 0.';R();return}
+ S.logs.push({d:today(),s:scan.slot,id:null,n:scan.items.map(item=>MB[item.id].n).join(' + '),rm:Number(cost.toFixed(2)),chk:false,extra:true,t:Date.now(),nutrition:scanTotals(scan.items)});
+ save();go('app','home');toast('Meal saved with estimated nutrition.','meal');
+}
+
+const shv=()=>`<div class="bk" data-a="bk"><div class="sheet" role="dialog" aria-modal="true" aria-label="Details"><div class="row sp"><span></span><button class="lk x" data-a="close" aria-label="Close">${ic('x')}</button></div>${{meal:mealSheet,swap:swapSheet,log:logSheet,scan:scanSheet,how:howSheet}[sheet.t](sheet)}</div></div>`;
 
 /* ===== RENDER + EVENTS ===== */
 function R(){const f={load:vLoad,auth:vAuth,welcome:vWel,wiz:vWiz,rev:vRev,ana:vAna,res:vRes,app:()=>({home:vHome,plan:vPlan,explore:vExp,prog:vProg,prof:vProf}[tab])()}[V];
@@ -446,6 +547,11 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
  else if(a=='so'){SO=-SO;R()}
  else if(a=='meal'){sheet={t:'meal',id:v,i:I,d:D};R()}
  else if(a=='swap'){sheet={t:'swap',i:I,d:D};R()}
+ else if(a==='scanopen'&&scanConfigured()){sheet={t:'scan',slot:1,cost:'',items:null,busy:false};R()}
+ else if(a==='scanrun'&&sheet?.t==='scan'){void analyzeScan(sheet)}
+ else if(a==='scanadd'&&sheet?.t==='scan'){sheet.items??=[];if(sheet.items.length<8)sheet.items.push(emptyScanItem());R()}
+ else if(a==='scanremove'&&sheet?.t==='scan'){sheet.items.splice(I,1);R()}
+ else if(a==='scansave'&&sheet?.t==='scan'){saveScan(sheet)}
  else if(a=='foodlog'&&elig(S.P).out.some(m=>m.id===v)){sheet={t:'log',v,i:MB[v].c==='b'?0:MB[v].c==='s'?3:1,extra:true};R()}
  else if(a=='log'){sheet={t:'log',v,i:I};R()}
  else if(a=='selectswap'){sheet.selected=v;R();$('#sh .swap-option.on')?.focus()}
@@ -466,6 +572,22 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
  else if(a=='amode'){AM=AM=='in'?'up':'in';R()}
  else if(a=='areset'){const em=$('#ae').value.trim(),er=$('#aer');if(!CFG_OK)return;if(!em)return er.textContent='Type your email above first.';sendPasswordResetEmail(auth,em).then(()=>{er.style.color='var(--mt)';er.textContent='Reset link sent. Check your email.'}).catch(x=>{er.style.color='';er.textContent=fe(x)})}
  else if(a=='reset'){if(confirm('Delete all your SiswaDiet data? Your login stays.')){try{localStorage.removeItem(lk())}catch(x){}deleteDoc(doc(db,'users',U.uid,'app','state')).catch(()=>{});S=freshS();S.P.name=U?.displayName||'';PL=null;document.documentElement.dataset.theme='';go('welcome')}}});
+document.addEventListener('change',e=>{
+ const t=e.target,field=t.dataset.scan;
+ if(sheet?.t!=='scan'||!field)return;
+ if(field==='photo')void selectScanPhoto(sheet,t.files?.[0]);
+ if(field==='id'){sheet.items[+t.dataset.i].id=t.value;R();$('#scan-food-'+t.dataset.i)?.focus()}
+});
+document.addEventListener('input',e=>{
+ const field=e.target.dataset.scan;
+ if(sheet?.t!=='scan'||!field)return;
+ if(field==='slot')sheet.slot=+e.target.value;
+ if(field==='cost')sheet.cost=e.target.value;
+ if(field==='servings'){
+  sheet.items[+e.target.dataset.i].servings=e.target.valueAsNumber;
+  $('#scan-total').textContent=scanSummary(sheet.items);
+ }
+});
 document.addEventListener('input',e=>{const t=e.target,k=t.dataset.k;if(t.id=='as'){$('#ap').type=t.checked?'text':'password';return}if(t.id=='lm'){$('#lc').value=MB[t.value]?.rm??'';return}if(!k)return;
  if(k=='q'){Q=t.value;$('#elist').innerHTML=elist();return}
  S.P[k]=['age','w','h','bud'].includes(k)?(t.value===''?undefined:+t.value):t.value;if(k=='bud')$('#bfeed').innerHTML=bfeed();
