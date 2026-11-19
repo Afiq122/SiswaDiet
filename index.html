@@ -141,6 +141,8 @@ html, body, .sheet {
 .food-add{font-size:24px;min-width:44px;border-radius:50%;background:var(--lav);justify-content:center}
 .scan-preview{display:block;width:100%;max-height:230px;object-fit:contain;border-radius:16px}
 .toast-single{box-sizing:border-box;width:max-content;max-width:calc(100vw - 24px);padding:10px 16px;justify-content:center;text-align:center;white-space:nowrap;font-size:clamp(12px,4vw,16px)}
+.gender-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;max-width:360px;margin:8px auto 0}
+.gender-options .ch{display:flex;align-items:center;justify-content:center;min-height:48px;padding:8px 6px;text-align:center;line-height:1.25}
 </style></head><body><div id="app" class="app"></div><div id="sh"></div><div id="toast" role="status" aria-live="polite"></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -159,7 +161,7 @@ const CFG_OK=firebaseConfig.apiKey!="PASTE_HERE",fbApp=initializeApp(firebaseCon
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf=new Intl.NumberFormat('en-MY',{style:'currency',currency:'MYR'}),rm=n=>nf.format(n),KEY='siswadiet.v2';
 const ACT={sit:1.2,lgt:1.375,mod:1.55,vry:1.725},DL={vegan:0,veg:1,pesc:2,omni:3},DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],SL=['Breakfast','Lunch','Dinner','Snack','Snack'],CN={b:'Breakfast',ld:'Lunch / dinner',s:'Snack / add-on'};
-const GOALS=[['light','Lose weight','Lower-energy meals · adults 18+'],['maintain','Maintain weight','Meals for maintaining your current weight'],['gain','Gain weight','Higher-energy meals · adults 18+'],['muscle','Gain muscle','Higher-protein meals']];
+const GOALS=[['light','Lose weight','Lower-energy meals'],['maintain','Maintain weight','Meals for maintaining your current weight'],['gain','Gain weight','Higher-energy meals'],['muscle','Gain muscle','Higher-protein meals']];
 const goalNeedsAdult=goal=>goal==='light'||goal==='gain';
 const currentGoal=goal=>['balanced','active'].includes(goal)?'maintain':goal;
 const ALG=[['egg','Egg'],['dairy','Dairy'],['peanut','Peanut'],['seafood','Fish / seafood'],['soy','Soy'],['gluten','Gluten']],HN=[['diabetes','Diabetes'],['bp','High blood pressure'],['chol','High cholesterol'],['meds','Takes regular medication']];
@@ -261,7 +263,7 @@ ${fld('age','Age',P.age,'type="number" inputmode="numeric" min="13" max="80" req
 <div class="two">${fld('w','Weight (kg)',P.w,'type="number" inputmode="decimal" min="25" max="250" step="any" required')}${fld('h','Height (cm)',P.h,'type="number" inputmode="decimal" min="100" max="230" step="any" required')}</div>
 <h3 class="mt">What's your goal?</h3>
 ${GOALS.map(([id,title,detail])=>card('goal',id,title,detail,goalNeedsAdult(id)&&Number(P.age)>0&&Number(P.age)<18)).join('')}${er('goal')}
-<div class="f"><span class="lb">Gender</span><div class="chs">${['woman','man','nb','self','skip'].map(v=>chS('gen',v,LB[v])).join('')}</div>${er('gen')}</div>${P.gen=='self'?fld('gt','Describe (optional)',P.gt,'maxlength="30"'):''}
+<div class="f"><span class="lb" id="gender-label">Gender</span><div class="gender-options" role="group" aria-labelledby="gender-label">${['woman','man','self','skip'].map(v=>chS('gen',v,LB[v])).join('')}</div>${er('gen')}</div>${P.gen=='self'?fld('gt','Describe (optional)',P.gt,'maxlength="30"'):''}
 `};
 const b1=()=>`<h2>Your routine</h2><div class="f"><span class="lb">Daily activity</span></div>${ACTS.map(([v,t,s])=>card('act',v,t,s)).join('')}${er('act')}
 <div class="two">${sel('ex',['Exercise type (optional)',[['','Choose'],['strength','Strength'],['cardio','Cardio'],['sports','Sports'],['walk','Walking'],['other','Other'],['none','None']]])}${sel('exf',['Days per week (optional)',[['','Choose'],['0','Never'],['1-2','1–2'],['3-4','3–4'],['5+','5+']]])}</div>
