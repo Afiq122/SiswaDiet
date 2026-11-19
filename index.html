@@ -80,7 +80,14 @@ import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-ap
 import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,sendPasswordResetEmail,updateProfile}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,doc,getDoc,setDoc,deleteDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 /* ===== PASTE YOUR FIREBASE CONFIG HERE (Firebase console > Project settings > Your apps > Web) ===== */
-const firebaseConfig={apiKey:"AIzaSyDHryM71YQreXyoNK8cJAcgJZSUnyYMqDA",authDomain:"siswadiet-4abc1.firebaseapp.com",projectId:"siswadiet-4abc1",storageBucket:"siswadiet-4abc1.firebasestorage.app",messagingSenderId:"937160576607",appId:"1:937160576607:web:823ba150a695c28dfb55ea"};
+const firebaseConfig={
+  apiKey:"AIzaSyDHryM71YQreXyoNK8cJAcgJZSUnyYMqDA",
+  authDomain:"siswadiet-4abc1.firebaseapp.com",
+  projectId:"siswadiet-4abc1",
+  storageBucket:"siswadiet-4abc1.firebasestorage.app",
+  messagingSenderId:"937160576607",
+  appId:"1:937160576607:web:823ba150a695c28dfb55ea"
+};
 const CFG_OK=firebaseConfig.apiKey!="PASTE_HERE",fbApp=initializeApp(firebaseConfig),auth=getAuth(fbApp),db=getFirestore(fbApp);
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf=new Intl.NumberFormat('en-MY',{style:'currency',currency:'MYR'}),rm=n=>nf.format(n),KEY='siswadiet.v2';
@@ -294,4 +301,13 @@ if(CFG_OK)onAuthStateChanged(auth,async u=>{U=u;if(!u){S=freshS();PL=null;V='aut
  if(!d)try{d=JSON.parse(localStorage.getItem(lk()))}catch(e){}
  S=d&&d.v==2?d:freshS();if(!S.P.name)S.P.name=u.displayName||'';PL=S.plan;V=S.plan?'app':'welcome';tab='home';day=wd();document.documentElement.dataset.theme=S.theme||'';R()});
 else{V='auth';R()}
-</script></body></html>
+</script><script>
+const APP_VERSION='1';
+navigator.serviceWorker?.getRegistrations().then(r=>r.forEach(x=>x.unregister()));
+async function checkUpdate(){try{const r=await fetch('version.json?'+Date.now(),{cache:'no-store'}),v=(await r.json()).v;
+ if(v!==APP_VERSION&&!document.getElementById('upd')){const b=document.createElement('button');b.id='upd';b.textContent='New version available. Tap to update';
+ b.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:99;background:#6C5CE7;color:#fff;border:0;border-radius:99px;padding:12px 20px;font:700 14px system-ui;box-shadow:0 6px 20px rgba(0,0,0,.25)';
+ b.onclick=()=>location.reload();document.body.appendChild(b)}}catch(e){}}
+checkUpdate();document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});
+</script>
+</body></html>
