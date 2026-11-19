@@ -480,11 +480,18 @@ async function selectScanPhoto(scan,file){
 async function analyzeScan(scan){
  if(!scanConfigured()||!U||!scan.photo||scan.busy)return;
  scan.busy=true;scan.message='';R();
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),65000);
  try{
   const token=await U.getIdToken();
-  const response=await fetch(SCAN_ENDPOINT,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'image/jpeg'},body:scan.photo,signal:AbortSignal.timeout(30000)});
+  if(sheet!==scan)return;
+  const response=await fetch(SCAN_ENDPOINT,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'image/jpeg'},body:scan.photo,signal:controller.signal});
+  if(response.status===400||response.status===415)throw Error('The scanner could not read that photo. Try a new JPEG.');
+  if(response.status===401)throw Error('Please sign out and sign back in to refresh your session.');
   if(response.status===403)throw Error('Scanning is limited to approved adult demo accounts. Choose foods manually.');
   if(response.status===429)throw Error('Scan limit reached. Try later or choose foods manually.');
+  if(response.status===503)throw Error('The scanner is not ready. Check the Cloudflare setup or choose foods manually.');
+  if(response.status===504)throw Error('Gemini took too long to respond. Try again or choose foods manually.');
   if(!response.ok)throw Error('Could not analyze the photo. Try again or choose foods manually.');
   const result=await response.json();
   if(!Array.isArray(result.ids))throw Error('No scan result was available.');
@@ -492,8 +499,15 @@ async function analyzeScan(scan){
   const ids=[...new Set(result.ids)].filter(id=>eligible.has(id)).slice(0,8);
   scan.items=ids.length?ids.map(id=>({id,servings:1})):[emptyScanItem()];
   scan.message=ids.length?'Check the suggestions, add any missed food, and adjust the servings.':'No matching foods passed your filters. Choose foods manually.';
- }catch(error){scan.message=error.message;scan.items??=[emptyScanItem()]}
- finally{scan.busy=false;if(sheet===scan)R()}
+ }catch(error){
+  if(controller.signal.aborted||error.name==='TimeoutError'||error.name==='AbortError'){
+   scan.message='The scan took too long or the connection was interrupted. Try again with the app open, or choose foods manually.';
+  }else if(error instanceof TypeError){
+   scan.message='Could not reach the scanner. Check your connection and try again, or choose foods manually.';
+  }else{scan.message=error.message}
+  scan.items??=[emptyScanItem()];
+ }
+ finally{clearTimeout(timeout);scan.busy=false;if(sheet===scan)R()}
 }
 function saveScan(scan){
  const eligible=new Set(scanMeals().map(food=>food.id));
