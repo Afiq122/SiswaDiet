@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#6C5CE7">
-<meta name="siswadiet-build" content="18">
+<meta name="siswadiet-build" content="19">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>SiswaDiet</title>
 <link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
@@ -509,6 +509,55 @@ html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:
 .achievement-hint{margin-top:6px;text-align:center}
 .achievement-detail-icon{padding:2px;background:var(--lav);border-radius:9px;flex:none}
 .progress-page nav button.on{background:var(--lav);color:var(--pri)}
+/* Profile dashboard */
+.profile-view,.profile-view body{background:var(--bg)}
+.profile-view:not([data-theme=dark]){background:#f1e8fa}
+.profile-view:not([data-theme=dark]) body{min-height:100dvh;background:linear-gradient(#f1e8fa calc(env(safe-area-inset-top,0px) + 24px),#faf7fe 310px)}
+.dashboard.profile-page{padding-inline:clamp(12px,3.6vw,20px)}
+.profile-page .profile-heading{min-height:clamp(84px,23vw,119px);margin:0;padding-inline:4px 0}
+.profile-heading h1{font-size:clamp(25px,6.7vw,36px);letter-spacing:-.04em}
+.profile-heading p{font-size:clamp(11px,3.3vw,15px)}
+.profile-heading>.sp{max-width:27%;align-self:end}
+.profile-heading>.sp img{max-width:100%;object-fit:contain;object-position:bottom}
+.dashboard.profile-page .profile-summary{margin:0;padding:12px;background:radial-gradient(ellipse at 16% 0,#9469ba 0%,transparent 70%),linear-gradient(150deg,#725397,#50317d);color:#fff}
+.profile-page .profile-header{grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center}
+.profile-header h2{overflow-wrap:anywhere;font-size:clamp(14px,4.5vw,23px)}
+.profile-page .profile-avatar{display:grid;place-items:center;width:clamp(34px,12vw,54px);height:clamp(34px,12vw,54px);border-radius:50%;background:#3e2169;font-weight:800}
+.profile-page .profile-header .mut{margin-top:2px;font-size:clamp(10px,3vw,14px)}
+.profile-page .profile-edit{display:inline-flex;justify-content:center;align-items:center;gap:5px;width:auto;margin:0;padding:4px 8px;border-radius:999px;background:#f4eafe;color:#4b1b82;font-size:clamp(10px,2.9vw,14px);line-height:1.15}
+.profile-page .profile-edit svg{flex:none}
+.profile-page .profile-summary .progress-stats{border-top:1px solid #ffffff46;padding-top:9px;margin-top:9px}
+.profile-stat{min-width:0;display:flex;align-items:center;gap:7px;padding-inline:4px}
+.profile-stat svg{flex:none}
+.profile-stat b{display:block;overflow-wrap:anywhere;font-size:clamp(12px,3.65vw,17px);line-height:1.2}
+.profile-stat .mut{font-size:clamp(10px,2.9vw,13px)}
+.profile-page .profile-section{margin-top:10px;padding:9px}
+.profile-section-heading{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.profile-section-heading h3{font-size:clamp(15px,4.3vw,20px)}
+.profile-section-heading p{line-height:1.25;font-size:clamp(11px,3vw,14px)}
+.profile-section-icon{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;color:var(--pri);background:var(--lav)}
+.profile-page .prefs-grid,.profile-page .setting-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.profile-page .profile-section .action-tile{flex-direction:column;align-items:center;justify-content:center;min-height:65px;padding:6px 2px;text-align:center;line-height:1.16;gap:4px;border-radius:12px}
+.profile-page .action-tile b{font-size:clamp(10px,2.95vw,14px)}
+.profile-page .action-tile small{margin-top:2px;font-size:clamp(9px,2.65vw,12px)}
+.profile-page .setting-grid .action-tile{background:var(--bg)}
+.profile-page .mode-switch{margin:0}
+.profile-page .profile-group{border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.profile-page .profile-item{min-height:44px;gap:8px;padding:5px 8px}
+.profile-page .profile-item svg{color:var(--pri)}
+.profile-page .profile-item .profile-arrow{display:flex}
+.profile-actions{display:grid;grid-template-columns:1fr 1fr;margin-top:10px;padding-top:6px;border-top:1px solid var(--bd)}
+.profile-actions button{display:flex;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:2px 4px;border:0;background:transparent;color:var(--ink);font-size:clamp(11px,3.35vw,15px);font-weight:800}
+.profile-actions button+button{border-inline-start:1px solid var(--bd)}
+.profile-actions .profile-logout{color:var(--err)}
+.profile-actions svg{flex:none}
+.profile-page .profile-privacy{margin-top:10px;padding:0 9px}
+.profile-privacy summary{display:flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;list-style:none;font-weight:800}
+.profile-privacy summary::-webkit-details-marker{display:none}
+.profile-privacy summary>svg:last-child{margin-inline-start:auto;color:var(--pri)}
+.profile-privacy[open] summary>svg:last-child{transform:rotate(90deg)}
+.profile-privacy[open]{padding-bottom:10px}
+.profile-page nav button.on{background:var(--lav);color:var(--pri)}
 </style></head><body>
 <div id="update-slot" class="update-slot" hidden>
  <section class="update-card" aria-labelledby="update-title">
@@ -617,7 +666,7 @@ const EX={goal:'<b class="cf a"></b><b class="cf b"></b><b class="cf c"></b><b c
 function sisi(v='wave',s=110){const k=MAP[v]||v,h=k=='hero'?Math.round(s*1.15):s;
  if(k=='load')return`<div class="sp sp-load" style="width:${Math.round(h*.8)}px;height:${h}px" role="img" aria-label="${ALT.load}">${['front','side','back'].map(x=>`<img src="${SPR[x]}" alt="">`).join('')}</div>`;
  return`<div class="sp sp-${k}" style="height:${h}px" data-a="hop" role="img" aria-label="${ALT[k]||'Sisi'}"><img src="${SPR[k]}" alt="" draggable="false">${EX[k]||''}</div>`}
-const IC={"wallet":"<rect x=\"3\" y=\"5\" width=\"17\" height=\"15\" rx=\"3\"/><path d=\"M5 5l10-2 3 2M15 10h7v6h-7a3 3 0 0 1 0-6zM15 13h.01\"/>","trophy":"<path d=\"M8 3h8v7a4 4 0 0 1-8 0V3zm0 2H4v3a4 4 0 0 0 4 4m8-7h4v3a4 4 0 0 1-4 4m-4 2v6m-4 0h8v2H8z\"/>","badge-plan":"<rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"3\"/><path fill=\"none\" d=\"M3 10h18M8 3v4m8-4v4M7 14h1m3 0h1m3 0h1m-9 3h1m3 0h1\"/>","badge-log":"<path d=\"M3 11h18c-.5 5.4-3.2 8.3-6 8.8V21H9v-1.2c-2.8-.5-5.5-3.4-6-8.8zM13 11l5-7a2 2 0 0 1 3 2l-5 5\"/>","badge-day":"<path d=\"M3 16v-1a9 9 0 0 1 18 0v1H3zm-1 3h20M10 6a2 2 0 1 1 4 0\"/>","badge-star":"<path d=\"M12 2.8l2.7 5.5 6.1.9-4.4 4.3 1 6-5.4-2.8-5.4 2.8 1-6-4.4-4.3 6.1-.9z\"/>","badge-target":"<circle cx=\"11\" cy=\"13\" r=\"8\"/><circle cx=\"11\" cy=\"13\" r=\"5\" fill=\"#fff\"/><circle cx=\"11\" cy=\"13\" r=\"2\"/><path d=\"M11 13l9-9m-1-2v3h3\" fill=\"none\"/>",scanframe:"<path d=\"M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3M12 8l1.2 2.8L16 12l-2.8 1.2L12 16l-1.2-2.8L8 12l2.8-1.2z\"/>",checklist:"<rect x=\"5\" y=\"5\" width=\"14\" height=\"16\" rx=\"2\"/><path d=\"M9 5V3h6v2M8 10l1 1 2-2m2 2h3m-8 5 1 1 2-2m2 2h3\"/>",sliders:"<path d=\"M3 7h4m4 0h10M3 17h10m4 0h4\"/><circle cx=\"9\" cy=\"7\" r=\"2\"/><circle cx=\"15\" cy=\"17\" r=\"2\"/>",grid:"<rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/>",sunrise:"<path d=\"M4 18h16M7 16a5 5 0 0 1 10 0m-5-8V5M5 10l2 2m10 0 2-2M2 15h2m16 0h2\"/>",cup:"<path d=\"M6 8h12l-2 13H8L6 8zm-1 0h14m-7 0 2-5h4\"/>",plus:"<path d=\"M12 5v14M5 12h14\"/>",fork:"<path d=\"M4 3v5a3 3 0 0 0 6 0V3M7 3v18M17 21V3c-2.6 1.5-4 4.5-4 8h4\"/>",swap:"<path d=\"M4 8h15l-4-4m5 12H5l4 4M19 8l-4 4m-10 4 4-4\"/>",next:"<path d=\"m9 5 7 7-7 7\"/>",info:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 11v5m0-8h.01\"/>",grain:"<path d=\"M3 21 18 6m-7 7C6 13 5 9 7 7c4 0 5 3 4 6zm3-3c-3-2-3-5 0-7 2 2 3 5 0 7zm-4 4c3-2 6-1 8 1-3 3-6 3-8-1zm5-5c2-1 4-1 6 1-2 3-5 3-6-1zm2-2c0-3 2-5 5-5 0 3-2 5-5 5z\"/>",drop:"<path d=\"M12 3C8.5 8 5 11.4 5 15a7 7 0 0 0 14 0c0-3.6-3.5-7-7-12Z\"/>",strength:"<path d=\"M12 12c2-2 5-2 7-.5 2 1.5 2 5.5.5 7-1.7 1.8-9.5 2.8-15 1-1-.3-1.6-1.4-1.4-2.4l1.7-8.9c.6-2.8 2-4.4 4.2-4.4 1.9 0 3 1 3 2.4 0 1-.6 1.7-1.7 1.8H9.1l-.5 5.8m2.4 2c.1-1.6.5-2.8 1-3.8\"/>",compass:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"m15.5 8.5-2 5-5 2 2-5z\"/>",home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',plan:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/>',explore:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/>',prog:'<path d="M5 20V11M12 20V4M19 20v-6"/>',prof:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>',ok:'<path d="M5 12l5 5 9-10"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',bowl:'<path d="M3 11h18a9 9 0 0 1-18 0zM8 7c0-2 2-2 2-4M14 7c0-2 2-2 2-4"/>',back:'<path d="M15 5l-7 7 7 7"/>'};
+const IC={"pencil":"<path d=\"m4 16 12-12 4 4L8 20H4zM14 6l4 4\"/>","goal":"<circle cx=\"11\" cy=\"13\" r=\"8\"/><circle cx=\"11\" cy=\"13\" r=\"4\"/><path d=\"M11 13l9-9m-1-2v3h3\"/>","heart":"<path d=\"M12 21l-8-8a5 5 0 0 1 8-6 5 5 0 0 1 8 6z\"/>","activity":"<path d=\"m3 18 6-6 4 4 8-9m-5 0h5v5\"/>","health":"<path d=\"m12 22 5-3a7 7 0 0 0 4-6V5l-9-3-9 3v8a7 7 0 0 0 4 6zM9 11h6m-3-3v6\"/>","refresh":"<path d=\"M20 7v5h-5M4 17v-5h5M20 12a8 8 0 0 0-14-5m-2 5a8 8 0 0 0 14 5\"/>","bulb":"<path d=\"M9 18h6m-5 3h4M8 14a6 6 0 1 1 8 0l-1 2H9z\"/>","settings":"<path d=\"M10 3h4l1 3 3 1 3 1v4l-2 2-1 3-1 3h-4l-2-2-3-1-3-1v-4l2-2 1-3z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","moon":"<path d=\"M20 15a8.5 8.5 0 0 1-11-11A8.5 8.5 0 1 0 20 15z\"/>","download":"<path d=\"M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4\"/>","trash":"<path d=\"M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13m-8 3v6m4-6v6\"/>","logout":"<path d=\"M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5m2-8h9m-4-4 4 4-4 4\"/>","wallet":"<rect x=\"3\" y=\"5\" width=\"17\" height=\"15\" rx=\"3\"/><path d=\"M5 5l10-2 3 2M15 10h7v6h-7a3 3 0 0 1 0-6zM15 13h.01\"/>","trophy":"<path d=\"M8 3h8v7a4 4 0 0 1-8 0V3zm0 2H4v3a4 4 0 0 0 4 4m8-7h4v3a4 4 0 0 1-4 4m-4 2v6m-4 0h8v2H8z\"/>","badge-plan":"<rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"3\"/><path fill=\"none\" d=\"M3 10h18M8 3v4m8-4v4M7 14h1m3 0h1m3 0h1m-9 3h1m3 0h1\"/>","badge-log":"<path d=\"M3 11h18c-.5 5.4-3.2 8.3-6 8.8V21H9v-1.2c-2.8-.5-5.5-3.4-6-8.8zM13 11l5-7a2 2 0 0 1 3 2l-5 5\"/>","badge-day":"<path d=\"M3 16v-1a9 9 0 0 1 18 0v1H3zm-1 3h20M10 6a2 2 0 1 1 4 0\"/>","badge-star":"<path d=\"M12 2.8l2.7 5.5 6.1.9-4.4 4.3 1 6-5.4-2.8-5.4 2.8 1-6-4.4-4.3 6.1-.9z\"/>","badge-target":"<circle cx=\"11\" cy=\"13\" r=\"8\"/><circle cx=\"11\" cy=\"13\" r=\"5\" fill=\"#fff\"/><circle cx=\"11\" cy=\"13\" r=\"2\"/><path d=\"M11 13l9-9m-1-2v3h3\" fill=\"none\"/>",scanframe:"<path d=\"M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3M12 8l1.2 2.8L16 12l-2.8 1.2L12 16l-1.2-2.8L8 12l2.8-1.2z\"/>",checklist:"<rect x=\"5\" y=\"5\" width=\"14\" height=\"16\" rx=\"2\"/><path d=\"M9 5V3h6v2M8 10l1 1 2-2m2 2h3m-8 5 1 1 2-2m2 2h3\"/>",sliders:"<path d=\"M3 7h4m4 0h10M3 17h10m4 0h4\"/><circle cx=\"9\" cy=\"7\" r=\"2\"/><circle cx=\"15\" cy=\"17\" r=\"2\"/>",grid:"<rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/>",sunrise:"<path d=\"M4 18h16M7 16a5 5 0 0 1 10 0m-5-8V5M5 10l2 2m10 0 2-2M2 15h2m16 0h2\"/>",cup:"<path d=\"M6 8h12l-2 13H8L6 8zm-1 0h14m-7 0 2-5h4\"/>",plus:"<path d=\"M12 5v14M5 12h14\"/>",fork:"<path d=\"M4 3v5a3 3 0 0 0 6 0V3M7 3v18M17 21V3c-2.6 1.5-4 4.5-4 8h4\"/>",swap:"<path d=\"M4 8h15l-4-4m5 12H5l4 4M19 8l-4 4m-10 4 4-4\"/>",next:"<path d=\"m9 5 7 7-7 7\"/>",info:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 11v5m0-8h.01\"/>",grain:"<path d=\"M3 21 18 6m-7 7C6 13 5 9 7 7c4 0 5 3 4 6zm3-3c-3-2-3-5 0-7 2 2 3 5 0 7zm-4 4c3-2 6-1 8 1-3 3-6 3-8-1zm5-5c2-1 4-1 6 1-2 3-5 3-6-1zm2-2c0-3 2-5 5-5 0 3-2 5-5 5z\"/>",drop:"<path d=\"M12 3C8.5 8 5 11.4 5 15a7 7 0 0 0 14 0c0-3.6-3.5-7-7-12Z\"/>",strength:"<path d=\"M12 12c2-2 5-2 7-.5 2 1.5 2 5.5.5 7-1.7 1.8-9.5 2.8-15 1-1-.3-1.6-1.4-1.4-2.4l1.7-8.9c.6-2.8 2-4.4 4.2-4.4 1.9 0 3 1 3 2.4 0 1-.6 1.7-1.7 1.8H9.1l-.5 5.8m2.4 2c.1-1.6.5-2.8 1-3.8\"/>",compass:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"m15.5 8.5-2 5-5 2 2-5z\"/>",home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',plan:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/>',explore:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/>',prog:'<path d="M5 20V11M12 20V4M19 20v-6"/>',prof:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>',ok:'<path d="M5 12l5 5 9-10"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',bowl:'<path d="M3 11h18a9 9 0 0 1-18 0zM8 7c0-2 2-2 2-4M14 7c0-2 2-2 2-4"/>',back:'<path d="M15 5l-7 7 7 7"/>'};
 const ic=(n,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
 const th=m=>`<div class="th" style="background:${{b:'var(--yw)',ld:'var(--lav)',s:'var(--mw)'}[m.c]};color:${{b:'#B7791F',ld:'var(--pri)',s:'var(--mt)'}[m.c]}">${ic('bowl',26)}</div>`;
 
@@ -898,35 +947,42 @@ function vProg(){
 function profileItem(label,description,icon,action,value=null){
  return `<button class="profile-item" data-a="${action}"${value===null?'':` data-v="${value}"`}>${ic(icon,19)}<span><b>${label}</b><small class="mut" style="display:block">${description}</small></span><span class="profile-arrow" aria-hidden="true">›</span></button>`;
 }
+function profileHeading(title,description,icon){
+ return `<div class="profile-section-heading"><span class="profile-section-icon">${ic(icon,19)}</span><div><h3>${title}</h3><p class="mut">${description}</p></div></div>`;
+}
 function vProf(){
  const P=S.P, goal=esc(GN()), theme=S.theme==='dark';
- return `${pageHead('Profile','Manage your account and preferences','wave')}
- <div class="card panel-purple profile-summary"><div class="profile-header"><span class="profile-avatar" aria-hidden="true">${esc((P.name||'?')[0].toUpperCase())}</span><div><h2>${esc(P.name)}</h2><p class="mut sm">${goal} · ${esc(LB[P.diet])}</p></div></div>
- <button class="btn s" data-a="profileedit" data-v="0">Edit Profile</button>
- <div class="progress-stats"><div><b>${S.logs.length}</b><p class="mut sm">Meals logged</p></div><div><b>${goal}</b><p class="mut sm">Current goal</p></div></div></div>
- <section class="profile-section"><h3>My Preferences</h3><p class="mut sm">Your details and diet settings</p><div class="prefs-grid">
-  ${actionTile('Personal Details','Basic information and goal','prof','profileedit',0)}
-  ${actionTile('Activity Routine','Activity level and exercise','prog','profileedit',1)}
-  ${actionTile('Allergies &amp; Health','Food allergies and health notes','ok','profileedit',2)}
-  ${actionTile('Food Preferences','Diet and disliked foods','bowl','profileedit',3)}
-  ${actionTile('Daily Budget',rm(P.bud)+' per day · Edit','plan','profileedit',4)}
-  ${actionTile('Try a New Budget','Preview a different amount','explore','budget-preview')}
+ return `<header class="page-head profile-heading"><div><h1>Profile</h1><p>Manage your account and preferences</p></div>${sisi('wave',82)}</header>
+ <section class="card panel-purple profile-summary"><div class="profile-header">
+  <span class="profile-avatar" aria-hidden="true">${esc((P.name||'?')[0].toUpperCase())}</span>
+  <div><h2>${esc(P.name)}</h2><p class="mut sm">${goal} · ${esc(LB[P.diet])}</p></div>
+  <button type="button" class="btn s profile-edit" data-a="profileedit" data-v="0">${ic('pencil',15)} Edit Profile</button>
+ </div><div class="progress-stats">
+  <div class="profile-stat">${ic('fork',21)}<div><b>${S.logs.length}</b><p class="mut sm">Meals logged</p></div></div>
+  <div class="profile-stat">${ic('goal',22)}<div><b>${goal}</b><p class="mut sm">Your current goal</p></div></div>
  </div></section>
- <section class="profile-section"><h3>My Progress</h3><p class="mut sm">Track your nutrition and meal planning</p><div class="card profile-group">
+ <section class="card profile-section">${profileHeading('My Preferences','Your details and diet settings','heart')}<div class="prefs-grid">
+  ${actionTile('Personal Details','Goal · Basics','prof','profileedit',0)}
+  ${actionTile('Activity Routine','Exercise level','activity','profileedit',1)}
+  ${actionTile('Allergies &amp; Health','Food allergies','health','profileedit',2)}
+  ${actionTile('Food Preferences','Diet and dislikes','bowl','profileedit',3)}
+  ${actionTile('Daily Budget',rm(P.bud)+' a day','wallet','profileedit',4)}
+  ${actionTile('Change Budget','Try a new budget','refresh','budget-preview')}
+ </div></section>
+ <section class="card profile-section">${profileHeading('My Progress','Track your nutrition and plan performance','prog')}<div class="profile-group">
   ${profileItem('Nutrition Today','Your intake and targets','home','go','home')}
-  ${profileItem('Weekly Progress','Meal logs and spending trends','prog','go','prog')}
-  ${profileItem('How Recommendations Work','How your meals are chosen','explore','how')}
+  ${profileItem('Weekly Progress','Meal logs and spending trends','activity','go','prog')}
+  ${profileItem('How Recommendations Work','Learn how meals are chosen','bulb','how')}
  </div></section>
- <section class="profile-section"><h3>Settings &amp; Data</h3><p class="mut sm">App and data management</p><div class="setting-grid">
-  <button class="action-tile" role="switch" aria-label="Dark mode" aria-checked="${theme}" data-a="theme"><span><b>Dark Mode</b><small>${theme?'On':'Off'}</small></span><span class="mode-switch" aria-hidden="true"></span></button>
-  ${actionTile('Export Data','JSON','plan','export')}
-  ${actionTile('Check Updates','Check app version','ok','upd')}
+ <section class="card profile-section">${profileHeading('Settings &amp; Data','App and data management','settings')}<div class="setting-grid">
+  <button type="button" class="action-tile" role="switch" aria-label="Dark mode" aria-checked="${theme}" data-a="theme">${ic('moon',20)}<b>Dark Mode</b><span class="mode-switch" aria-hidden="true"></span></button>
+  ${actionTile('Export Data','JSON','download','export')}
+  <button type="button" class="action-tile" data-a="upd">${ic('refresh',20)}<b>Check Updates</b></button>
+ </div><div class="profile-actions">
+  <button type="button" class="profile-reset" data-a="reset">${ic('trash',17)} Delete My Data</button>
+  <button type="button" class="profile-logout" data-a="exit">${ic('logout',17)} Log Out</button>
  </div></section>
- <section class="profile-section"><h3>Account</h3><div class="card profile-group">
-  ${profileItem('Log Out','Sign out of this device','back','exit')}
-  <button class="profile-item danger" data-a="reset">${ic('x',19)}<b>Delete My Data</b><span aria-hidden="true">›</span></button>
- </div></section>
- <details class="card"><summary>${authIcon('shield',16)} Privacy &amp; Limits</summary><p class="mut sm mt">Your profile, meal plan and logs are saved in Firebase and cached on this device. Your details help calculate meal recommendations. Prices and nutrition are estimates, and food suitability depends on the information available.</p><p class="mut sm mt">Export downloads a JSON copy. Deleting your data removes your saved plan, profile and logs while keeping your sign-in account.</p><p class="mut sm mt">Installed version: ${esc(new Date(document.lastModified).toLocaleString('en-MY'))}</p></details>`;
+ <details class="card profile-privacy"><summary><span class="profile-section-icon">${authIcon('shield',19)}</span> Privacy &amp; Limits ${ic('next',17)}</summary><p class="mut sm mt">Your profile, meal plan and logs are saved in Firebase and cached on this device. Your details help calculate meal recommendations. Prices and nutrition are estimates, and food suitability depends on the information available.</p><p class="mut sm mt">Export downloads a JSON copy. Deleting your data removes your saved plan, profile and logs while keeping your sign-in account.</p><p class="mut sm mt">Installed version: ${esc(new Date(document.lastModified).toLocaleString('en-MY'))}</p></details>`;
 }
 const vLoad=()=>`<div class="wel full">${sisi('load',130)}<p class="mut">Loading your account…</p></div>`;
 const authIcons={
@@ -977,7 +1033,7 @@ function syncAuthViewport(app){
  app.style.setProperty('--auth-top',viewport.offsetTop+'px');
 }
 const vWel=()=>`<div class="wel full"><img class="logo" src="${LOGO}" alt="SiswaDiet logo"><h1>Eat smart.<br>Spend wisely.</h1><p class="mut">Meal ideas for student life, matched to your goal, food rules and daily budget.</p>${S.plan?`<button class="btn" data-a="cont">Continue as ${esc(S.P.name)}</button>`:'<button class="btn" data-a="start">Get started</button>'}<button class="btn s" data-a="sample">Try a sample profile</button><p class="mut sm">Signed in as ${esc(U?.email)}</p></div>`;
-const nav=()=>`<nav aria-label="Main">${[['home','Today'],['plan','Week'],['explore','Explore'],['prog','Progress'],['prof','Profile']].map(([k,t])=>`<button data-a="go" data-v="${k}" class="${tab==k?'on':''}" ${tab==k?'aria-current="page"':''}>${ic(['home','plan','explore','prog'].includes(tab)&&k==='explore'?'compass':k)}${t}</button>`).join('')}</nav>`;
+const nav=()=>`<nav aria-label="Main">${[['home','Today'],['plan','Week'],['explore','Explore'],['prog','Progress'],['prof','Profile']].map(([k,t])=>`<button data-a="go" data-v="${k}" class="${tab==k?'on':''}" ${tab==k?'aria-current="page"':''}>${ic(['home','plan','explore','prog','prof'].includes(tab)&&k==='explore'?'compass':k)}${t}</button>`).join('')}</nav>`;
 
 /* ===== SHEETS ===== */
 function whyL(m,ids){
@@ -1295,14 +1351,15 @@ const shv=()=>`<div class="bk" data-a="bk"><div class="sheet" role="dialog" aria
 /* ===== RENDER + EVENTS ===== */
 function R(){const f={load:vLoad,auth:vAuth,welcome:vWel,wiz:vWiz,rev:vRev,ana:vAna,res:vRes,app:()=>({home:vHome,plan:vPlan,explore:vExp,prog:vProg,prof:vProf}[tab])()}[V];
  const isToday=V==='app'&&tab==='home', root=document.documentElement;
- const isWeek=V==='app'&&tab==='plan', isExplore=V==='app'&&tab==='explore', isProgress=V==='app'&&tab==='prog';
+ const isWeek=V==='app'&&tab==='plan', isExplore=V==='app'&&tab==='explore', isProgress=V==='app'&&tab==='prog', isProfile=V==='app'&&tab==='prof';
  root.classList.toggle('today-view',isToday);
  root.classList.toggle('week-view',isWeek);
  root.classList.toggle('explore-view',isExplore);
  root.classList.toggle('progress-view',isProgress);
+ root.classList.toggle('profile-view',isProfile);
  root.classList.toggle('dashboard-view',V==='app');
- $('meta[name="theme-color"]').content=isToday?(root.dataset.theme==='dark'?'#2d203f':'#efe6fa'):isWeek?(root.dataset.theme==='dark'?'#161020':'#f7f3fd'):(isExplore||isProgress)?(root.dataset.theme==='dark'?'#161020':'#f1e8fa'):'#6C5CE7';
- const app=$('#app');app.className=V==='auth'?'app auth-shell':V==='app'?'app dashboard'+(isToday?' today-page':isWeek?' week-page':isExplore?' explore-page':isProgress?' progress-page':''):'app';syncAuthViewport(app);
+ $('meta[name="theme-color"]').content=isToday?(root.dataset.theme==='dark'?'#2d203f':'#efe6fa'):isWeek?(root.dataset.theme==='dark'?'#161020':'#f7f3fd'):(isExplore||isProgress||isProfile)?(root.dataset.theme==='dark'?'#161020':'#f1e8fa'):'#6C5CE7';
+ const app=$('#app');app.className=V==='auth'?'app auth-shell':V==='app'?'app dashboard'+(isToday?' today-page':isWeek?' week-page':isExplore?' explore-page':isProgress?' progress-page':isProfile?' profile-page':''):'app';syncAuthViewport(app);
  app.innerHTML=`<div class="v${foc?' nv':''}" id="vw" tabindex="-1">${f()}</div>${V=='app'?nav():''}`;$('#sh').innerHTML=sheet?shv():'';
  if(sheet){if(sheet.t==='log')updateLogEstimate();$('#sh .x').focus()}else if(foc){$('#vw').focus({preventScroll:true});scrollTo(0,0);foc=0}}
 const toast=(m,v)=>{clearTimeout(toastTimer);$('#toast').innerHTML=`<div class="toast${m==='You have the latest version.'?' toast-single':''}">${v?sisi(v,40):''}<span>${esc(m)}</span></div>`;toastTimer=setTimeout(()=>$('#toast').innerHTML='',2400)};
