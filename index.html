@@ -190,6 +190,28 @@ html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:
 .budget-compare strong{display:block}
 .budget-quick{margin-top:6px}
 .budget-result:focus-visible{outline-offset:4px}
+.today-budget .budget-head{align-items:flex-start}
+.today-budget .budget-head h2{font-size:15px;margin:8px 0 0}
+.today-budget .budget-value{font-size:clamp(36px,11vw,54px);letter-spacing:-.05em;overflow-wrap:anywhere}
+.budget-amount{margin:5px 0 14px}
+.budget-amount p{font-weight:700}
+.budget-indicator{--budget-color:var(--mt);background:var(--card);border:1px solid var(--bd);border-radius:14px}
+.budget-indicator[data-status="at"]{--budget-color:var(--pri)}
+.budget-indicator[data-status="over"]{--budget-color:var(--err)}
+.budget-indicator summary{cursor:pointer;list-style:none;padding:12px 13px;display:grid;gap:8px;border-radius:14px}
+.budget-indicator summary::-webkit-details-marker{display:none}
+.budget-indicator summary:focus-visible{outline-offset:2px}
+.budget-indicator-head,.budget-indicator-caption{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:2px 10px}
+.budget-indicator-head b{color:var(--budget-color)}
+.budget-indicator-arrow{display:inline-block;margin-left:4px}
+.budget-indicator[open] .budget-indicator-arrow{transform:rotate(180deg)}
+.budget-meter{display:block;width:100%;height:9px;border:0;border-radius:99px;overflow:hidden;appearance:none;background:var(--lav)}
+.budget-meter::-webkit-progress-bar{background:var(--lav);border-radius:99px}
+.budget-meter::-webkit-progress-value{background:var(--budget-color);border-radius:99px}
+.budget-meter::-moz-progress-bar{background:var(--budget-color);border-radius:99px}
+.budget-breakdown{margin:0;padding:12px 13px 13px;border-top:1px solid var(--bd)}
+.budget-breakdown dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:13px}
+.budget-breakdown dd{margin:0;text-align:right;font-weight:700}
 </style></head><body><div id="app" class="app"></div><div id="sh"></div><div id="toast" role="status" aria-live="polite"></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -377,13 +399,37 @@ function nutritionCards(logs,P){
  </div><p class="mut sm mt">Estimated from meals logged today.${totals.unknown?' Custom meals without nutrition values are excluded.':''}</p></div>
  </section>`;
 }
+
+function todayBudgetCard(budget,planned,logs){
+ const limit=Math.round(budget*100);
+ const spent=logs.reduce((total,log)=>total+Math.round(log.rm*100),0);
+ const left=limit-spent;
+ const status=left<0?'over':left===0?'at':'under';
+ const statusLabel={under:'Under budget',at:'Budget reached',over:'Over budget'}[status];
+ const usage=limit>0?spent/limit*100:spent>0?100:0;
+ const percent=usage>100&&usage<101?'Over 100':usage<100&&usage>99?'Over 99':String(Math.round(usage));
+ return `<section class="card budget-card today-budget" aria-labelledby="today-budget-title">
+  <div class="budget-head"><h2 id="today-budget-title">Daily food budget</h2><button class="btn s" data-a="budget-preview">Try a new budget</button></div>
+  <div class="budget-amount"><div class="budget-value">${rm(Math.abs(left)/100)}</div><p>${left<0?'over budget today':'left to spend today'}</p></div>
+  <details class="budget-indicator" data-status="${status}">
+   <summary>
+    <span class="budget-indicator-head"><b>${statusLabel}</b><span class="mut sm">${percent}% used</span></span>
+    <progress class="budget-meter" max="100" value="${Math.min(100,Math.max(0,usage))}" aria-label="Daily food budget used"></progress>
+    <span class="budget-indicator-caption mut sm"><span>${rm(spent/100)} spent of ${rm(limit/100)}</span><span>Breakdown <span class="budget-indicator-arrow" aria-hidden="true">⌄</span></span></span>
+   </summary>
+   <div class="budget-breakdown">
+    <dl><dt>Daily limit</dt><dd>${rm(limit/100)}</dd><dt>Planned meals</dt><dd>${rm(planned)}</dd><dt>Actual spending</dt><dd>${rm(spent/100)}</dd></dl>
+    <p class="mut sm mt">Only the meals you log count toward money spent.</p>
+   </div>
+  </details>
+ </section>`;
+}
 function vHome(){
  const P=S.P,pl=S.plan,d=wd(),ids=pl.days[d],pt=tot(ids),logs=S.logs.filter(l=>l.d==today());
- const sp=logs.reduce((total,log)=>total+log.rm,0),left=+(P.bud-sp).toFixed(2);
  const next=ids.findIndex((id,i)=>!isLg(i,id));
  return`<div class="row sp"><div><h1>Hi, ${esc(P.name)}</h1><p class="mut">Today’s meal plan</p></div>${sisi(new Set(S.logs.filter(l=>l.d==today()&&l.s<3).map(l=>l.s)).size>=3?'celebrate':'wave',72)}</div>${S.sample?'<div class="bn w">You’re viewing a sample profile. Edit it in Profile to use your own details.</div>':''}
 ${JSON.stringify(pl.P)!=JSON.stringify(P)?'<div class="bn w">Your details changed. <button class="lk" data-a="gen">Regenerate plan</button></div>':''}${pl.mode=='partial'?`<div class="bn w">Closest-match plan: your goal targets aren’t fully met within ${rm(P.bud)} a day. <button class="lk" data-a="how">See why</button></div>`:''}
-<div class="card budget-card"><div class="budget-head"><div><p>Daily food budget</p><div class="budget-value">${rm(P.bud)}</div></div><button class="btn s" data-a="budget-preview">Try a new budget</button></div><div class="budget-stats"><div><b>${rm(pt)}</b><span class="mut sm">Planned today</span></div><div><b>${rm(sp)}</b><span class="mut sm">Logged today</span></div></div><p class="sm mt">${rm(Math.abs(left))} ${left<0?'over budget':'left today'}</p></div>
+${todayBudgetCard(P.bud,pt,logs)}
 ${nutritionCards(logs,P)}
 ${next>=0?`<div class="card"><h3>Next meal to log</h3>${mrow(ids[next],next,d,1)}</div>`:''}
 
