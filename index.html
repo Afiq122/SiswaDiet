@@ -302,12 +302,14 @@ if(CFG_OK)onAuthStateChanged(auth,async u=>{U=u;if(!u){S=freshS();PL=null;V='aut
  S=d&&d.v==2?d:freshS();if(!S.P.name)S.P.name=u.displayName||'';PL=S.plan;V=S.plan?'app':'welcome';tab='home';day=wd();document.documentElement.dataset.theme=S.theme||'';R()});
 else{V='auth';R()}
 </script><script>
-const APP_VERSION='1';
+/* Auto-update: compares this page's Last-Modified time with the server's. Nothing to edit when you update. */
 navigator.serviceWorker?.getRegistrations().then(r=>r.forEach(x=>x.unregister()));
-async function checkUpdate(){try{const r=await fetch('version.json?'+Date.now(),{cache:'no-store'}),v=(await r.json()).v;
- if(v!==APP_VERSION&&!document.getElementById('upd')){const b=document.createElement('button');b.id='upd';b.textContent='New version available. Tap to update';
+const RUNNING=Date.parse(document.lastModified);
+async function checkUpdate(){try{
+ const r=await fetch(location.pathname,{method:'HEAD',cache:'no-store'}),lm=r.headers.get('last-modified'),srv=lm?Date.parse(lm):0;
+ if(srv&&srv-RUNNING>2000&&!document.getElementById('upd')){const b=document.createElement('button');b.id='upd';b.textContent='New version available. Tap to update';
  b.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:99;background:#6C5CE7;color:#fff;border:0;border-radius:99px;padding:12px 20px;font:700 14px system-ui;box-shadow:0 6px 20px rgba(0,0,0,.25)';
- b.onclick=()=>location.reload();document.body.appendChild(b)}}catch(e){}}
+ b.onclick=()=>{location.href=location.pathname+'?v='+Date.now()};document.body.appendChild(b)}}catch(e){}}
 checkUpdate();document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});
 </script>
 </body></html>
