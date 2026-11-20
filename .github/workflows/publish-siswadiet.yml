@@ -1,0 +1,70 @@
+name: Publish SiswaDiet
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Check out website files
+        uses: actions/checkout@v6
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Add the SiswaDiet build number
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          path = Path("index.html")
+          if not path.is_file():
+              raise SystemExit("index.html is missing from the repository root.")
+
+          html = path.read_text(encoding="utf-8")
+          config = re.search(r"\b(?:const|let|var)\s+firebaseConfig\s*=\s*\{([^}]*)\}", html)
+          key = re.search(r"""["']?apiKey["']?\s*:\s*["']([^"']+)["']""", config[1]) if config else None
+          if not key or key[1].strip() == "PASTE_HERE" or not key[1].strip():
+              raise SystemExit("Upload the complete index.html with your Firebase configuration.")
+
+          build = 28 + int(os.environ["GITHUB_RUN_NUMBER"])
+          tag = f'<meta name="siswadiet-build" content="{build}">'
+          old_tag = r'''<meta\b(?=[^>]*\bname\s*=\s*["']siswadiet-build["'])[^>]*>'''
+          html = re.sub(old_tag, "", html, flags=re.IGNORECASE)
+          html, count = re.subn(
+              r"</head\s*>", tag + "\n</head>", html, count=1, flags=re.IGNORECASE
+          )
+          if count != 1:
+              raise SystemExit("Could not find </head> in index.html.")
+
+          path.write_text(html, encoding="utf-8")
+          print(f"Publishing SiswaDiet build {build}")
+          PY
+
+      - name: Upload website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+
+      - name: Deploy website
+        id: deployment
+        uses: actions/deploy-pages@v4
