@@ -2,13 +2,7 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#6C5CE7">
-<meta name="siswadiet-build" content="22">
-<script>/* Stale-copy guard: if this page is older than a build already seen on this phone, reload once, bypassing the cache. */
-(function(){try{var m=document.querySelector('meta[name="siswadiet-build"]'),b=Number(m&&m.content)||0,s=Number(localStorage.getItem('sd-build'))||0,u=new URL(location.href),fixed=u.searchParams.has('v');
-if(b<s&&!fixed&&!sessionStorage.getItem('sd-fix')){sessionStorage.setItem('sd-fix','1');u.searchParams.set('v',s+'-'+Date.now());location.replace(u.href);return}
-localStorage.setItem('sd-build',String(fixed&&b<s?b:Math.max(b,s)));
-navigator.serviceWorker&&navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(x){x.unregister()})});
-window.caches&&caches.keys().then(function(k){k.forEach(function(n){caches.delete(n)})})}catch(e){}})();</script>
+<meta name="siswadiet-build" content="23">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>SiswaDiet</title>
 <link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
@@ -849,10 +843,9 @@ function todayBudgetCard(budget,planned,logs){
 function vHome(){
  const P=S.P,pl=S.plan,d=wd(),ids=pl.days[d],pt=tot(ids),logs=S.logs.filter(l=>l.d==today());
  const next=ids.findIndex((id,i)=>!isLg(i,id)),changed=JSON.stringify(pl.P)!==JSON.stringify(P);
- const complete=new Set(logs.filter(log=>log.s<3).map(log=>log.s)).size>=3;
  const nutritionDate=new Date();nutritionDate.setDate(nutritionDate.getDate()-nutritionDay);
  const nutritionLogs=nutritionDay?S.logs.filter(log=>log.d===nutritionDate.toLocaleDateString('en-CA')):logs;
- return`<header class="page-head today-heading"><div><h1>Hi, ${esc(P.name)}</h1><p>Today’s meal plan</p></div>${sisi(complete?'celebrate':'meal',122)}</header>${todayBudgetCard(P.bud,pt,logs)}
+ return`<header class="page-head today-heading"><div><h1>Hi, ${esc(P.name)}</h1><p>Today’s meal plan</p></div>${sisi('meal',122)}</header>${todayBudgetCard(P.bud,pt,logs)}
  ${nutritionCards(nutritionLogs,P)}
  ${S.sample?'<div class="bn w">You’re viewing a sample profile. Edit it in Profile to use your own details.</div>':''}
 ${changed?'<div class="bn w">Your details changed. <button class="lk" data-a="gen">Regenerate plan</button></div>':''}
@@ -1464,7 +1457,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
  else if(a=='exit')signOut(auth);
  else if(a=='upd'&&!t.disabled){
   t.disabled=true;toast('Checking for updates…');
-  const messages={new:'New version found. Tap Update at the top.',same:'You have the latest version.',dismissed:'You dismissed this update notice.',stale:'GitHub is still publishing your latest file. Wait 1 to 2 minutes, then try again.',unversioned:'The published index.html has no siswadiet-build number. Upload the complete, latest index.html.', 'wrong-config':'The published index.html has no valid Firebase config (it may still say PASTE_HERE). Fix it on GitHub, then try again.', 'wrong-page':'This link redirects away from the SiswaDiet page.',local:'Open your published GitHub Pages link to check for updates.'};
+  const messages={new:'New version found. Tap Update at the top.',same:'You have the latest version.',dismissed:'You dismissed this update notice.',stale:'GitHub Pages is serving an older build. Try again after deployment.',unversioned:'The published page has no SiswaDiet build number. Upload the complete index.html.', 'wrong-config':'The published page uses a different or incomplete Firebase configuration.', 'wrong-page':'This link redirects away from the SiswaDiet page.',local:'Open your published GitHub Pages link to check for updates.'};
   window.checkUpdate(true).then(result=>toast(messages[result]||'Could not reach the published page. Try again shortly.')).finally(()=>{t.disabled=false});
  }
  else if(a=='amode'){AM=AM=='in'?'up':'in';R()}
@@ -1531,13 +1524,12 @@ if(CFG_OK)onAuthStateChanged(auth,async u=>{U=u;if(!u){S=freshS();PL=null;V='aut
  S=d&&d.v==2?d:freshS();S.P.goal=currentGoal(S.P.goal);if(!S.P.name)S.P.name=u.displayName||signupName||'';signupName='';reviewEdit=false;errs={};step=Number.isInteger(S.setupStep)&&S.setupStep>=0&&S.setupStep<=4?S.setupStep:0;PL=S.plan;V=S.plan?'app':'wiz';tab='home';day=wd();document.documentElement.dataset.theme=S.theme||'';R()});
 else{V='auth';R()}
 </script><script>
-/* Increase the siswadiet-build number in the <meta> tag at the top every time you publish an update. */
+/* Increase siswadiet-build when publishing an update. */
 const readBuild=page=>Number(page.querySelector('meta[name="siswadiet-build"]')?.content);
 const runningBuild=readBuild(document);
 const entry=new URL(location.href);
 entry.search='';entry.hash='';
 const alternate=entry.pathname.endsWith('/')?new URL('index.html',entry):entry.pathname.endsWith('/index.html')?new URL('./',entry):null;
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function firebaseIdentity(page){
  for(const script of page.querySelectorAll('script[type="module"]')){
   const config=script.textContent.match(/\b(?:const|let|var)\s+firebaseConfig\s*=\s*\{([^}]+)\}/)?.[1];
@@ -1555,22 +1547,19 @@ document.getElementById('update-close').onclick=()=>{
  updateSlot.hidden=true;
  document.getElementById('vw')?.focus({preventScroll:true});
 };
-/* Always load the update through a fresh, cache-busting address so the phone cannot reuse an old cached copy. */
-function freshAddress(build){const u=new URL(entry);u.searchParams.set('v',build+'-'+Date.now());return u.href}
 document.getElementById('update-action').onclick=async()=>{
  if(applyingUpdate)return;
  applyingUpdate=true;
  updateSlot.hidden=true;
  const update=await probeUpdate();
- if(update.status==='new'){try{localStorage.setItem('sd-build',String(update.build))}catch(e){}location.replace(freshAddress(update.build));return}
+ if(update.url){location.replace(update.url);return}
  failedBuild=visibleBuild;
  applyingUpdate=false;
  document.dispatchEvent(new Event('siswadiet-update-failed'));
 };
-/* Every check uses a unique query string, so neither the browser nor GitHub's CDN can answer from an old cached copy. */
-async function probePage(address){
+async function probePage(address,bust=false){
   const url=new URL(address);
-  url.searchParams.set('cb',Date.now().toString(36)+Math.random().toString(36).slice(2,6));
+  if(bust)url.searchParams.set('v',String(Date.now()));
   const controller=new AbortController(), timer=setTimeout(()=>controller.abort(),10000);
   try{
    const response=await fetch(url,{cache:'no-store',signal:controller.signal});
@@ -1579,30 +1568,28 @@ async function probePage(address){
    if(served.origin!==entry.origin||![entry.pathname,alternate?.pathname].includes(served.pathname))return{status:'wrong-page'};
    const page=new DOMParser().parseFromString(await response.text(),'text/html');
    const build=readBuild(page);
-   if(!Number.isSafeInteger(build)||build<1)return{status:'unversioned'};
-   if(build<runningBuild)return{status:'stale'};
    const publishedFirebase=firebaseIdentity(page);
-   if(!runningFirebase||!publishedFirebase||publishedFirebase.projectId!==runningFirebase.projectId||publishedFirebase.appId!==runningFirebase.appId)return{status:'wrong-config'};
+   if(!Number.isSafeInteger(build)||build<1)return{status:'unversioned'};
+   if(!runningFirebase||!publishedFirebase||
+      publishedFirebase.projectId!==runningFirebase.projectId||publishedFirebase.appId!==runningFirebase.appId)return{status:'wrong-config'};
+   if(build<runningBuild)return{status:'stale'};
    if(build<=runningBuild)return{status:'same'};
-   return{status:'new',build};
+   return{status:'new',url:served.href,build};
   }catch(error){return{status:'error'}}finally{clearTimeout(timer)}
-}
-async function probeOnce(){
- const addresses=alternate?[entry,alternate]:[entry];
- const results=await Promise.all(addresses.map(probePage));
- const newer=results.filter(r=>r.status==='new').sort((a,b)=>b.build-a.build)[0];
- if(newer)return newer;
- for(const status of ['same','stale','wrong-config','unversioned','wrong-page'])if(results.some(r=>r.status===status))return{status};
- return{status:'error'};
 }
 function probeUpdate(){
  if(pendingCheck)return pendingCheck;
  pendingCheck=(async()=>{
   if(!/^https?:$/.test(entry.protocol))return{status:'local'};
-  let r=await probeOnce();
-  /* GitHub Pages can serve an older copy for a minute or two while it publishes. Retry before reporting a problem. */
-  for(let n=0;n<2&&['stale','unversioned','wrong-config','error'].includes(r.status);n++){await sleep(2500);r=await probeOnce()}
-  return r;
+  const addresses=alternate?[entry,alternate]:[entry];
+  const results=await Promise.all(addresses.map(address=>probePage(address)));
+  if(!results.some(result=>result.status==='new'||result.status==='same')){
+   results.push(...await Promise.all(addresses.map(address=>probePage(address,true))));
+  }
+  const newer=results.filter(result=>result.status==='new').sort((a,b)=>b.build-a.build)[0];
+  if(newer)return newer;
+  for(const status of ['same','stale','wrong-config','unversioned','wrong-page'])if(results.some(result=>result.status===status))return{status};
+  return{status:'error'};
  })().finally(()=>{pendingCheck=null});
  return pendingCheck;
 }
