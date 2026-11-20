@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#6C5CE7">
-<meta name="siswadiet-build" content="23">
+<meta name="siswadiet-build" content="24">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>SiswaDiet</title>
 <link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
@@ -859,7 +859,7 @@ function vPlan(){
  const logs=S.logs.filter(log=>log.d===date),spent=logs.reduce((sum,log)=>sum+Math.round(log.rm*100),0)/100;
  const pct=budget>0?Math.round(planned/budget*100):0,fits=planned<=budget;
  const arc='M 10 72 A 52 52 0 1 1 110 72';
- return `<header class="page-head week-heading"><div><h1>Meal Plan</h1><p>Your personalised meals for the week</p></div>${sisi('meal',106)}</header>
+ return `<header class="page-head week-heading"><div><h1>Meal Plan</h1><p>Your personalised meals for the week</p></div>${sisi('plan',106)}</header>
  <div class="week-days" aria-label="Meal plan day">${DAYS.map((label,i)=>`<button class="dp ${i===day?'on':''} ${i===wd()?'is-today':''}" data-a="day" data-v="${i}" aria-pressed="${i===day}" aria-label="${label}${i===wd()?', today':''}">${label}</button>`).join('')}</div>
  <details class="card week-summary"><summary><div class="week-budget-dial" aria-label="${pct}% of budget planned"><svg viewBox="0 0 120 80" aria-hidden="true" fill="none" stroke-width="10" stroke-linecap="round"><path d="${arc}" stroke="var(--bd)"/>${pct>0?`<path d="${arc}" stroke="${fits?'var(--mt)':'var(--err)'}" pathLength="100" stroke-dasharray="${Math.min(100,pct)} 101"/>`:''}</svg><strong>${pct}%</strong></div>
  <div class="week-budget-copy"><b class="${fits?'ok':'er'}">${ic(fits?'ok':'info',16)} ${fits?'Within budget':'Over budget'}</b><p class="sm mut">${rm(planned)} / ${rm(budget)}</p></div><span class="week-chevron">${ic('next',18)}</span></summary>
