@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#6C5CE7">
-<meta name="siswadiet-build" content="24">
+<meta name="siswadiet-build" content="25">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>SiswaDiet</title>
 <link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
@@ -264,8 +264,6 @@ html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:
 .week-days .is-today:not(.on){border-color:var(--pri)}
 .week-summary{display:grid;grid-template-columns:76px minmax(0,1fr);gap:14px;align-items:center;background:var(--lav)}
 .week-summary .budget-gauge{--gauge-center:var(--lav);--gauge-track:var(--bd)}
-.week-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.week-actions button{height:100%;margin:0;padding:6px 10px}
 .meal-row .pl,.food-row .pl{min-width:0;min-height:48px}
 .meal-row .pl>div:last-child,.food-row .pl>div:last-child{min-width:0;overflow-wrap:anywhere}
 .meal-thumb{width:43px;height:43px;flex:none;display:grid;place-items:center;border-radius:13px;background:var(--lav);font-size:23px}
@@ -296,7 +294,7 @@ html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:
 .setting-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .setting-grid .action-tile{flex-direction:column;align-items:flex-start;justify-content:center}
 .mode-switch{margin-inline-start:auto;border-radius:99px;width:33px;height:18px;background:var(--bd);padding:2px;display:flex}.mode-switch::after{content:"";width:14px;height:14px;border-radius:50%;background:var(--card)}[aria-checked=true] .mode-switch{background:var(--panel)}[aria-checked=true] .mode-switch::after{margin-inline-start:auto}
-@media(max-width:370px){.app.dashboard{padding-inline:14px}.week-actions{grid-template-columns:1fr}.action-tile{gap:5px;font-size:12px}.setting-grid{grid-template-columns:1fr}.setting-grid .action-tile{flex-direction:row;align-items:center;justify-content:flex-start;min-height:44px}}
+@media(max-width:370px){.app.dashboard{padding-inline:14px}.action-tile{gap:5px;font-size:12px}.setting-grid{grid-template-columns:1fr}.setting-grid .action-tile{flex-direction:row;align-items:center;justify-content:flex-start;min-height:44px}}
 @media(prefers-reduced-motion:reduce){.dashboard *,.sheet *{animation:none!important;transition:none!important}}
 /* Today dashboard */
 .dashboard.today-page{padding-inline:clamp(12px,3.6vw,20px)}
@@ -401,8 +399,6 @@ html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:
 .week-meals .meal-row .btn.bs{padding:0 9px;font-size:clamp(10px,3vw,14px);background:linear-gradient(135deg,#8c43cc,#581c91)}
 .week-page .week-note{display:flex;align-items:center;gap:8px}
 .week-note svg{flex:none}
-.week-page .week-actions .btn{border-radius:16px;font-size:clamp(11px,3vw,14px);line-height:1.25}
-.week-page .week-actions .btn:not(.o){background:linear-gradient(135deg,#9248c7,#552586)}
 .week-page nav button.on{background:var(--lav);color:var(--pri)}
 /* Keep the update card in the document flow above the current dashboard. */
 .update-slot{display:none}
@@ -515,7 +511,7 @@ html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:
 .profile-view:not([data-theme=dark]) body{min-height:100dvh;background:linear-gradient(#f1e8fa calc(env(safe-area-inset-top,0px) + 24px),#faf7fe 310px)}
 .dashboard.profile-page{padding-inline:clamp(12px,3.6vw,20px)}
 .profile-page .profile-heading{min-height:clamp(84px,23vw,119px);margin:0;padding-inline:4px 0}
-.profile-heading h1{font-size:clamp(25px,6.7vw,36px);letter-spacing:-.04em}
+.profile-heading h1{color:var(--ink);font-size:clamp(25px,6.7vw,36px);letter-spacing:-.04em}
 .profile-heading p{font-size:clamp(11px,3.3vw,15px)}
 .profile-heading>.sp{max-width:27%;align-self:end}
 .profile-heading>.sp img{max-width:100%;object-fit:contain;object-position:bottom}
@@ -819,7 +815,7 @@ function todayBudgetCard(budget,planned,logs){
  const fill=Math.min(100,Math.max(0,usage)), arc='M 9 63 A 52 52 0 0 1 113 63';
  const gaugeColor={under:'#a5e475',at:'#ffda8a',over:'#ffa1b8'}[status];
  return `<section class="card budget-card today-budget panel-purple" aria-labelledby="today-budget-title">
-  <div class="budget-head"><h2 id="today-budget-title">${ic('fork',20)} Daily Food Budget</h2><button class="btn s" data-a="budget-preview">${ic('swap',17)} Try New Budget</button></div>
+  <div class="budget-head"><h2 id="today-budget-title">${ic('fork',20)} Daily Food Budget</h2><button class="btn s" data-a="budget-preview">${ic('swap',17)} Change Budget</button></div>
   <div class="budget-hero">
    <div class="budget-amount"><div class="budget-value">${rm(Math.abs(left)/100)}</div><p>${left<0?'over budget today':'left to spend today'}</p></div>
    <div class="today-gauge" role="img" aria-label="${percent}% of ${rm(limit/100)} used">
@@ -865,8 +861,7 @@ function vPlan(){
  <div class="week-budget-copy"><b class="${fits?'ok':'er'}">${ic(fits?'ok':'info',16)} ${fits?'Within budget':'Over budget'}</b><p class="sm mut">${rm(planned)} / ${rm(budget)}</p></div><span class="week-chevron">${ic('next',18)}</span></summary>
  <p class="mut sm week-budget-detail">${rm(planned)} planned of ${rm(budget)}. ${logs.length?rm(spent)+' spent on logged meals.':'No meals logged.'}</p></details>
  <div class="card week-meals">${ids.map((id,i)=>mrow(id,i,day,isToday,logs.some(log=>!log.extra&&log.id===id&&log.s===Math.min(i,3)))).join('')}</div>
- <p class="mut sm inline-note week-note">${ic('info',20)}<span>Prices and nutrition are estimates. Swaps that go over your budget are disabled.</span></p>
- <div class="week-actions mt"><button class="btn o" data-a="how">How this plan was made</button><button class="btn" data-a="budget-preview">Try a new budget</button></div>`;
+ <p class="mut sm inline-note week-note">${ic('info',20)}<span>Prices and nutrition are estimates. Swaps that go over your budget are disabled.</span></p>`;
 }
 const foodSorters={asc:(a,b)=>a.rm-b.rm,desc:(a,b)=>b.rm-a.rm,cal:(a,b)=>a.k-b.k,caldesc:(a,b)=>b.k-a.k,name:(a,b)=>a.n.localeCompare(b.n)};
 let foodSort='asc';
