@@ -5,7 +5,7 @@
 <meta name="siswadiet-build" content="28">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>SiswaDiet</title>
-<link rel="manifest" href="manifest.json?v=logo2"><link rel="icon" href="icon-192.png?v=logo2" sizes="192x192" type="image/png"><link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=logo2">
+<link rel="manifest" href="manifest.json?v=logo3"><link rel="icon" href="icon-192.png?v=logo3" sizes="192x192" type="image/png"><link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=logo3">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="SiswaDiet">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -152,8 +152,8 @@ html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:
 .auth-shell #vw{min-height:100%;display:flex;align-items:flex-start;padding:calc(16px + env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
 .auth-view{width:min(100%,400px);margin:auto;display:grid;gap:clamp(12px,2.4dvh,24px);text-align:center}
 .auth-brand{display:grid;justify-items:center;gap:6px}
-.auth-logo-frame{display:grid;place-items:center;width:clamp(68px,11dvh,100px);aspect-ratio:1;border:1px solid var(--bd);border-radius:26%;background:var(--card);box-shadow:0 3px 8px rgba(41,21,59,.07);margin-bottom:8px}
-.auth-logo-frame img{display:block;width:90%;height:90%;object-fit:contain}
+.auth-logo-frame{display:block;width:clamp(68px,11dvh,100px);aspect-ratio:1;border-radius:23%;overflow:hidden;background:#522a96;box-shadow:0 3px 8px rgba(41,21,59,.12);margin-bottom:8px}
+.auth-logo-frame img{display:block;width:100%;height:100%;object-fit:cover}
 .auth-brand h1{font-size:clamp(24px,6.65vw,30px);letter-spacing:-.045em}
 .auth-brand p{color:var(--mut);font-size:13px}
 .auth-form.card{margin:0;padding:clamp(13px,4vw,22px);text-align:left;box-shadow:0 3px 10px rgba(41,21,59,.08);border-radius:24px;display:grid;gap:12px}
@@ -1018,7 +1018,7 @@ const vAuth=()=>{
  const up=AM==='up';
  return `<section class="auth-view" aria-labelledby="auth-title">
   <header class="auth-brand">
-   <div class="auth-logo-frame"><img src="${LOGO}" alt="SiswaDiet logo"></div>
+   <div class="auth-logo-frame"><img src="icon-512.png?v=logo3" width="512" height="512" alt="SiswaDiet logo"></div>
    <h1 id="auth-title">${up?'Create your account':'Welcome to SiswaDiet'}</h1>
    <p>${up?'Create an account to save your meal plan.':'Plan meals around your student budget.'}</p>
   </header>
