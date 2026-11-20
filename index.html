@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#6C5CE7">
-<meta name="siswadiet-build" content="27">
+<meta name="siswadiet-build" content="28">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>SiswaDiet</title>
 <link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
@@ -578,6 +578,9 @@ html:has(.auth-shell),body:has(.auth-shell){overflow:hidden;overscroll-behavior:
 .app.account-loading-shell{position:fixed;inset:0;max-width:none;margin:0;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);display:grid;place-items:center;overflow:hidden;touch-action:none;background:linear-gradient(180deg,var(--loading-top),var(--loading-bottom))}
 .account-loading-content{display:flex;flex-direction:column;align-items:center;gap:14px;padding:12px;text-align:center}
 .account-loading-content>.sp-load{max-height:38vh}
+/* Match the viewport canvas and bottom safe area to the open sheet. */
+:root.sheet-open,:root.sheet-open[data-theme=dark]{background:var(--card)}
+.bk::after{content:"";position:absolute;left:50%;bottom:-96px;transform:translateX(-50%);width:min(100%,520px);height:calc(96px + max(2px,env(safe-area-inset-bottom,0px)));background:var(--card);pointer-events:none}
 </style></head><body>
 <div id="update-slot" class="update-slot" hidden>
  <section class="update-card" aria-labelledby="update-title">
@@ -1392,7 +1395,7 @@ function R(){const f={load:vLoad,auth:vAuth,welcome:vWel,wiz:vWiz,rev:vRev,ana:v
  root.classList.toggle('dashboard-view',V==='app');
  root.classList.toggle('plan-result-view',V==='res');
  root.classList.toggle('account-loading',V==='load');
- $('meta[name="theme-color"]').content=isToday?(root.dataset.theme==='dark'?'#2d203f':'#efe6fa'):isWeek?(root.dataset.theme==='dark'?'#161020':'#f7f3fd'):(isExplore||isProgress||isProfile)?(root.dataset.theme==='dark'?'#161020':'#f1e8fa'):(V==='res'||V==='load')?(root.dataset.theme==='dark'?'#241a31':'#f0e5ff'):'#6C5CE7';
+ $('meta[name="theme-color"]').content=sheet?(root.dataset.theme==='dark'?'#271839':'#fff'):isToday?(root.dataset.theme==='dark'?'#2d203f':'#efe6fa'):isWeek?(root.dataset.theme==='dark'?'#161020':'#f7f3fd'):(isExplore||isProgress||isProfile)?(root.dataset.theme==='dark'?'#161020':'#f1e8fa'):(V==='res'||V==='load')?(root.dataset.theme==='dark'?'#241a31':'#f0e5ff'):'#6C5CE7';
  const app=$('#app');app.className=V==='auth'?'app auth-shell':V==='app'?'app dashboard'+(isToday?' today-page':isWeek?' week-page':isExplore?' explore-page':isProgress?' progress-page':isProfile?' profile-page':''):V==='res'?'app plan-result-page':V==='load'?'app account-loading-shell':'app';syncAuthViewport(app);
  app.innerHTML=`<div class="v${foc?' nv':''}" id="vw" tabindex="-1">${f()}</div>${V=='app'?nav():''}`;$('#sh').innerHTML=sheet?shv():'';
  app.inert=!!sheet;$('#update-slot').inert=!!sheet;syncSheetScroll(!!sheet);
