@@ -897,7 +897,7 @@ let exploreFiltersOpen=true;
 const exploreTile=(label,detail,icon,action,enabled=true)=>`<button type="button" class="action-tile" data-a="${action}" ${enabled?'':'disabled'}>${ic(icon,22)}<span><b>${label}</b><small>${detail}</small></span>${ic('next',14)}</button>`;
 const vExp=()=>`<header class="page-head explore-heading"><div><h1>Explore Foods</h1><p>Find and add meals to your plan</p></div>${sisi('empty',106)}</header>
 <div class="explore-actions">
- ${exploreTile('Scan Meal',scanConfigured()?'Take or upload a meal photo':'Available to adults with a saved profile','scanframe','scanopen',scanConfigured())}
+ ${exploreTile('Scan Meal',scanConfigured()?'Estimate from a photo or meal name':'Available to adults with a saved profile','scanframe','scanopen',scanConfigured())}
  ${exploreTile('Check Food Fit','See if a food suits you','checklist','inspect-food')}
 </div>
 <div class="explore-search-group">
@@ -1254,10 +1254,8 @@ function updateLogEstimate(updateCost=false){
 function howSheet(){const t=(S.plan||PL)?.tr,r=t?.rej||{};return`<h2>How recommendations work</h2><p class="mut">SiswaDiet is a rule-based expert system. The same answers always give the same plan.</p><ol class="sm"><li><b>R1 Allergies.</b> Meals with your allergens are removed. Meals with incomplete allergen data are hidden if you list allergies or prefer not to say.</li><li><b>R2 Diet.</b> Vegan, vegetarian and pescatarian rules apply to every meal.</li><li><b>R3 Dislikes.</b> Disliked ingredients are skipped.</li><li><b>R4 Budget.</b> Breakfast + lunch + dinner (+ up to 2 snacks) must total no more than your daily budget. Nothing goes over.</li><li><b>R5 Variety.</b> Repeats are penalised across the week.</li><li><b>R6 Goal.</b> Days are ranked by how close they get to rough protein and calorie targets. “Goal minimum” is the cheapest day in this meal list that reaches them.</li></ol>
 ${t?`<div class="card sm"><h3>Your last run</h3><p>${t.ok} of ${t.all} meals kept. Removed: ${r.allergen||0} allergen, ${r.unknown||0} unknown data, ${r.diet||0} diet, ${r.dislike||0} dislike.</p><p>${t.n} complete days checked, ${t.fit} fit your budget. Targets: about ${t.T.pro} g protein, ${t.T.kLo}–${t.T.kHi} kcal.${t.minGoal!=null?` Cheapest day reaching them: ${rm(t.minGoal)}.`:' No day in this list reaches them.'}</p></div>`:''}<p class="mut sm mt">Limits: meals, prices and nutrition are illustrative estimates, not a verified database. Under-18 profiles never get weight-loss targets. Ask a doctor or dietitian about health conditions.</p>`}
 
-const SCAN_ENDPOINT = 'https://siswadiet-meal-scan.afiqalim0984.workers.dev/scan';
-const scanConfigured=()=>!S.sample&&Number.isInteger(Number(S.P.age))&&Number(S.P.age)>=18&&/^https:\/\/[^/]+\/scan$/.test(SCAN_ENDPOINT);
-const emptyScanItem=()=>({id:'', servings:1});
-const scanMeals=()=>elig(S.P).out;
+const SCAN_ENDPOINT = 'https://siswadiet-meal-scan.afiqalim0984.workers.dev/estimate';
+const scanConfigured=()=>!S.sample&&Number.isInteger(Number(S.P.age))&&Number(S.P.age)>=18&&/^https:\/\/[^/]+\/estimate$/.test(SCAN_ENDPOINT);
 function scanTotals(items){
  const totals={k:0,p:0,cb:0,f:0};
  for(const {id,servings} of items){
@@ -1272,27 +1270,22 @@ const scanSummary=items=>{
  return `Est. ${nutritionNumber(k)} kcal · ${nutritionNumber(p)} g protein · ${nutritionNumber(cb)} g carbs · ${nutritionNumber(f)} g fat`;
 };
 function scanSheet(scan){
- const foodList=scanMeals();
+ const estimate=scan.estimate, disabled=scan.busy?'disabled':'';
  return `<h2>Scan meal</h2>
- <p class="mut sm mt">Use a plate-only photo. Leave faces, IDs and other personal information out of the shot.</p>
- <div class="f"><label for="scan-file">Take a photo</label><input id="scan-file" data-scan="photo" type="file" accept="image/*" capture="environment" ${scan.busy?'disabled':''}></div>
- <div class="f"><label for="scan-upload">Or choose a photo</label><input id="scan-upload" data-scan="photo" type="file" accept="image/*" ${scan.busy?'disabled':''}></div>
- ${scan.preview?`<img class="scan-preview mt" src="${scan.preview}" alt="Meal photo preview">`:''}
- <p class="mut sm mt">Analyze photo sends the picture to Google Gemini. Google may use free-tier submissions to improve its products. SiswaDiet saves only your confirmed meal log.</p>
- ${scan.preview?`<button class="btn" data-a="scanrun" ${scan.busy?'disabled':''}>${scan.busy?'Analyzing photo…':'Analyze photo'}</button>`:''}
+ <p class="mut sm mt">Use a photo of the meal only, or type its name. Avoid faces, IDs and other personal information.</p>
+ <div class="f"><label for="scan-file">Take a photo</label><input id="scan-file" data-scan="photo" type="file" accept="image/*" capture="environment" ${disabled}></div>
+ <div class="f"><label for="scan-upload">Or choose a photo</label><input id="scan-upload" data-scan="photo" type="file" accept="image/*" ${disabled}></div>
+ ${scan.preview?`<img class="scan-preview mt" src="${scan.preview}" alt="Meal photo preview"><button class="btn s" data-a="scanrun" ${disabled}>Identify meal from photo</button>`:''}
+ <div class="f"><label for="scan-name">Meal name</label><input id="scan-name" data-scan="name" maxlength="120" placeholder="e.g. Nasi kerabu with ayam percik" value="${esc(scan.name)}" ${disabled}></div>
+ <p class="mut sm">If Gemini guessed wrong, edit the name and tap Estimate from name. Include the portion if you know it, such as “half a plate of nasi kerabu”.</p>
+ <button class="btn s" data-a="scanestimate" ${disabled}>Estimate from name</button>
+ <p class="mut sm mt">The selected photo or meal name is sent to Google Gemini for an estimate. A photo cannot confirm ingredients or allergen safety.</p>
  <p class="er mt" role="status">${esc(scan.message||'')}</p>
- ${scan.items?`<h3 class="mt">Review foods and portions</h3>
- <p class="mut sm">Select the foods you ate. A photo cannot confirm ingredients, allergens or serving sizes.</p>
- ${scan.items.map(({id,servings},i)=>`<div class="card mt"><div class="f"><label for="scan-food-${i}">Food ${i+1}</label>
-  <select id="scan-food-${i}" data-scan="id" data-i="${i}"><option value="">Choose a food</option>${foodList.map(food=>`<option value="${food.id}" ${id===food.id?'selected':''}>${esc(food.n)}</option>`).join('')}</select></div>
-  <div class="f"><label for="scan-count-${i}">Servings ${MB[id]?.portion?`(${esc(MB[id].portion)} each)`:''}</label><input id="scan-count-${i}" data-scan="servings" data-i="${i}" type="number" min="0.25" max="10" step="any" inputmode="decimal" value="${Number.isFinite(servings)?servings:''}"></div>
-  <button class="lk" data-a="scanremove" data-i="${i}">Remove food</button></div>`).join('')}
- ${scan.items.length<8?'<button class="btn s" data-a="scanadd">Add food</button>':''}
- <p class="card mt" id="scan-total" aria-live="polite">${scanSummary(scan.items)}</p>
- <div class="f"><label for="scan-slot">Meal time</label><select id="scan-slot" data-scan="slot">${['Breakfast','Lunch','Dinner','Snack'].map((label,i)=>`<option value="${i}" ${i===scan.slot?'selected':''}>${label}</option>`).join('')}</select></div>
- <div class="f"><label for="scan-cost">Actual cost (RM)</label><input id="scan-cost" data-scan="cost" type="number" min="0" step=".01" inputmode="decimal" value="${esc(scan.cost)}"></div>
- <button class="btn" data-a="scansave" ${scan.busy?'disabled':''}>Save to Today</button>`:''}
- ${!scan.items&&!scan.busy?'<button class="btn s" data-a="scanadd">Choose foods manually</button>':''}`;
+ <section class="card mt" id="scan-estimate" ${estimate?'':'hidden'}>
+ ${estimate?`<h3>${esc(estimate.name)}</h3><p class="mut sm">${esc(estimate.description)}</p><p class="mut sm mt"><b>Assumed portion</b> ${esc(estimate.portion)}</p><p class="sm mt"><b>AI estimate</b> ${nutritionNumber(estimate.kcal)} kcal · ${nutritionNumber(estimate.protein)} g protein · ${nutritionNumber(estimate.carbs)} g carbs · ${nutritionNumber(estimate.fat)} g fat</p>`:''}</section>
+ <div class="f"><label for="scan-slot">Meal time</label><select id="scan-slot" data-scan="slot" ${disabled}>${['Breakfast','Lunch','Dinner','Snack'].map((label,i)=>`<option value="${i}" ${i===scan.slot?'selected':''}>${label}</option>`).join('')}</select></div>
+ <div class="f"><label for="scan-cost">Actual cost (RM)</label><input id="scan-cost" data-scan="cost" type="number" min="0" step=".01" inputmode="decimal" value="${esc(scan.cost)}" ${disabled}></div>
+ <button class="btn" data-a="scansave" ${scan.busy||!estimate?'disabled':''}>Confirm and save to Today</button>`;
 }
 async function prepareScanPhoto(file){
  if(!file.type.startsWith('image/')||file.size>18000000)throw Error('Choose an image under 18 MB.');
@@ -1313,7 +1306,7 @@ async function prepareScanPhoto(file){
 }
 async function selectScanPhoto(scan,file){
  if(!file||scan.busy)return;
- scan.busy=true;scan.message='Preparing photo…';scan.photo=null;scan.preview='';scan.items=null;R();
+ scan.busy=true;scan.message='Preparing photo…';scan.photo=null;scan.preview='';scan.estimate=null;R();
  try{
   scan.photo=await prepareScanPhoto(file);
   scan.preview=await new Promise((resolve,reject)=>{
@@ -1323,47 +1316,59 @@ async function selectScanPhoto(scan,file){
  }catch(error){scan.message=error.message}
  finally{scan.busy=false;if(sheet===scan)R()}
 }
-async function analyzeScan(scan){
- if(!scanConfigured()||!U||!scan.photo||scan.busy)return;
- scan.busy=true;scan.message='';R();
+async function analyzeScan(scan, byName=false){
+ if(!scanConfigured()||!U||scan.busy||(!byName&&!scan.photo))return;
+ const name=byName?scan.name.trim():'';
+ if(byName&&!name){scan.message='Enter the meal name first.';R();$('#scan-name')?.focus({preventScroll:true});return}
+ scan.busy=true;scan.estimate=null;scan.message='Estimating your meal…';R();
  const controller=new AbortController();
  const timeout=setTimeout(()=>controller.abort(),65000);
  try{
   const token=await U.getIdToken();
   if(sheet!==scan)return;
-  const response=await fetch(SCAN_ENDPOINT,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'image/jpeg'},body:scan.photo,signal:controller.signal});
-  if(response.status===400||response.status===415)throw Error('The scanner could not read that photo. Try a new JPEG.');
+  const headers={Authorization:'Bearer '+token};
+  if(byName)headers['X-Meal-Name']=encodeURIComponent(name);
+  const body=byName?null:scan.photo;
+  if(body)headers['Content-Type']='image/jpeg';
+  const response=await fetch(SCAN_ENDPOINT,{method:'POST',headers,body,signal:controller.signal});
+  if(response.status===400||response.status===415)throw Error('Check the meal name or try a new JPEG.');
   if(response.status===401)throw Error('Please sign out and sign back in to refresh your session.');
-  if(response.status===403)throw Error('Scanning requires a saved SiswaDiet profile with an age of 18 or older. If you just saved your profile, wait a moment and retry.');
-  if(response.status===429)throw Error('Scan limit reached. Try later or choose foods manually.');
-  if(response.status===503)throw Error('The scanner could not check your profile or is unavailable. Try again or choose foods manually.');
-  if(response.status===504)throw Error('Gemini took too long to respond. Try again or choose foods manually.');
-  if(!response.ok)throw Error('Could not analyze the photo. Try again or choose foods manually.');
+  if(response.status===403)throw Error('Estimating requires a saved SiswaDiet profile with an age of 18 or older.');
+  if(response.status===429)throw Error('Scan limit reached. Try again later.');
+  if(response.status===404)throw Error('The meal estimation service has not been deployed yet.');
+  if(response.status===504)throw Error('Gemini took too long to respond. Try again.');
+  if(!response.ok)throw Error('Could not estimate this meal. Try again or log it manually.');
   const result=await response.json();
-  if(!Array.isArray(result.ids))throw Error('No scan result was available.');
-  const eligible=new Set(scanMeals().map(food=>food.id));
-  const ids=[...new Set(result.ids)].filter(id=>eligible.has(id)).slice(0,8);
-  scan.items=ids.length?ids.map(id=>({id,servings:1})):[emptyScanItem()];
-  scan.message=ids.length?'Check the suggestions, add any missed food, and adjust the servings.':'No matching foods passed your filters. Choose foods manually.';
+  if(result.status==='unknown'){
+   scan.message=(result.description||'Gemini could not identify this meal.')+' Try entering its name or a more detailed description.';
+   return;
+  }
+  if(result.status!=='ok'||typeof result.name!=='string'||!result.name.trim()||
+     typeof result.description!=='string'||typeof result.portion!=='string'||
+     !['kcal','protein','carbs','fat'].every(key=>Number.isFinite(result[key])&&result[key]>=0)){
+   throw Error('No usable estimate was available. Try again or log the meal manually.');
+  }
+  scan.name=name||result.name;
+  scan.estimate=result;
+  scan.message='';
  }catch(error){
-  if(controller.signal.aborted||error.name==='TimeoutError'||error.name==='AbortError'){
-   scan.message='The scan took too long or the connection was interrupted. Try again with the app open, or choose foods manually.';
-  }else if(error instanceof TypeError){
-   scan.message='Could not reach the scanner. Check your connection and try again, or choose foods manually.';
-  }else{scan.message=error.message}
-  scan.items??=[emptyScanItem()];
+  scan.message=controller.signal.aborted||error.name==='TimeoutError'||error.name==='AbortError'
+   ?'The estimate took too long or the connection was interrupted. Try again with the app open.'
+   :error instanceof TypeError?'Could not reach the scanner. Check your connection and try again.':error.message;
+ }finally{
+  clearTimeout(timeout);scan.busy=false;
+  if(sheet===scan){R();$('#scan-name')?.focus({preventScroll:true})}
  }
- finally{clearTimeout(timeout);scan.busy=false;if(sheet===scan)R()}
 }
 function saveScan(scan){
- const eligible=new Set(scanMeals().map(food=>food.id));
- if(scan.busy||!scan.items?.length)return;
- if(scan.items.some(({id,servings})=>!eligible.has(id)||!Number.isFinite(servings)||servings<.25||servings>10)){
-  scan.message='Choose each food and enter 0.25 to 10 servings.';R();return;
- }
+ if(scan.busy||!scan.estimate||!scan.name.trim())return;
  const cost=Number(scan.cost);
- if(!String(scan.cost).trim()||!Number.isFinite(cost)||cost<0){scan.message='Enter what you paid in RM, or 0.';R();return}
- S.logs.push({d:today(),s:scan.slot,id:null,n:scan.items.map(item=>MB[item.id].n).join(' + '),rm:Number(cost.toFixed(2)),chk:false,extra:true,t:Date.now(),nutrition:scanTotals(scan.items)});
+ if(!String(scan.cost).trim()||!Number.isFinite(cost)||cost<0){
+  scan.message='Enter what you paid in RM, or 0.';R();$('#scan-cost')?.focus({preventScroll:true});return;
+ }
+ const {kcal,protein,carbs,fat,description,portion}=scan.estimate;
+ S.logs.push({d:today(),s:scan.slot,id:null,n:scan.name.trim(),rm:Number(cost.toFixed(2)),
+  chk:false,extra:true,t:Date.now(),nutrition:{k:kcal,p:protein,cb:carbs,f:fat},estimateSource:'gemini',description,portion});
  save();go('app','home');toast('Meal saved with estimated nutrition.','meal');
 }
 
@@ -1452,10 +1457,9 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
   if(!result.plan?.days){sheet.preview=result;R();return}
   S.P.bud=result.profile.bud;S.plan=result.plan;PL=result.plan;day=wd();save();go('app','plan');toast('Budget and weekly plan updated.','plan');
  }
- else if(a==='scanopen'&&scanConfigured()){sheet={t:'scan',slot:1,cost:'',items:null,busy:false};R()}
+ else if(a==='scanopen'&&scanConfigured()){sheet={t:'scan',slot:1,cost:'',name:'',estimate:null,busy:false};R()}
  else if(a==='scanrun'&&sheet?.t==='scan'){void analyzeScan(sheet)}
- else if(a==='scanadd'&&sheet?.t==='scan'){sheet.items??=[];if(sheet.items.length<8)sheet.items.push(emptyScanItem());R()}
- else if(a==='scanremove'&&sheet?.t==='scan'){sheet.items.splice(I,1);R()}
+ else if(a==='scanestimate'&&sheet?.t==='scan'){void analyzeScan(sheet,true)}
  else if(a==='scansave'&&sheet?.t==='scan'){saveScan(sheet)}
  else if(a=='foodlog'&&elig(S.P).out.some(m=>m.id===v)){sheet={t:'log',v,i:MB[v].c==='b'?0:MB[v].c==='s'?3:1,extra:true};R()}
  else if(a=='log'){sheet={t:'log',v,i:I};R()}
@@ -1507,7 +1511,7 @@ document.addEventListener('change',e=>{
  const field=t.dataset.scan;
  if(sheet?.t!=='scan'||!field)return;
  if(field==='photo')void selectScanPhoto(sheet,t.files?.[0]);
- if(field==='id'){sheet.items[+t.dataset.i].id=t.value;R();$('#scan-food-'+t.dataset.i)?.focus()}
+
 });
 document.addEventListener('input',e=>{
  if(sheet?.t==='budget'&&e.target.id==='whatif-budget'){
@@ -1517,9 +1521,11 @@ document.addEventListener('input',e=>{
  if(sheet?.t!=='scan'||!field)return;
  if(field==='slot')sheet.slot=+e.target.value;
  if(field==='cost')sheet.cost=e.target.value;
- if(field==='servings'){
-  sheet.items[+e.target.dataset.i].servings=e.target.valueAsNumber;
-  $('#scan-total').textContent=scanSummary(sheet.items);
+ if(field==='name'){
+  sheet.name=e.target.value;
+  sheet.estimate=null;
+  $('#scan-estimate').hidden=true;
+  $('#sh [data-a="scansave"]').disabled=true;
  }
 });
 document.addEventListener('input',e=>{const t=e.target,k=t.dataset.k;if(t.id=='as'){$('#ap').type=t.checked?'text':'password';return}if(t.id==='lm'||t.id==='lqty'){if(t.id==='lm')delete $('#lc').dataset.edited;updateLogEstimate(true);return}if(t.id==='lc'){t.dataset.edited='true';return}if(!k)return;
